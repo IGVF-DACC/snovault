@@ -29,6 +29,7 @@ class NoRemoteResolver(RefResolver):
 
 
 def mixinProperties(schema, resolver):
+    print('in mixin props, resolver', resolver)
     mixins = schema.get('mixinProperties')
     if mixins is None:
         return schema
@@ -274,6 +275,7 @@ format_checker = FormatChecker()
 
 
 def load_schema(filename):
+    print('loading schema', filename)
     if isinstance(filename, dict):
         schema = filename
         resolver = NoRemoteResolver.from_schema(schema)
@@ -292,6 +294,7 @@ def load_schema(filename):
 
 def validate(schema, data, current=None):
     resolver = NoRemoteResolver.from_schema(schema)
+    print('in validate, resolver', resolver)
     sv = SchemaValidator(schema, resolver=resolver, format_checker=format_checker)
     validated, errors = sv.serialize(data)
 
@@ -341,6 +344,7 @@ def validate_request(schema, request, data=None, current=None):
 
 
 def schema_validator(filename):
+    print('in schema validator, filename', filename)
     schema = load_schema(filename)
 
     def validator(request):
