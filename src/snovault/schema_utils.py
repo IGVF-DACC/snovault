@@ -62,6 +62,10 @@ def mixinProperties(schema, resolver):
 
 def resolve_ref(ref, resolver):
     with resolver.resolving(ref) as resolved:
+        if not isinstance(resolved, dict):
+            raise ValueError(
+                f'Schema ref {ref} must resolve dict, not {type(resolved)}'
+            )
         return resolved
 
 
