@@ -60,6 +60,49 @@ def mixinProperties(schema, resolver):
     return schema
 
 
+def resolve_ref(ref, resolver):
+    with resolver.resolving(ref) as resolved:
+        return resolved
+
+
+def resolve_refs(data, resolver):
+    if isinstance(data, dict):
+        # Return copy.
+        resolved_data = {}
+        for k, v in data.items():
+            if k == '$ref':
+                # Assumes resolved value is dictionary.
+                resolved_data.update(
+                    resolve_refs(
+                        resolve_ref(v, resolver),
+                        resolver
+                    )
+                )
+            else:
+                resolved_data[k] = resolve_refs(v, resolver)
+    elif isinstance(data, list):
+        # Return copy.
+        resolved_data = [
+            resolve_refs(v, resolver)
+            for v in data
+        ]
+    else:
+        # Assumes we're only dealing with other JSON types
+        # like string, number, boolean, null, not other
+        # types like tuples, sets, functions, classes, etc.,
+        # which would require a deep copy.
+        resolved_data = data
+    return resolved_data
+
+
+def fill_in_schema_refs_in_properties(schema, resolver):
+    # Avoid resolving refs e.g. in mixinProperties.
+    properties = schema.get('properties')
+    if properties:
+        schema['properties'] = resolve_refs(properties, resolver)
+    return schema
+
+
 def linkTo(validator, linkTo, instance, schema):
     # avoid circular import
     from snovault import Item, COLLECTIONS
@@ -284,6 +327,7 @@ def load_schema(filename):
                            object_pairs_hook=collections.OrderedDict)
         resolver = RefResolver('file://' + asset.abspath(), schema)
     schema = mixinProperties(schema, resolver)
+    schema = fill_in_schema_refs_in_properties(schema, resolver)
 
     # SchemaValidator is not thread safe for now
     SchemaValidator(schema, resolver=resolver)
