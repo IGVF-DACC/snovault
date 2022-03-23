@@ -25,6 +25,8 @@ def server_default(func):
 
 class NoRemoteResolver(RefResolver):
     def resolve_remote(self, uri):
+        print('resolving remote uri')
+        return super().resolve_remote(uri)
         raise ValueError('Resolution disallowed for: %s' % uri)
 
 
@@ -287,7 +289,6 @@ def load_schema(filename):
         print('creating resolver from asset', asset.abspath())
         resolver = RefResolver('file://' + asset.abspath(), schema)
     schema = mixinProperties(schema, resolver)
-    print('loading vars resolver', vars(resolver))
     # SchemaValidator is not thread safe for now
     SchemaValidator(schema, resolver=resolver)
     return schema
@@ -296,7 +297,6 @@ def load_schema(filename):
 def validate(schema, data, current=None):
     resolver = NoRemoteResolver.from_schema(schema)
     print('in validate, resolver', resolver)
-    print('vars resolver', vars(resolver))
     sv = SchemaValidator(schema, resolver=resolver, format_checker=format_checker)
     validated, errors = sv.serialize(data)
 
