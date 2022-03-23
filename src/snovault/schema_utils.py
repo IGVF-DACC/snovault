@@ -284,9 +284,10 @@ def load_schema(filename):
         asset = AssetResolver(caller_package()).resolve(filename)
         schema = json.load(utf8(asset.stream()),
                            object_pairs_hook=collections.OrderedDict)
+        print('creating resolver from asset', asset.abspath())
         resolver = RefResolver('file://' + asset.abspath(), schema)
     schema = mixinProperties(schema, resolver)
-
+    print('loading vars resolver', vars(resolver))
     # SchemaValidator is not thread safe for now
     SchemaValidator(schema, resolver=resolver)
     return schema
@@ -295,6 +296,7 @@ def load_schema(filename):
 def validate(schema, data, current=None):
     resolver = NoRemoteResolver.from_schema(schema)
     print('in validate, resolver', resolver)
+    print('vars resolver', vars(resolver))
     sv = SchemaValidator(schema, resolver=resolver, format_checker=format_checker)
     validated, errors = sv.serialize(data)
 
