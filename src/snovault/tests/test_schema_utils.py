@@ -244,3 +244,131 @@ def test_schema_utils_resolve_refs_fills_allows_override_of_ref_property(mocker)
         }
     }
     assert resolved_data == expected_data
+
+
+def test_schema_utils_resolve_ref_in_real_schema():
+    import codecs
+    import json
+    from pyramid.path import AssetResolver
+    from snovault.schema_utils import resolve_ref
+    from snovault.schema_utils import resolve_refs
+    from jsonschema import RefResolver
+    filename = 'snowflakes:schemas/snowball.json'
+    utf8 = codecs.getreader('utf-8')
+    asset = AssetResolver(
+        'snowflakes'
+    ).resolve(
+        filename
+    )
+    schema = json.load(
+        utf8(
+            asset.stream()
+        ),
+        object_pairs_hook=dict
+    )
+    assert list(schema['properties'].keys()) == [
+        'schema_version',
+        'method'
+    ]
+    resolver = RefResolver('file://' + asset.abspath(), schema)
+
+    # Try resolving ref from mixins.
+    resolved = resolve_ref(
+        'mixins.json#/uuid',
+        resolver
+    )
+    assert resolved == {
+        'uuid': {
+            'title': 'UUID',
+            'type': 'string',
+            'format': 'uuid',
+            'serverDefault': 'uuid4',
+            'requestMethod': ['POST']
+        }
+    }
+    # Resolve the inner object.
+    resolved = resolve_ref(
+        'mixins.json#/uuid/uuid',
+        resolver
+    )
+    assert resolved == {
+        'title': 'UUID',
+        'type': 'string',
+        'format': 'uuid',
+        'serverDefault': 'uuid4',
+        'requestMethod': ['POST']
+    }
+    # Raise error if resolve value not dict.
+    with pytest.raises(ValueError) as error:
+        resolved = resolve_ref(
+            'mixins.json#/uuid/uuid/title',
+            resolver
+        )
+    assert str(error.value) == (
+        "Schema ref mixins.json#/uuid/uuid/title must resolve dict, not <class 'str'>"
+    )
+    # Add ref to properties.
+    schema['properties']['accession'] = {
+        '$ref': 'mixins.json#/accession/accession'
+    }
+    # Resolve from properties.
+    resolved = resolve_refs(schema['properties'], resolver)
+    expected = {
+        'schema_version': {
+            'default': '2', 'comment': 'For testing upgrades'
+        },
+        'method': {
+            'title': 'Method',
+            'description': 'Technique used to make snowball.',
+            'type': 'string',
+            'default': 'hand-packed',
+            'enum': [
+                'hand-packed',
+                'scoop-formed',
+                'accreted'
+            ]
+        },
+        'accession': {
+            'title': 'Accession',
+            'description': 'A unique identifier to be used to reference the object prefixed with a db specific char set',
+            'comment': 'Do not submit. The accession is assigned by the server.',
+            'type': 'string',
+            'format': 'accession',
+            'serverDefault': 'accession',
+            'permission': 'import_items'
+        }
+    }
+    assert resolved == expected
+    # Fill in status from top level
+    del schema['properties']['accession']
+    schema['properties']['$ref'] = 'mixins.json#/standard_status'
+    resolved = resolve_refs(schema['properties'], resolver)
+    expected = {
+        'schema_version': {
+            'default': '2',
+            'comment': 'For testing upgrades'
+        },
+        'method': {
+            'title': 'Method',
+            'description': 'Technique used to make snowball.',
+            'type': 'string',
+            'default': 'hand-packed',
+            'enum': [
+                'hand-packed',
+                'scoop-formed',
+                'accreted'
+            ]
+        },
+        'status': {
+            'title': 'Status',
+            'type': 'string',
+            'default': 'in progress',
+            'enum': [
+                'in progress',
+                'deleted',
+                'replaced',
+                'released'
+            ]
+        }
+    }
+    assert resolved == expected
