@@ -73,7 +73,9 @@ def resolve_refs(data, resolver):
             if k == '$ref':
                 # Assumes resolved value is dictionary.
                 resolved_data.update(
+                    # Recurse here in case the resolved value has refs.
                     resolve_refs(
+                        # Actually get the ref value.
                         resolve_ref(v, resolver),
                         resolver
                     )
