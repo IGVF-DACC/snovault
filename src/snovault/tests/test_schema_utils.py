@@ -372,3 +372,140 @@ def test_schema_utils_resolve_ref_in_real_schema():
         }
     }
     assert resolved == expected
+
+
+def test_schema_utils_fill_in_schema_refs_in_properties():
+    import codecs
+    import json
+    from pyramid.path import AssetResolver
+    from jsonschema import RefResolver
+    from snovault.schema_utils import fill_in_schema_refs_in_properties
+    filename = 'snowflakes:schemas/snowball.json'
+    utf8 = codecs.getreader('utf-8')
+    asset = AssetResolver(
+        'snowflakes'
+    ).resolve(
+        filename
+    )
+    schema = json.load(
+        utf8(
+            asset.stream()
+        ),
+        object_pairs_hook=dict
+    )
+    assert list(schema['properties'].keys()) == [
+        'schema_version',
+        'method'
+    ]
+    resolver = RefResolver('file://' + asset.abspath(), schema)
+    # Add ref to something besides mixins.
+    schema['properties']['snowball_phone'] = {
+        '$ref': 'lab.json#/properties/phone1',
+        # Override default
+        'default': '999-123-4567',
+    }
+    resolved = fill_in_schema_refs_in_properties(
+        schema,
+        resolver,
+    )
+    expected = {
+        'title': 'Snowball',
+        'description': 'Schema for submitting metadata for a Snowball with 1 or more snowflakes', 'comment': 'An snowball is a special case of snowset.',
+        '$id': '/profiles/snowball.json',
+        '$schema': 'https://json-schema.org/draft/2020-12/schema',
+        'type': 'object',
+        'required': ['award', 'lab'],
+        'identifyingProperties': ['uuid', 'accession'],
+        'additionalProperties': False,
+        'mixinProperties': [
+            {'$ref': 'mixins.json#/schema_version'},
+            {'$ref': 'mixins.json#/uuid'},
+            {'$ref': 'mixins.json#/accession'},
+            {'$ref': 'mixins.json#/attribution'},
+            {'$ref': 'mixins.json#/submitted'},
+            {'$ref': 'snowset.json#/properties'}
+        ],
+        'dependentSchemas': {
+            'status': {
+                'oneOf': [
+                    {
+                        'required': ['date_released'],
+                        'properties': {
+                            'status': {
+                                'enum': [
+                                    'released', 'revoked'
+                                ]
+                            }
+                        }
+                    },
+                    {
+                        'not': {
+                            'properties': {
+                                'status': {
+                                    'enum': [
+                                        'released', 'revoked'
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        'properties': {
+            'schema_version': {
+                'default': '2',
+                'comment': 'For testing upgrades'
+            },
+            'method': {
+                'title': 'Method',
+                'description':
+                'Technique used to make snowball.',
+                'type': 'string',
+                'default': 'hand-packed',
+                'enum': [
+                    'hand-packed',
+                    'scoop-formed',
+                    'accreted'
+                ]
+            },
+            'snowball_phone': {
+                'title': 'Primary phone number',
+                'description': "The lab's primary phone number (with country code).",
+                'type': 'string',
+                'default': '999-123-4567',
+                'format': 'phone'
+            }
+        },
+        'facets': {
+            'method': {'title': 'Method'},
+            'award.project': {'title': 'Project'},
+            'award.rfa': {'title': 'RFA'},
+            'status': {'title': 'Snowball status'},
+            'snowflakes.type': {'title': 'Flakes'},
+            'month_released': {'title': 'Date released'},
+            'lab.title': {'title': 'Lab'}
+        },
+        'columns': {
+            'accession': {'title': 'Accession'},
+            'method': {'title': 'Method'},
+            'lab.title': {'title': 'Lab'},
+            'award.project': {'title': 'Project'},
+            'status': {'title': 'Status'},
+            'snowflakes.length': {'title': 'Number of snowflakes'}
+        },
+        'boost_values': {
+            'accession': 1.0,
+            'method': 1.0,
+            'snowflakes.type': 1.0,
+            'award.title': 1.0,
+            'award.project': 1.0,
+            'submitted_by.email': 1.0,
+            'submitted_by.first_name': 1.0,
+            'submitted_by.last_name': 1.0,
+            'lab.institute_name': 1.0,
+            'lab.institute_label': 1.0,
+            'lab.title': 1.0
+        }
+    }
+    assert resolved == expected
