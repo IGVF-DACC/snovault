@@ -218,3 +218,29 @@ def test_schema_utils_resolve_refs_fills_in_refs(mocker):
         }
     }
     assert resolved_data == expected_data
+
+
+def test_schema_utils_resolve_refs_fills_allows_override_of_ref_property(mocker):
+    from snovault.schema_utils import resolve_refs
+    resolver = None
+    resolve_ref = mocker.patch('snovault.schema_utils.resolve_ref')
+    resolve_ref.return_value = {
+        'a new value': 'that was resolved',
+        'custom': 'original value',
+        'and': 'something else',
+    }
+    data = {
+        'a': {
+            '$ref': 'xyz',
+            'custom': 'override',
+        }
+    }
+    resolved_data = resolve_refs(data, resolver)
+    expected_data = {
+        'a': {
+            'a new value': 'that was resolved',
+            'and': 'something else',
+            'custom': 'override',
+        }
+    }
+    assert resolved_data == expected_data
