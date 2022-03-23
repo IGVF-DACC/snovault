@@ -291,7 +291,9 @@ def load_schema(filename):
     # SchemaValidator is not thread safe for now
     SchemaValidator(schema, resolver=resolver)
 
-    SCHEMA_STORE[schema['$id']] = schema
+    schema_id = schema.get('$id')
+    if schema_id:
+        SCHEMA_STORE[schema_id] = schema
 
     return schema
 
