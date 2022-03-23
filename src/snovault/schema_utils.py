@@ -25,8 +25,6 @@ def server_default(func):
 
 class NoRemoteResolver(RefResolver):
     def resolve_remote(self, uri):
-        print('resolving remote uri')
-        return super().resolve_remote(uri)
         raise ValueError('Resolution disallowed for: %s' % uri)
 
 
@@ -276,6 +274,9 @@ class SchemaValidator(SerializingSchemaValidator):
 format_checker = FormatChecker()
 
 
+SCHEMA_STORE = {}
+
+
 def load_schema(filename):
     print('loading schema', filename)
     if isinstance(filename, dict):
@@ -286,16 +287,20 @@ def load_schema(filename):
         asset = AssetResolver(caller_package()).resolve(filename)
         schema = json.load(utf8(asset.stream()),
                            object_pairs_hook=collections.OrderedDict)
-        print('creating resolver from asset', asset.abspath())
         resolver = RefResolver('file://' + asset.abspath(), schema)
     schema = mixinProperties(schema, resolver)
+
     # SchemaValidator is not thread safe for now
     SchemaValidator(schema, resolver=resolver)
+
+    SCHEMA_STORE[schema['$id']] = schema
+
     return schema
 
 
 def validate(schema, data, current=None):
-    resolver = NoRemoteResolver.from_schema(schema)
+    print('schema store', SCHEMA_STORE)
+    resolver = NoRemoteResolver.from_schema(schema, store=SCHEMA_STORE)
     print('in validate, resolver', resolver)
     sv = SchemaValidator(schema, resolver=resolver, format_checker=format_checker)
     validated, errors = sv.serialize(data)
