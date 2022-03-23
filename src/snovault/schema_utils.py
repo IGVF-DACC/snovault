@@ -299,7 +299,7 @@ def load_schema(filename):
 
 
 def validate(schema, data, current=None):
-    print('schema store', SCHEMA_STORE)
+    print('schema store', SCHEMA_STORE.keys())
     resolver = NoRemoteResolver.from_schema(schema, store=SCHEMA_STORE)
     print('in validate, resolver', resolver)
     sv = SchemaValidator(schema, resolver=resolver, format_checker=format_checker)
