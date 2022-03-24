@@ -38,11 +38,11 @@ def test_uniqueItems_validates_normalized_links(content, threadlocals):
     )
 
 
-def test_schema_utils_resolve_refs_returns_copy_of_original_if_no_refs(mocker):
-    from snovault.schema_utils import resolve_refs
+def test_schema_utils_resolve_merge_refs_returns_copy_of_original_if_no_refs(mocker):
+    from snovault.schema_utils import resolve_merge_refs
     resolver = None
     data = {'a': 'b'}
-    resolved_data = resolve_refs(data, resolver)
+    resolved_data = resolve_merge_refs(data, resolver)
     assert resolved_data == data
     assert id(resolved_data) != id(data)
     data = {
@@ -62,7 +62,7 @@ def test_schema_utils_resolve_refs_returns_copy_of_original_if_no_refs(mocker):
             }
         }
     }
-    resolved_data = resolve_refs(data, resolver)
+    resolved_data = resolve_merge_refs(data, resolver)
     assert resolved_data == data
     # Dicts are copies.
     assert id(resolved_data) != id(data)
@@ -78,26 +78,26 @@ def test_schema_utils_resolve_refs_returns_copy_of_original_if_no_refs(mocker):
         2,
         {},
     ]
-    resolved_data = resolve_refs(data, resolver)
+    resolved_data = resolve_merge_refs(data, resolver)
     assert resolved_data == data
     assert id(resolved_data) != id(data)
 
 
-def test_schema_utils_resolve_refs_fills_in_refs(mocker):
-    from snovault.schema_utils import resolve_refs
+def test_schema_utils_resolve_merge_refs_fills_in_refs(mocker):
+    from snovault.schema_utils import resolve_merge_refs
     resolver = None
     data = {'a': 'b'}
-    resolved_data = resolve_refs(data, resolver)
+    resolved_data = resolve_merge_refs(data, resolver)
     assert resolved_data == data
-    resolve_ref = mocker.patch('snovault.schema_utils.resolve_ref')
-    resolve_ref.return_value = {'a new value': 'that was resolved'}
-    data = {'a': 'b', 'c': {'$ref': 'xyz'}}
-    resolved_data = resolve_refs(data, resolver)
+    resolve_merge_ref = mocker.patch('snovault.schema_utils.resolve_merge_ref')
+    resolve_merge_ref.return_value = {'a new value': 'that was resolved'}
+    data = {'a': 'b', 'c': {'$merge': 'xyz'}}
+    resolved_data = resolve_merge_refs(data, resolver)
     expected_data = {'a': 'b', 'c': {'a new value': 'that was resolved'}}
     assert resolved_data == expected_data
     data = {
         'a': 'b',
-        'c': {'$ref': 'xyz'},
+        'c': {'$merge': 'xyz'},
         'sub': {
             'values': [
                 'that',
@@ -105,7 +105,7 @@ def test_schema_utils_resolve_refs_fills_in_refs(mocker):
                 'resolved',
                 {
                     'if': {
-                        '$ref': 'xyz',
+                        '$merge': 'xyz',
                         'and': 'other',
                         'values': 'are',
                         'allowed': 'too',
@@ -114,7 +114,7 @@ def test_schema_utils_resolve_refs_fills_in_refs(mocker):
             ]
         }
     }
-    resolved_data = resolve_refs(data, resolver)
+    resolved_data = resolve_merge_refs(data, resolver)
     expected_data = {
         'a': 'b',
         'c': {'a new value': 'that was resolved'},
@@ -140,7 +140,7 @@ def test_schema_utils_resolve_refs_fills_in_refs(mocker):
                 'a': 'new value',
                 'and': 'a ref',
                 'inside': 'of a ref',
-                '$ref': 'notxyz',
+                '$merge': 'notxyz',
             }
         else:
             return {
@@ -150,15 +150,15 @@ def test_schema_utils_resolve_refs_fills_in_refs(mocker):
                     'and': ['lists'],
                 }
             }
-    resolve_ref.side_effect = custom_resolver
+    resolve_merge_ref.side_effect = custom_resolver
     data = {
         'something_new': [
             {
-                '$ref': 'notxyz'
+                '$merge': 'notxyz'
             }
         ],
         'a': 'b',
-        'c': {'$ref': 'xyz'},
+        'c': {'$merge': 'xyz'},
         'sub': {
             'values': [
                 'that',
@@ -166,7 +166,7 @@ def test_schema_utils_resolve_refs_fills_in_refs(mocker):
                 'resolved',
                 {
                     'if': {
-                        '$ref': 'xyz',
+                        '$merge': 'xyz',
                         'and': 'other',
                         'values': 'are',
                         'allowed': 'too',
@@ -175,7 +175,7 @@ def test_schema_utils_resolve_refs_fills_in_refs(mocker):
             ]
         }
     }
-    resolved_data = resolve_refs(data, resolver)
+    resolved_data = resolve_merge_refs(data, resolver)
     expected_data = {
         'something_new': [
             {
@@ -220,22 +220,22 @@ def test_schema_utils_resolve_refs_fills_in_refs(mocker):
     assert resolved_data == expected_data
 
 
-def test_schema_utils_resolve_refs_fills_allows_override_of_ref_property(mocker):
-    from snovault.schema_utils import resolve_refs
+def test_schema_utils_resolve_merge_refs_fills_allows_override_of_ref_property(mocker):
+    from snovault.schema_utils import resolve_merge_refs
     resolver = None
-    resolve_ref = mocker.patch('snovault.schema_utils.resolve_ref')
-    resolve_ref.return_value = {
+    resolve_merge_ref = mocker.patch('snovault.schema_utils.resolve_merge_ref')
+    resolve_merge_ref.return_value = {
         'a new value': 'that was resolved',
         'custom': 'original value',
         'and': 'something else',
     }
     data = {
         'a': {
-            '$ref': 'xyz',
+            '$merge': 'xyz',
             'custom': 'override',
         }
     }
-    resolved_data = resolve_refs(data, resolver)
+    resolved_data = resolve_merge_refs(data, resolver)
     expected_data = {
         'a': {
             'a new value': 'that was resolved',
@@ -246,12 +246,12 @@ def test_schema_utils_resolve_refs_fills_allows_override_of_ref_property(mocker)
     assert resolved_data == expected_data
 
 
-def test_schema_utils_resolve_ref_in_real_schema():
+def test_schema_utils_resolve_merge_ref_in_real_schema():
     import codecs
     import json
     from pyramid.path import AssetResolver
-    from snovault.schema_utils import resolve_ref
-    from snovault.schema_utils import resolve_refs
+    from snovault.schema_utils import resolve_merge_ref
+    from snovault.schema_utils import resolve_merge_refs
     from jsonschema import RefResolver
     filename = 'snowflakes:schemas/snowball.json'
     utf8 = codecs.getreader('utf-8')
@@ -273,7 +273,7 @@ def test_schema_utils_resolve_ref_in_real_schema():
     resolver = RefResolver('file://' + asset.abspath(), schema)
 
     # Try resolving ref from mixins.
-    resolved = resolve_ref(
+    resolved = resolve_merge_ref(
         'mixins.json#/uuid',
         resolver
     )
@@ -287,7 +287,7 @@ def test_schema_utils_resolve_ref_in_real_schema():
         }
     }
     # Resolve the inner object.
-    resolved = resolve_ref(
+    resolved = resolve_merge_ref(
         'mixins.json#/uuid/uuid',
         resolver
     )
@@ -300,7 +300,7 @@ def test_schema_utils_resolve_ref_in_real_schema():
     }
     # Raise error if resolve value not dict.
     with pytest.raises(ValueError) as error:
-        resolved = resolve_ref(
+        resolved = resolve_merge_ref(
             'mixins.json#/uuid/uuid/title',
             resolver
         )
@@ -309,10 +309,10 @@ def test_schema_utils_resolve_ref_in_real_schema():
     )
     # Add ref to properties.
     schema['properties']['accession'] = {
-        '$ref': 'mixins.json#/accession/accession'
+        '$merge': 'mixins.json#/accession/accession'
     }
     # Resolve from properties.
-    resolved = resolve_refs(schema['properties'], resolver)
+    resolved = resolve_merge_refs(schema['properties'], resolver)
     expected = {
         'schema_version': {
             'default': '2', 'comment': 'For testing upgrades'
@@ -341,8 +341,8 @@ def test_schema_utils_resolve_ref_in_real_schema():
     assert resolved == expected
     # Fill in status from top level
     del schema['properties']['accession']
-    schema['properties']['$ref'] = 'mixins.json#/standard_status'
-    resolved = resolve_refs(schema['properties'], resolver)
+    schema['properties']['$merge'] = 'mixins.json#/standard_status'
+    resolved = resolve_merge_refs(schema['properties'], resolver)
     expected = {
         'schema_version': {
             'default': '2',
@@ -374,12 +374,12 @@ def test_schema_utils_resolve_ref_in_real_schema():
     assert resolved == expected
 
 
-def test_schema_utils_fill_in_schema_refs_in_properties():
+def test_schema_utils_fill_in_schema_merge_refs():
     import codecs
     import json
     from pyramid.path import AssetResolver
     from jsonschema import RefResolver
-    from snovault.schema_utils import fill_in_schema_refs_in_properties
+    from snovault.schema_utils import fill_in_schema_merge_refs
     filename = 'snowflakes:schemas/snowball.json'
     utf8 = codecs.getreader('utf-8')
     asset = AssetResolver(
@@ -400,11 +400,11 @@ def test_schema_utils_fill_in_schema_refs_in_properties():
     resolver = RefResolver('file://' + asset.abspath(), schema)
     # Add ref to something besides mixins.
     schema['properties']['snowball_phone'] = {
-        '$ref': 'lab.json#/properties/phone1',
+        '$merge': 'lab.json#/properties/phone1',
         # Override default
         'default': '999-123-4567',
     }
-    resolved = fill_in_schema_refs_in_properties(
+    resolved = fill_in_schema_merge_refs(
         schema,
         resolver,
     )
