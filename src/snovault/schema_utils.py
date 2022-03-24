@@ -60,7 +60,7 @@ def mixinProperties(schema, resolver):
     return schema
 
 
-def resolve_ref(ref, resolver):
+def resolve_merge_ref(ref, resolver):
     with resolver.resolving(ref) as resolved:
         if not isinstance(resolved, dict):
             raise ValueError(
@@ -69,27 +69,27 @@ def resolve_ref(ref, resolver):
         return resolved
 
 
-def resolve_refs(data, resolver):
+def resolve_merge_refs(data, resolver):
     if isinstance(data, dict):
         # Return copy.
         resolved_data = {}
         for k, v in data.items():
-            if k == '$ref':
+            if k == '$merge':
                 # Assumes resolved value is dictionary.
                 resolved_data.update(
                     # Recurse here in case the resolved value has refs.
-                    resolve_refs(
+                    resolve_merge_refs(
                         # Actually get the ref value.
-                        resolve_ref(v, resolver),
+                        resolve_merge_ref(v, resolver),
                         resolver
                     )
                 )
             else:
-                resolved_data[k] = resolve_refs(v, resolver)
+                resolved_data[k] = resolve_merge_refs(v, resolver)
     elif isinstance(data, list):
         # Return copy.
         resolved_data = [
-            resolve_refs(v, resolver)
+            resolve_merge_refs(v, resolver)
             for v in data
         ]
     else:
@@ -101,12 +101,8 @@ def resolve_refs(data, resolver):
     return resolved_data
 
 
-def fill_in_schema_refs_in_properties(schema, resolver):
-    # Avoid resolving refs e.g. in mixinProperties.
-    properties = schema.get('properties')
-    if properties:
-        schema['properties'] = resolve_refs(properties, resolver)
-    return schema
+def fill_in_schema_merge_refs(schema, resolver):
+    return resolve_merge_refs(schema, resolver)
 
 
 def linkTo(validator, linkTo, instance, schema):
@@ -333,7 +329,7 @@ def load_schema(filename):
                            object_pairs_hook=collections.OrderedDict)
         resolver = RefResolver('file://' + asset.abspath(), schema)
     schema = mixinProperties(schema, resolver)
-    schema = fill_in_schema_refs_in_properties(schema, resolver)
+    schema = fill_in_schema_merge_refs(schema, resolver)
 
     # SchemaValidator is not thread safe for now
     SchemaValidator(schema, resolver=resolver)
