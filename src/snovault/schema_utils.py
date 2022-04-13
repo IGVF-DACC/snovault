@@ -89,7 +89,6 @@ def _handle_list_or_string_value(resolved_data, value, resolver):
         _update_resolved_data(resolved_data, value, resolver)
 
 
-
 def resolve_merge_refs(data, resolver):
     if isinstance(data, dict):
         # Return copy.
