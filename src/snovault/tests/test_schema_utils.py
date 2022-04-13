@@ -896,4 +896,4 @@ def test_schema_utils_fill_in_schema_merge_refs():
             }
         }
     }
-    assert resolved == expected
+    assert resolved['dependentSchemas'] == expected
