@@ -38,6 +38,130 @@ def test_uniqueItems_validates_normalized_links(content, threadlocals):
     )
 
 
+def test_schema_utils_update_resolved_data(mocker):
+    from snovault.schema_utils import _update_resolved_data
+    from snovault.schema_utils import resolve_merge_ref
+    resolve_merge_ref = mocker.patch('snovault.schema_utils.resolve_merge_ref')
+    def custom_resolver(ref, resolver):
+        if ref == 'xyz':
+            return {
+                'a': 'new value',
+                'and': 'a ref',
+                'inside': 'of a ref',
+                '$merge': 'notxyz',
+            }
+        else:
+            return {
+                'the': 'notxyz values',
+                'with': {
+                    'sub': 'dependencies',
+                    'and': ['lists'],
+                }
+            }
+    resolve_merge_ref.side_effect = custom_resolver
+    resolved_data = {}
+    _update_resolved_data(resolved_data, 'xyz', {})
+    assert resolved_data == {
+        'a': 'new value',
+        'and': 'a ref',
+        'inside': 'of a ref',
+        'the': 'notxyz values',
+        'with': {
+            'sub': 'dependencies',
+            'and': [
+                'lists'
+            ]
+        }
+    }
+
+
+def test_schema_utils_handle_list_or_string_value(mocker):
+    from snovault.schema_utils import _handle_list_or_string_value
+    from snovault.schema_utils import resolve_merge_ref
+    resolve_merge_ref = mocker.patch('snovault.schema_utils.resolve_merge_ref')
+    def custom_resolver(ref, resolver):
+        if ref == 'xyz':
+            return {
+                'a': 'new value',
+                'and': 'a ref',
+                'inside': 'of a ref',
+                '$merge': 'notxyz',
+            }
+        else:
+            return {
+                'the': 'notxyz values',
+                'with': {
+                    'sub': 'dependencies',
+                    'and': ['lists'],
+                }
+            }
+    resolve_merge_ref.side_effect = custom_resolver
+    resolved_data = {}
+    value = 'notxyz'
+    _handle_list_or_string_value(resolved_data, value, {})
+    assert resolved_data == {
+        'the': 'notxyz values',
+        'with': {
+            'sub': 'dependencies',
+            'and': [
+                'lists'
+            ]
+        }
+    }
+    resolved_data = {}
+    value = ['notxyz', 'xyz']
+    _handle_list_or_string_value(resolved_data, value, {})
+    assert resolved_data == {
+        'the': 'notxyz values',
+        'with': {
+            'sub': 'dependencies',
+            'and': ['lists']
+        },
+        'a': 'new value',
+        'and': 'a ref',
+        'inside': 'of a ref'
+    }
+    def custom_resolver(ref, resolver):
+        if ref == 'xyz':
+            return {
+                'a': 'b',
+            }
+        else:
+            return {
+                'c': 'd'
+            }
+    resolve_merge_ref.side_effect = custom_resolver
+    resolved_data = {}
+    value = ['notxyz', 'xyz']
+    _handle_list_or_string_value(resolved_data, value, {})
+    assert resolved_data == {
+        'a': 'b',
+        'c': 'd',
+    }
+    def custom_resolver(ref, resolver):
+        if ref == 'xyz':
+            return {
+                'a': 'b',
+            }
+        else:
+            return {
+                'a': 'override'
+            }
+    resolve_merge_ref.side_effect = custom_resolver
+    resolved_data = {}
+    value = ['notxyz', 'xyz']
+    _handle_list_or_string_value(resolved_data, value, {})
+    assert resolved_data == {
+        'a': 'b',
+    }
+    resolved_data = {}
+    value = ['xyz', 'notxyz']
+    _handle_list_or_string_value(resolved_data, value, {})
+    assert resolved_data == {
+        'a': 'override',
+    }
+
+
 def test_schema_utils_resolve_merge_refs_returns_copy_of_original_if_no_refs(mocker):
     from snovault.schema_utils import resolve_merge_refs
     resolver = None
@@ -372,6 +496,228 @@ def test_schema_utils_resolve_merge_ref_in_real_schema():
         }
     }
     assert resolved == expected
+    schema['properties'] = {}
+    schema['properties']['$merge'] = [
+        'mixins.json#/standard_status',
+        'mixins.json#/attachment',
+        'mixins.json#/submitted',
+    ]
+    resolved = resolve_merge_refs(schema['properties'], resolver)
+    expected = {
+        'status': {
+            'title': 'Status',
+            'type': 'string',
+            'default': 'in progress',
+            'enum': [
+                'in progress',
+                'deleted',
+                'replaced',
+                'released'
+            ]
+        },
+        'attachment': {
+            'title': 'Document file metadata',
+            'type': 'object',
+            'additionalProperties': False,
+            'formInput': 'file',
+            'attachment': True,
+            'properties': {
+                'download': {
+                    'title': 'File Name',
+                    'type': 'string'
+                },
+                'href': {
+                    'comment': 'Internal webapp URL for document file',
+                    'type': 'string'
+                },
+                'type': {
+                    'title': 'MIME type',
+                    'type': 'string',
+                    'enum': [
+                        'application/pdf',
+                        'text/plain',
+                        'text/tab-separated-values',
+                        'image/jpeg',
+                        'image/tiff',
+                        'image/gif',
+                        'text/html',
+                        'image/png',
+                        'image/svs',
+                        'text/autosql'
+                    ]
+                },
+                'md5sum': {
+                    'title': 'MD5sum',
+                    'type': 'string',
+                    'format': 'md5sum'
+                },
+                'size': {
+                    'title': 'File size',
+                    'type': 'integer'
+                },
+                'width': {
+                    'title': 'Image width',
+                    'type': 'integer'
+                },
+                'height': {
+                    'title': 'Image height',
+                    'type': 'integer'
+                }
+            }
+        },
+        'date_created': {
+            'rdfs:subPropertyOf': 'dc:created',
+            'title': 'Date created',
+            'comment': 'Do not submit, value is assigned by the server. The date the object is created.',
+            'type': 'string',
+            'anyOf': [{'format': 'date-time'}, {'format': 'date'}],
+            'serverDefault': 'now',
+            'permission': 'import_items'
+        },
+        'submitted_by': {
+            'rdfs:subPropertyOf': 'dc:creator',
+            'title': 'Submitted by',
+            'comment': 'Do not submit, value is assigned by the server. The user that created the object.',
+            'type': 'string',
+            'linkTo': 'User',
+            'serverDefault': 'userid',
+            'permission': 'import_items'
+        }
+    }
+    assert resolved == expected
+    schema['properties'] = {}
+    # Status override
+    schema['properties']['$merge'] = [
+        'mixins.json#/standard_status',
+        'mixins.json#/attachment',
+        'mixins.json#/submitted',
+        'mixins.json#/shared_status',
+    ]
+    resolved = resolve_merge_refs(schema['properties'], resolver)
+    expected = {
+        'status': {
+            "title": "Status",
+            "type": "string",
+            "default": "current",
+            "enum" : [
+                "current",
+                "deleted",
+                "replaced",
+                "disabled"
+            ]
+        },
+        'attachment': {
+            'title': 'Document file metadata',
+            'type': 'object',
+            'additionalProperties': False,
+            'formInput': 'file',
+            'attachment': True,
+            'properties': {
+                'download': {
+                    'title': 'File Name',
+                    'type': 'string'
+                },
+                'href': {
+                    'comment': 'Internal webapp URL for document file',
+                    'type': 'string'
+                },
+                'type': {
+                    'title': 'MIME type',
+                    'type': 'string',
+                    'enum': [
+                        'application/pdf',
+                        'text/plain',
+                        'text/tab-separated-values',
+                        'image/jpeg',
+                        'image/tiff',
+                        'image/gif',
+                        'text/html',
+                        'image/png',
+                        'image/svs',
+                        'text/autosql'
+                    ]
+                },
+                'md5sum': {
+                    'title': 'MD5sum',
+                    'type': 'string',
+                    'format': 'md5sum'
+                },
+                'size': {
+                    'title': 'File size',
+                    'type': 'integer'
+                },
+                'width': {
+                    'title': 'Image width',
+                    'type': 'integer'
+                },
+                'height': {
+                    'title': 'Image height',
+                    'type': 'integer'
+                }
+            }
+        },
+        'date_created': {
+            'rdfs:subPropertyOf': 'dc:created',
+            'title': 'Date created',
+            'comment': 'Do not submit, value is assigned by the server. The date the object is created.',
+            'type': 'string',
+            'anyOf': [{'format': 'date-time'}, {'format': 'date'}],
+            'serverDefault': 'now',
+            'permission': 'import_items'
+        },
+        'submitted_by': {
+            'rdfs:subPropertyOf': 'dc:creator',
+            'title': 'Submitted by',
+            'comment': 'Do not submit, value is assigned by the server. The user that created the object.',
+            'type': 'string',
+            'linkTo': 'User',
+            'serverDefault': 'userid',
+            'permission': 'import_items'
+        }
+    }
+    assert resolved == expected
+    schema['properties'] = {}
+    # Status override
+    schema['properties']['$merge'] = [
+        'mixins.json#/standard_status',
+        'mixins.json#/attachment',
+        'mixins.json#/submitted',
+        'mixins.json#/shared_status',
+    ]
+    schema['properties']['attachment'] = {'something': 'else'}
+    schema['properties']['submitted_by'] = {'override': 'value'}
+    resolved = resolve_merge_refs(schema['properties'], resolver)
+    expected = {
+        'status': {
+            'title': 'Status',
+            'type': 'string',
+            'default': 'current',
+            'enum': [
+                'current',
+                'deleted',
+                'replaced',
+                'disabled'
+            ]
+        },
+        'attachment': {
+            'something': 'else'
+        },
+        'date_created': {
+            'rdfs:subPropertyOf': 'dc:created',
+            'title': 'Date created',
+            'comment': 'Do not submit, value is assigned by the server. The date the object is created.',
+            'type': 'string', 'anyOf': [
+                {'format': 'date-time'},
+                {'format': 'date'}
+            ],
+            'serverDefault': 'now',
+            'permission': 'import_items'
+        },
+        'submitted_by': {
+            'override': 'value'
+        }
+    }
+    assert resolved == expected
 
 
 def test_schema_utils_fill_in_schema_merge_refs():
@@ -506,6 +852,48 @@ def test_schema_utils_fill_in_schema_merge_refs():
             'lab.institute_name': 1.0,
             'lab.institute_label': 1.0,
             'lab.title': 1.0
+        }
+    }
+    assert resolved == expected
+    schema['dependentSchemas']['$merge'] = ['snowflake.json#/dependentSchemas']
+    resolved = fill_in_schema_merge_refs(
+        schema,
+        resolver,
+    )
+    expected = {
+        'status': {
+            'oneOf': [
+                {
+                    'required': ['date_released'],
+                    'properties': {
+                        'status': {
+                            'enum': [
+                                'released',
+                                'revoked'
+                            ]
+                        }
+                    }
+                },
+                {
+                    'not': {
+                        'properties': {
+                            'status': {
+                                'enum': [
+                                    'released',
+                                    'revoked'
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        'external_accession': {
+            'not': {
+                'required': [
+                    'accession'
+                ]
+            }
         }
     }
     assert resolved == expected

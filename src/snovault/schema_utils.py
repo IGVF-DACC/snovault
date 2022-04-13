@@ -69,21 +69,34 @@ def resolve_merge_ref(ref, resolver):
         return resolved
 
 
+def _update_resolved_data(resolved_data, value, resolver):
+    # Assumes resolved value is dictionary.
+    resolved_data.update(
+        # Recurse here in case the resolved value has refs.
+        resolve_merge_refs(
+            # Actually get the ref value.
+            resolve_merge_ref(value, resolver),
+            resolver
+        )
+    )
+
+
+def _handle_list_or_string_value(resolved_data, value, resolver):
+    if isinstance(value, list):
+        for v in value:
+            _update_resolved_data(resolved_data, v, resolver)
+    else:
+        _update_resolved_data(resolved_data, value, resolver)
+
+
+
 def resolve_merge_refs(data, resolver):
     if isinstance(data, dict):
         # Return copy.
         resolved_data = {}
         for k, v in data.items():
             if k == '$merge':
-                # Assumes resolved value is dictionary.
-                resolved_data.update(
-                    # Recurse here in case the resolved value has refs.
-                    resolve_merge_refs(
-                        # Actually get the ref value.
-                        resolve_merge_ref(v, resolver),
-                        resolver
-                    )
-                )
+                _handle_list_or_string_value(resolved_data, v, resolver)
             else:
                 resolved_data[k] = resolve_merge_refs(v, resolver)
     elif isinstance(data, list):
