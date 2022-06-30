@@ -56,8 +56,8 @@ def test_schemas_etag(testapp):
 
 def test_schemas_type_hierarchy_view(testapp):
     result = testapp.get('/profiles/')
-    assert '_hierarchy' in result
-    actual = result['_hierarchy']
+    assert '_hierarchy' in result.json
+    actual = result.json['_hierarchy']
     expected = {
         'Item': {
             'Award': {},
