@@ -3,9 +3,9 @@ import os
 
 from snovault.json_renderer import json_renderer
 from snovault.util import get_root_request
-from elasticsearch import Elasticsearch
-from elasticsearch.connection import Urllib3HttpConnection
-from elasticsearch.serializer import SerializationError
+from opensearch import Opensearch as Elasticsearch
+from opensearch.connection import Urllib3HttpConnection
+from opensearch.serializer import SerializationError
 from pyramid.settings import (
     asbool,
     aslist,
