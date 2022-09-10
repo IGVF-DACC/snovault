@@ -469,8 +469,8 @@ def create_elasticsearch_index(es, index, body):
                       400, 404], master_timeout='5m', request_timeout=300)
 
 
-def set_index_mapping(es, index, doc_type, mapping):
-    es.indices.put_mapping(index=index, doc_type=doc_type, body=mapping, ignore=[400], request_timeout=300)
+def set_index_mapping(es, index, mapping):
+    es.indices.put_mapping(index=index, body=mapping, ignore=[400], request_timeout=300)
 
 
 def create_snovault_index_alias(es, indices):
@@ -503,7 +503,7 @@ def run(app, collections=None, dry_run=False):
             print(json.dumps(sorted_dict({index: {doc_type: mapping}}), indent=4))
             continue
         create_elasticsearch_index(es, index, index_settings())
-        set_index_mapping(es, index, doc_type, {doc_type: mapping})
+        set_index_mapping(es, index, mapping)
         if collection_name != 'meta':
             indices.append(index)
 
