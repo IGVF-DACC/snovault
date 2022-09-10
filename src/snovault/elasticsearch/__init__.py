@@ -3,7 +3,7 @@ import os
 
 from snovault.json_renderer import json_renderer
 from snovault.util import get_root_request
-from opensearchpy import Opensearch as Elasticsearch
+from opensearchpy import OpenSearch as Elasticsearch
 from opensearchpy.connection import Urllib3HttpConnection
 from opensearchpy.serializer import SerializationError
 from pyramid.settings import (
