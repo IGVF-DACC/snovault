@@ -1,6 +1,6 @@
 from itertools import chain
 from itertools import zip_longest
-from elasticsearch.exceptions import (
+from opensearchpy.exceptions import (
     ConflictError,
     ConnectionError,
     NotFoundError,

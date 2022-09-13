@@ -428,7 +428,7 @@ def test_search_cached_facets_view_values_invalid_search_term(workbook, testapp)
 def test_search_generator(workbook, threadlocals, dummy_request):
     from snosearch.parsers import ParamsParser
     from snovault.elasticsearch import ELASTIC_SEARCH
-    from elasticsearch import Elasticsearch
+    from opensearchpy import OpenSearch as Elasticsearch
     from types import GeneratorType
     dummy_request.environ['QUERY_STRING'] = (
         'type=*&limit=all'
@@ -447,7 +447,7 @@ def test_search_generator(workbook, threadlocals, dummy_request):
 def test_search_generator_field_specified(workbook, threadlocals, dummy_request):
     from snosearch.parsers import ParamsParser
     from snovault.elasticsearch import ELASTIC_SEARCH
-    from elasticsearch import Elasticsearch
+    from opensearchpy import OpenSearch as Elasticsearch
     from types import GeneratorType
     dummy_request.environ['QUERY_STRING'] = (
         'type=Snowflake&field=@id&limit=5'

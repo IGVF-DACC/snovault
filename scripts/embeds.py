@@ -4,8 +4,8 @@ For each object, count the number of objects in which it is embedded.
 Usage: python embeds.py > embeds.jsonlines
 '''
 
-from elasticsearch import Elasticsearch
-from elasticsearch.helpers import scan
+from opensearchpy import OpenSearch as Elasticsearch
+from opensearchpy.helpers import scan
 import json
 
 es = Elasticsearch('localhost:9200')
