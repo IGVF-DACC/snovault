@@ -1,5 +1,5 @@
 from snovault.util import get_root_request
-from elasticsearch.helpers import scan
+from opensearchpy.helpers import scan
 from pyramid.threadlocal import get_current_request
 from zope.interface import alsoProvides
 from .interfaces import (
