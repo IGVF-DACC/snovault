@@ -3,7 +3,7 @@ import boto3
 
 from botocore.config import Config
 from botocore.exceptions import ClientError
-from elasticsearch.exceptions import (
+from opensearchpy.exceptions import (
     ConflictError,
     ConnectionError,
     NotFoundError,
