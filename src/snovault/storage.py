@@ -667,7 +667,6 @@ def record_transaction_data(session):
         return
 
     record = data['_snovault_transaction_record']
-
     # txn.note(text)
     if txn.description:
         data['description'] = txn.description
@@ -709,3 +708,54 @@ def set_transaction_isolation_level(session, sqla_txn, connection):
             snapshot_id=data['snapshot_id'])
     else:
         connection.execute("SET TRANSACTION READ ONLY;")
+
+import json
+import boto3
+
+ENDPOINT_URL = 'http://localstack:4566'
+TRANSACTION_QUEUE_URL = 'http://localstack:4566/000000000000/transaction-queue'
+
+from snovault.queue import SQSQueueRepositoryProps
+from snovault.queue import SQSQueueRepository
+from snovault.queue import OutboundMessage
+from snovault.queue import client as sqs_client
+from snovault.queue import QUEUE_URL
+
+
+transaction_queue = SQSQueueRepository(
+    props=SQSQueueRepositoryProps(
+        queue_url=QUEUE_URL,
+        client=sqs_client,
+    )
+)
+
+transaction_queue.wait_for_queue_to_exist()
+
+
+@event.listens_for(TransactionRecord, 'after_update')
+def transaction_record_updated(mapper, connection, target):
+    data = target.data
+    if data is None or 'updated' not in data:
+        return None
+    event = {
+        'metadata': {
+            'xid': target.xid,
+            'tid': str(target.tid),
+        },
+        'data': {
+            'payload': {
+                k: v
+                for k, v in target.data.items()
+                if k != 'tid'
+            }
+        }
+    }
+    outbound_message = OutboundMessage(
+        unique_id=event['metadata']['tid'],
+        body=event,
+    )
+    transaction_queue.send_messages(
+        [
+            outbound_message,
+        ]
+    )

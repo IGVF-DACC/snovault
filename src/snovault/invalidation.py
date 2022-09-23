@@ -86,7 +86,6 @@ def es_update_data(event):
     record = data.get('_snovault_transaction_record')
     if record is None:
         return
-
     xid = record.xid
     if xid is None:
         return
