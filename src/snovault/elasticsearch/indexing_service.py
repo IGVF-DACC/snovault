@@ -6,7 +6,7 @@ from opensearchpy import OpenSearch
 from snovault.queue import SQSQueueRepository
 from snovault.queue import SQSQueueRepositoryProps
 from snovault.queue import client
-from snovault.queue import QUEUE_URL
+from snovault.queue import INVALIDATION_QUEUE_URL
 
 
 auth = ('foobar', 'bazqux')
@@ -24,57 +24,56 @@ def get_item(uuid):
     ).json()
 
 
-def index_item(item):
+def index_item(item, version):
     opensearch_client.index(
         index=item['item_type'],
         body=item,
         id=item['uuid'],
-        request_timeout=30
+        request_timeout=30,
+        version=version,
+        version_type='external_gte',
     )
 
 
-def get_uuids_from_transaction(message):
-    uuids = set()
-    payload = message.json_body['data']['payload']
-    uuids.update(payload['updated'])
-    uuids.update(payload['renamed'])
-    return list(uuids)
+def get_uuid_and_version_from_message(message):
+    uuid = message.json_body['data']['uuid']
+    version = message.json_body['metadata']['xid']
+    return (uuid, version)
 
 
 def handle_messages(messages):
     for message in messages:
-        uuids = get_uuids_from_transaction(message)
-        for uuid in uuids:
-            item = get_item(uuid)
-            index_item(item)
+        uuid, version = get_uuid_and_version_from_message(message)
+        item = get_item(uuid)
+        index_item(item, version)
 
 
-def get_transaction_queue():
-    transaction_queue = SQSQueueRepository(
+def get_invalidation_queue():
+    invalidation_queue = SQSQueueRepository(
         props=SQSQueueRepositoryProps(
             client=client,
-            queue_url=QUEUE_URL,
+            queue_url=INVALIDATION_QUEUE_URL,
         )
     )
-    transaction_queue.wait_for_queue_to_exist()
-    return transaction_queue
+    invalidation_queue.wait_for_queue_to_exist()
+    return invalidation_queue
 
 
 def poll():
     number_of_handled_messages = 0
-    transaction_queue = get_transaction_queue()
-    print('LISTENING to transaction queue')
+    invalidation_queue = get_invalidation_queue()
+    print('LISTENING to invalidation queue')
     while True:
         messages = list(
-            transaction_queue.get_messages(
+            invalidation_queue.get_messages(
                 desired_number_of_messages=10
             )
         )
         if messages:
             handle_messages(messages)
-            transaction_queue.mark_as_processed(messages)
+            invalidation_queue.mark_as_processed(messages)
             number_of_handled_messages += len(messages)
-            print(f'transaction queue messages handled so far: {number_of_handled_messages}')
+            print(f'invalidation queue messages handled so far: {number_of_handled_messages}')
 
 
 if __name__ == '__main__':

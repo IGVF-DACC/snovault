@@ -713,18 +713,19 @@ import json
 import boto3
 
 ENDPOINT_URL = 'http://localstack:4566'
+
 TRANSACTION_QUEUE_URL = 'http://localstack:4566/000000000000/transaction-queue'
 
 from snovault.queue import SQSQueueRepositoryProps
 from snovault.queue import SQSQueueRepository
 from snovault.queue import OutboundMessage
 from snovault.queue import client as sqs_client
-from snovault.queue import QUEUE_URL
+from snovault.queue import TRANSACTION_QUEUE_URL
 
 
 transaction_queue = SQSQueueRepository(
     props=SQSQueueRepositoryProps(
-        queue_url=QUEUE_URL,
+        queue_url=TRANSACTION_QUEUE_URL,
         client=sqs_client,
     )
 )

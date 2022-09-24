@@ -15,7 +15,9 @@ from typing import List
 
 ENDPOINT_URL = 'http://localstack:4566'
 
-QUEUE_URL = 'http://localhost:4566/000000000000/transaction-queue'
+TRANSACTION_QUEUE_URL = 'http://localhost:4566/000000000000/transaction-queue'
+
+INVALIDATION_QUEUE_URL = 'http://localhost:4566/000000000000/invalidation-queue'
 
 AWS_SQS_MAX_NUMBER = 10
 
