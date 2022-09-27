@@ -26,6 +26,10 @@ from snovault.interfaces import TYPES
 from snovault.interfaces import UPGRADER
 from snovault.interfaces import PHASE1_5_CONFIG
 from snovault.interfaces import PHASE2_5_CONFIG
+from snovault.interfaces import Created
+from snovault.interfaces import BeforeModified
+from snovault.interfaces import AfterModified
+from snovault.interfaces import AfterUpgrade
 
 from .calculated import calculated_property
 
