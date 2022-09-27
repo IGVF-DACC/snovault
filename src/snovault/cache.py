@@ -8,6 +8,7 @@ from zope.interface import implementer
 class ManagerLRUCache(object):
     """ Override capacity in settings.
     """
+
     def __init__(self, name, default_capacity=100, threshold=.5):
         self.name = name
         self.default_capacity = default_capacity

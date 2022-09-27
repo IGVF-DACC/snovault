@@ -16,7 +16,7 @@ from snovault.app import (
     # static_resources,
     changelogs,
     json_from_path,
-    )
+)
 from pyramid.settings import (
     aslist,
     asbool,

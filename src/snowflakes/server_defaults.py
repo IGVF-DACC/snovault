@@ -4,7 +4,7 @@ from pyramid.threadlocal import get_current_request
 from string import (
     digits,
     ascii_uppercase,
-    )
+)
 import random
 import uuid
 
@@ -57,7 +57,7 @@ def accession(instance, subschema):
         if new_accession in request.root:
             continue
         return new_accession
-    raise AssertionError("Free accession not found in %d attempts" % ATTEMPTS)
+    raise AssertionError('Free accession not found in %d attempts' % ATTEMPTS)
 
 
 PRODUCTION_ACCESSION_FORMAT = (digits, digits, digits, ascii_uppercase, ascii_uppercase, ascii_uppercase)

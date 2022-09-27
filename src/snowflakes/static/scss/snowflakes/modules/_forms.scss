@@ -68,7 +68,7 @@ input[type="text"], input[type="password"], input[type="date"], input[type="date
 		position: relative;
 		top: 0;
 		left: -24px;
-		color: gray;	
+		color: gray;
 
 		@media(min-width: $screen-sm-min) {
 			top: 2px;
@@ -127,7 +127,7 @@ input[type="text"], input[type="password"], input[type="date"], input[type="date
 	@extend .form-control;
 	height: auto;
 	.item-picker-preview {
-		overflow: hidden;		
+		overflow: hidden;
 		.result-table > li {
 			margin: 4px 6px;
 			border: none;

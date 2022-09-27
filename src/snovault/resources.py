@@ -37,8 +37,8 @@ def includeme(config):
 class Resource(object):
 
     @calculated_property(name='@id', schema={
-        "title": "ID",
-        "type": "string",
+        'title': 'ID',
+        'type': 'string',
     })
     def jsonld_id(self, request):
         return request.resource_path(self)
@@ -101,10 +101,10 @@ class Root(Resource):
         return self.properties.copy()
 
     @calculated_property(name='@type', schema={
-        "title": "Type",
-        "type": "array",
-        "items": {
-            "type": "string",
+        'title': 'Type',
+        'type': 'array',
+        'items': {
+            'type': 'string',
         },
     })
     def jsonld_type(self):
@@ -185,10 +185,10 @@ class AbstractCollection(Resource, Mapping):
         return self.properties.copy()
 
     @calculated_property(name='@type', schema={
-        "title": "Type",
-        "type": "array",
-        "items": {
-            "type": "string",
+        'title': 'Type',
+        'type': 'array',
+        'items': {
+            'type': 'string',
         },
     })
     def jsonld_type(self):
@@ -336,7 +336,7 @@ class Item(Resource):
             unique_keys = self.unique_keys(properties)
             for k, values in unique_keys.items():
                 if len(set(values)) != len(values):
-                    msg = "Duplicate keys for %r: %r" % (k, values)
+                    msg = 'Duplicate keys for %r: %r' % (k, values)
                     raise ValidationFailure('body', [], msg)
 
             links = self.links(properties)
@@ -345,10 +345,10 @@ class Item(Resource):
         connection.update(self.model, properties, sheets, unique_keys, links)
 
     @calculated_property(name='@type', schema={
-        "title": "Type",
-        "type": "array",
-        "items": {
-            "type": "string",
+        'title': 'Type',
+        'type': 'array',
+        'items': {
+            'type': 'string',
         },
     })
     def jsonld_type(self):

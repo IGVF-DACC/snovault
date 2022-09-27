@@ -121,42 +121,42 @@ def linkTo(validator, linkTo, instance, schema):
     # avoid circular import
     from snovault import Item, COLLECTIONS
 
-    if not validator.is_type(instance, "string"):
+    if not validator.is_type(instance, 'string'):
         return
 
     request = get_current_request()
     collections = request.registry[COLLECTIONS]
-    if validator.is_type(linkTo, "string"):
+    if validator.is_type(linkTo, 'string'):
         base = collections.get(linkTo, request.root)
         linkTo = [linkTo] if linkTo else []
-    elif validator.is_type(linkTo, "array"):
+    elif validator.is_type(linkTo, 'array'):
         base = request.root
     else:
-        raise Exception("Bad schema")  # raise some sort of schema error
+        raise Exception('Bad schema')  # raise some sort of schema error
     try:
         item = find_resource(base, instance.replace(':', '%3A'))
         if item is None:
             raise KeyError()
     except KeyError:
-        error = "%r not found" % instance
+        error = '%r not found' % instance
         yield ValidationError(error)
         return
     if not isinstance(item, Item):
-        error = "%r is not a linkable resource" % instance
+        error = '%r is not a linkable resource' % instance
         yield ValidationError(error)
         return
     if linkTo and not set([item.type_info.name] + item.base_types).intersection(set(linkTo)):
         reprs = (repr(it) for it in linkTo)
-        error = "%r is not of type %s" % (instance, ", ".join(reprs))
+        error = '%r is not of type %s' % (instance, ', '.join(reprs))
         yield ValidationError(error)
         return
     linkEnum = schema.get('linkEnum')
     if linkEnum is not None:
-        if not validator.is_type(linkEnum, "array"):
-            raise Exception("Bad schema")
+        if not validator.is_type(linkEnum, 'array'):
+            raise Exception('Bad schema')
         if not any(UUID(enum_uuid) == item.uuid for enum_uuid in linkEnum):
             reprs = ', '.join(repr(it) for it in linkTo)
-            error = "%r is not one of %s" % (instance, reprs)
+            error = '%r is not one of %s' % (instance, reprs)
             yield ValidationError(error)
             return
 
@@ -173,7 +173,7 @@ def linkTo(validator, linkTo, instance, schema):
                     not any(UUID(uuid) == item.uuid for uuid in submits_for) and
                     not request.has_permission('review') and
                     not request.has_permission('submit_for_any')):
-                error = "%r is not in user submits_for" % instance
+                error = '%r is not in user submits_for' % instance
                 yield ValidationError(error)
                 return
 
@@ -186,21 +186,21 @@ def linkFrom(validator, linkFrom, instance, schema):
 
     linkType, linkProp = linkFrom.split('.')
     linkCollection = collections[linkType]
-    if validator.is_type(instance, "string"):
+    if validator.is_type(instance, 'string'):
         try:
             item = find_resource(linkCollection, instance.replace(':', '%3A'))
             if item is None:
                 raise KeyError()
         except KeyError:
-            error = "%r not found" % instance
+            error = '%r not found' % instance
             yield ValidationError(error)
             return
         if not isinstance(item, Item):
-            error = "%r is not a linkable resource" % instance
+            error = '%r is not a linkable resource' % instance
             yield ValidationError(error)
             return
         if linkType not in set([item.type_info.name] + item.type_info.base_types):
-            error = "%r is not of type %s" % (instance, repr(linkType))
+            error = '%r is not of type %s' % (instance, repr(linkType))
             yield ValidationError(error)
             return
     else:
@@ -214,7 +214,7 @@ def linkFrom(validator, linkFrom, instance, schema):
             item = find_resource(request.root, path.replace(':', '%3A'))
             if item is not None:
                 if linkType not in set([item.type_info.name] + item.type_info.base_types):
-                    error = "%r is not of type %s" % (instance, repr(linkType))
+                    error = '%r is not of type %s' % (instance, repr(linkType))
                     yield ValidationError(error)
                     return
                 subschema = item.type_info.schema
@@ -271,26 +271,26 @@ class IgnoreUnchanged(ValidationError):
 
 
 def requestMethod(validator, requestMethod, instance, schema):
-    if validator.is_type(requestMethod, "string"):
+    if validator.is_type(requestMethod, 'string'):
         requestMethod = [requestMethod]
-    elif not validator.is_type(requestMethod, "array"):
-        raise Exception("Bad schema")  # raise some sort of schema error
+    elif not validator.is_type(requestMethod, 'array'):
+        raise Exception('Bad schema')  # raise some sort of schema error
 
     request = get_current_request()
     if request.method not in requestMethod:
         reprs = ', '.join(repr(it) for it in requestMethod)
-        error = "request method %r is not one of %s" % (request.method, reprs)
+        error = 'request method %r is not one of %s' % (request.method, reprs)
         yield IgnoreUnchanged(error)
 
 
 def permission(validator, permission, instance, schema):
-    if not validator.is_type(permission, "string"):
-        raise Exception("Bad schema")  # raise some sort of schema error
+    if not validator.is_type(permission, 'string'):
+        raise Exception('Bad schema')  # raise some sort of schema error
 
     request = get_current_request()
     context = request.context
     if not request.has_permission(permission, context):
-        error = "permission %r required" % permission
+        error = 'permission %r required' % permission
         yield IgnoreUnchanged(error)
 
 
@@ -298,8 +298,8 @@ VALIDATOR_REGISTRY = {}
 
 
 def validators(validator, validators, instance, schema):
-    if not validator.is_type(validators, "array"):
-        raise Exception("Bad schema")  # raise some sort of schema error
+    if not validator.is_type(validators, 'array'):
+        raise Exception('Bad schema')  # raise some sort of schema error
 
     for validator_name in validators:
         validate = VALIDATOR_REGISTRY.get(validator_name)
@@ -335,7 +335,7 @@ def load_schema(filename):
         schema = filename
         resolver = NoRemoteResolver.from_schema(schema)
     else:
-        utf8 = codecs.getreader("utf-8")
+        utf8 = codecs.getreader('utf-8')
         asset = AssetResolver(caller_package()).resolve(filename)
         schema = json.load(utf8(asset.stream()),
                            object_pairs_hook=collections.OrderedDict)

@@ -8,6 +8,7 @@ from .interfaces import (
     TYPES,
 )
 
+
 def includeme(config):
     registry = config.registry
     registry[CONNECTION] = Connection(registry)
@@ -20,12 +21,14 @@ class UnknownItemTypeError(Exception):
 class Connection(object):
     ''' Intermediates between the storage and the rest of the system
     '''
+
     def __init__(self, registry):
         self.registry = registry
         self.item_cache = ManagerLRUCache('snovault.connection.item_cache', 1000)
         self.unique_key_cache = ManagerLRUCache('snovault.connection.key_cache', 1000)
         embed_cache_capacity = int(registry.settings.get('embed_cache.capacity', 5000))
         self.embed_cache = ManagerLRUCache('snovault.connection.embed_cache', embed_cache_capacity)
+
     @reify
     def storage(self):
         return self.registry[STORAGE]

@@ -50,12 +50,12 @@ def run(app):
 def main():
     import argparse
     parser = argparse.ArgumentParser(
-        description="Move attachment blobs to S3", epilog=EPILOG,
+        description='Move attachment blobs to S3', epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('--app-name', help="Pyramid app name in configfile")
-    parser.add_argument('--abort', action='store_true', help="Rollback transaction")
-    parser.add_argument('config_uri', help="path to configfile")
+    parser.add_argument('--app-name', help='Pyramid app name in configfile')
+    parser.add_argument('--abort', action='store_true', help='Rollback transaction')
+    parser.add_argument('config_uri', help='path to configfile')
     args = parser.parse_args()
 
     logging.basicConfig()

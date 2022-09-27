@@ -13,7 +13,7 @@ def award_1(award):
     item = award.copy()
     item.update({
         'schema_version': '1',
-        'rfa': "ENCODE2"
+        'rfa': 'ENCODE2'
     })
     return item
 
@@ -23,8 +23,8 @@ def award_bad(award):
     item = award.copy()
     item.update({
         'schema_version': '1',
-        'rfa': "ENCODE2",
-        'status': "Not a status"
+        'rfa': 'ENCODE2',
+        'status': 'Not a status'
     })
     return item
 

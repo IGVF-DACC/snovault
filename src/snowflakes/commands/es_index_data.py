@@ -17,7 +17,7 @@ def run(app, collections=None, record=False):
         'last_xmin': None,
         'types': collections,
         'recovery': True
-        }
+    }
     )
 
 
@@ -26,13 +26,13 @@ def main():
 
     import argparse
     parser = argparse.ArgumentParser(
-        description="Index data in Elastic Search", epilog=EPILOG,
+        description='Index data in Elastic Search', epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('--item-type', action='append', help="Item type")
-    parser.add_argument('--record', default=False, action='store_true', help="Record the xmin in ES meta")
-    parser.add_argument('--app-name', help="Pyramid app name in configfile")
-    parser.add_argument('config_uri', help="path to configfile")
+    parser.add_argument('--item-type', action='append', help='Item type')
+    parser.add_argument('--record', default=False, action='store_true', help='Record the xmin in ES meta')
+    parser.add_argument('--app-name', help='Pyramid app name in configfile')
+    parser.add_argument('config_uri', help='path to configfile')
     args = parser.parse_args()
 
     logging.basicConfig()

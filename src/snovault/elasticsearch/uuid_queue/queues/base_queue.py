@@ -19,6 +19,7 @@ class BaseQueueClient(object):
 
     * Queue client must expose the 'get_queue' function to the adapter.
     '''
+
     def __init__(self, queue_options):
         pass
 

@@ -46,7 +46,7 @@ import copy
 import json
 import requests
 
-es_logger = logging.getLogger("elasticsearch")
+es_logger = logging.getLogger('elasticsearch')
 es_logger.setLevel(logging.ERROR)
 log = logging.getLogger('snovault.elasticsearch.es_index_listener')
 MAX_CLAUSES_FOR_ES = 8192
@@ -105,13 +105,13 @@ def get_related_uuids(request, es, updated, renamed):
     es.indices.refresh(RESOURCES_INDEX)
 
     # TODO: batching may allow us to drive a partial reindexing much greater than 99999
-    #BATCH_COUNT = 100  # NOTE: 100 random uuids returned > 99999 results!
+    # BATCH_COUNT = 100  # NOTE: 100 random uuids returned > 99999 results!
     #beg = 0
     #end = BATCH_COUNT
     #related_set = set()
-    #updated_list = list(updated)  # Must be lists
+    # updated_list = list(updated)  # Must be lists
     #renamed_list = list(renamed)
-    #while updated_count > beg or renamed_count > beg:
+    # while updated_count > beg or renamed_count > beg:
     #    if updated_count > end or beg > 0:
     #        log.error('Indexer looking for related uuids by BATCH[%d,%d]' % (beg, end))
     #
@@ -161,7 +161,7 @@ def get_related_uuids(request, es, updated, renamed):
 
 def _determine_indexing_protocol(request, uuid_count):
     remote_indexing = asbool(
-        os.environ.get("REMOTE_INDEXING")
+        os.environ.get('REMOTE_INDEXING')
         or request.registry.settings.get('remote_indexing', False)
     )
     if not remote_indexing:
@@ -185,12 +185,12 @@ def _determine_indexing_protocol(request, uuid_count):
 
 
 def _send_sqs_msg(
-            cluster_name,
-            remote_indexing,
-            body,
-            delay_seconds=0,
-            save_event=False,
-        ):
+    cluster_name,
+    remote_indexing,
+    body,
+    delay_seconds=0,
+    save_event=False,
+):
     did_fail = True
     msg_attrs = {
         'cluster_name': cluster_name,
@@ -207,7 +207,7 @@ def _send_sqs_msg(
     attempts = 0
     while attempts < watch_dog:
         attempts += 1
-        try: 
+        try:
             queue_arn = sqs_resource.get_queue_by_name(QueueName='ec2_scheduler_input')
             if queue_arn:
                 response = sqs_resource.meta.client.send_message(
@@ -217,12 +217,12 @@ def _send_sqs_msg(
                     MessageBody=body,
                 )
                 if response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 200:
-                    log.warning(f"Remote indexing _send_sqs_msg: {body}")
+                    log.warning(f'Remote indexing _send_sqs_msg: {body}')
                     did_fail = False
                     break
         except ClientError as ecp:
             error_str = e.response.get('Error', {}).get('Code', 'Unknown')
-            log.warning(f"({attempts} of {watch_dog}) Indexer could not send message to queue: {error_str}")
+            log.warning(f'({attempts} of {watch_dog}) Indexer could not send message to queue: {error_str}')
     return did_fail
 
 
@@ -261,7 +261,7 @@ def _get_nodes(request, indexer_state):
                 pass
             else:
                 label = 'Head node with remote indexing running, permature shutdown'
-                log.warning(f"Indexer permature shutdown: sleep {_REMOTE_INDEXING_SHUTDOWN_SLEEP} seconds")
+                log.warning(f'Indexer permature shutdown: sleep {_REMOTE_INDEXING_SHUTDOWN_SLEEP} seconds')
                 time.sleep(_REMOTE_INDEXING_SHUTDOWN_SLEEP)
                 continue_on = True
         elif this_node['waiting_on_remote']:
@@ -276,13 +276,13 @@ def _get_nodes(request, indexer_state):
                     instance_name = this_node['instance_name']
                     remote_indexing = False
                     _ = _send_sqs_msg(
-                        f"{instance_name}-indexer",
+                        f'{instance_name}-indexer',
                         remote_indexing,
                         'Turn OFF remote indexer for failed start',
                         delay_seconds=0,
                         save_event=False
                     )
-                    log.warning(f"Indexer failed start shutdown sleep: {_REMOTE_INDEXING_SHUTDOWN_SLEEP} seconds")
+                    log.warning(f'Indexer failed start shutdown sleep: {_REMOTE_INDEXING_SHUTDOWN_SLEEP} seconds')
                     time.sleep(_REMOTE_INDEXING_SHUTDOWN_SLEEP)
                 else:
                     # log.warning('Indexer failed start shutdown: Already stopped')
@@ -301,13 +301,13 @@ def _get_nodes(request, indexer_state):
                     instance_name = this_node['instance_name']
                     remote_indexing = False
                     _ = _send_sqs_msg(
-                        f"{instance_name}-indexer",
+                        f'{instance_name}-indexer',
                         remote_indexing,
                         'Turn OFF remote indexer for shutdown',
                         delay_seconds=0,
                         save_event=False
                     )
-                    log.warning(f"Indexer timeout shutdown: sleep {_REMOTE_INDEXING_SHUTDOWN_SLEEP} seconds")
+                    log.warning(f'Indexer timeout shutdown: sleep {_REMOTE_INDEXING_SHUTDOWN_SLEEP} seconds')
                     time.sleep(_REMOTE_INDEXING_SHUTDOWN_SLEEP)
                 else:
                     # log.warning('Indexer timeout shutdown: Already stopped')
@@ -331,20 +331,22 @@ def _get_nodes(request, indexer_state):
             label = 'Index node finished indexing and has been reset by head node.  Waiting to be shutdown by head node.'
     if label:
         if other_node['instance_state'] == 'stopped':
-            log.warning(f"Remote indexing _get_nodes: {label}. this_time: {this_time_in_state:0.6f}, other_time: stopped")
+            log.warning(
+                f'Remote indexing _get_nodes: {label}. this_time: {this_time_in_state:0.6f}, other_time: stopped')
         else:
-            log.warning(f"Remote indexing _get_nodes: {label}. this_time: {this_time_in_state:0.6f}, other_time: {other_time_in_state:0.6f}")
+            log.warning(
+                f'Remote indexing _get_nodes: {label}. this_time: {this_time_in_state:0.6f}, other_time: {other_time_in_state:0.6f}')
     return this_node, other_node, continue_on, did_timeout
 
 
-@view_config(route_name='index', request_method='POST', permission="index")
+@view_config(route_name='index', request_method='POST', permission='index')
 def index(request):
     # Setting request.datastore here only works because routed views are not traversed.
     request.datastore = 'database'
     session = request.registry[DBSESSION]()
     connection = session.connection()
     # Currently 2 possible followup indexers (base.ini [set stage_for_followup = vis_indexer, region_indexer])
-    stage_for_followup = list(request.registry.settings.get("stage_for_followup", '').replace(' ','').split(','))
+    stage_for_followup = list(request.registry.settings.get('stage_for_followup', '').replace(' ', '').split(','))
     # May have undone uuids from prior cycle
     indexer_state = IndexerState(
         request.registry[ELASTIC_SEARCH],
@@ -355,7 +357,7 @@ def index(request):
     this_node = indexer_state.get_obj(INDEXING_NODE_INDEX)
     other_node = indexer_state.get_obj(HEAD_NODE_INDEX)
     remote_indexing = asbool(
-        os.environ.get("REMOTE_INDEXING")
+        os.environ.get('REMOTE_INDEXING')
         or request.registry.settings.get('remote_indexing', False)
     )
     did_timeout = False
@@ -454,7 +456,8 @@ def index(request):
                     full_reindex = False
                     related_set = set(all_uuids(request.registry))
                 else:
-                    (related_set, full_reindex) = get_related_uuids(request, request.registry[ELASTIC_SEARCH], updated, renamed)
+                    (related_set, full_reindex) = get_related_uuids(
+                        request, request.registry[ELASTIC_SEARCH], updated, renamed)
                 if full_reindex:
                     invalidated = related_set
                     flush = True
@@ -480,18 +483,17 @@ def index(request):
         return_now = False
         return result, invalidated, flush, first_txn, snapshot_id, restart, xmin, return_now
 
-
     def _run_indexing(
-            request,
-            indexer_state,
-            result,
-            invalidated,
-            stage_for_followup,
-            flush,
-            snapshot_id,
-            restart,
-            xmin,
-        ):
+        request,
+        indexer_state,
+        result,
+        invalidated,
+        stage_for_followup,
+        flush,
+        snapshot_id,
+        restart,
+        xmin,
+    ):
         if len(stage_for_followup) > 0:
             # Note: undones should be added before, because those uuids will (hopefully) be indexed in this cycle
             indexer_state.prep_for_followup(xmin, invalidated)
@@ -509,7 +511,7 @@ def index(request):
         )
         if err_msg:
             log.warning('Could not start indexing: %s', err_msg)
-        result = indexer_state.finish_cycle(result,errors)
+        result = indexer_state.finish_cycle(result, errors)
 
         if errors:
             result['errors'] = errors
@@ -533,15 +535,16 @@ def index(request):
                 )
                 for item in error_messages:
                     if 'error_message' in item:
-                        log.error('Indexing error for {}, error message: {}'.format(item['uuid'], item['error_message']))
-                        item['error_message'] = "Error occured during indexing, check the logs"
+                        log.error('Indexing error for {}, error message: {}'.format(
+                            item['uuid'], item['error_message']))
+                        item['error_message'] = 'Error occured during indexing, check the logs'
                 result['errors'] = error_messages
-
 
         request.registry[ELASTIC_SEARCH].indices.refresh(RESOURCES_INDEX)
         if flush:
             try:
-                request.registry[ELASTIC_SEARCH].indices.flush_synced(index=RESOURCES_INDEX)  # Faster recovery on ES restart
+                request.registry[ELASTIC_SEARCH].indices.flush_synced(
+                    index=RESOURCES_INDEX)  # Faster recovery on ES restart
             except ConflictError:
                 pass
         return result, indexing_update_infos
@@ -571,40 +574,40 @@ def index(request):
                 uuids_count = len(invalidated)
                 do_remote_indexing = _determine_indexing_protocol(request, uuids_count)
                 if did_timeout:
-                    log.warning(f"Remote indexing index: did_timeout.  Run on head node.")
-                    head_node, indexing_node, time_now, did_fail, is_indexing_node  = setup_indexing_nodes(
+                    log.warning(f'Remote indexing index: did_timeout.  Run on head node.')
+                    head_node, indexing_node, time_now, did_fail, is_indexing_node = setup_indexing_nodes(
                         request,
                         indexer_state,
                         reset=True
                     )
                     result, indexing_update_infos = _run_indexing(*run_indexing_vars)
                 elif do_remote_indexing:
-                    log.warning(f"Remote indexing run indexing: Defer to remote.")
+                    log.warning(f'Remote indexing run indexing: Defer to remote.')
                     instance_name = this_node['instance_name']
                     did_fail = False
                     if not other_node['instance_state'] in ['running', 'pending']:
                         did_fail = _send_sqs_msg(
-                            f"{instance_name}-indexer",
+                            f'{instance_name}-indexer',
                             remote_indexing,
                             'Turn ON remote indexer',
                             delay_seconds=0,
                             save_event=False
                         )
                     else:
-                        log.warning(f"Remote indexing run indexing: Already on.")
+                        log.warning(f'Remote indexing run indexing: Already on.')
                     if not did_fail:
                         this_node['waiting_on_remote'] = True
                         this_node['last_run_time'] = str(float(time.time()))
                         indexer_state.put_obj(this_node['node_index'], this_node)
                     else:
-                        log.warning(f"Remote indexing index: Failed sqs queue.  Run on head node.")
+                        log.warning(f'Remote indexing index: Failed sqs queue.  Run on head node.')
                         result, indexing_update_infos = _run_indexing(*run_indexing_vars)
                 else:
-                    log.warning(f"Remote indexing index: Below threshold. Run on head node.")
+                    log.warning(f'Remote indexing index: Below threshold. Run on head node.')
                     result, indexing_update_infos = _run_indexing(*run_indexing_vars)
                     # Do not reset state for local indexing below threshold.
             elif this_node['node_index'] == INDEXING_NODE_INDEX:
-                log.warning(f"Remote indexing indexing node: Start indexing")
+                log.warning(f'Remote indexing indexing node: Start indexing')
                 this_node['started_indexing'] = True
                 this_node['last_run_time'] = str(float(time.time()))
                 indexer_state.put_obj(this_node['node_index'], this_node)
@@ -612,14 +615,14 @@ def index(request):
                 this_node['done_indexing'] = True
                 this_node['last_run_time'] = str(float(time.time()))
                 indexer_state.put_obj(this_node['node_index'], this_node)
-                log.warning(f"Remote indexing indexing node: Done indexing")
+                log.warning(f'Remote indexing indexing node: Done indexing')
         else:
-            log.warning(f"Non remote indexing")
+            log.warning(f'Non remote indexing')
             result, indexing_update_infos = _run_indexing(*run_indexing_vars)
     elif invalidated:
-        log.warning(f"Load indexing have uuids but dry_run")
+        log.warning(f'Load indexing have uuids but dry_run')
     elif dry_run:
-        log.warning(f"Load indexing no uuids on dry_run")
+        log.warning(f'Load indexing no uuids on dry_run')
     # Add transaction lag to result
     if first_txn is not None:
         result['txn_lag'] = str(datetime.datetime.now(pytz.utc) - first_txn)
@@ -642,13 +645,13 @@ def get_current_xmin(request):
     # http://www.postgresql.org/docs/9.3/static/functions-info.html#FUNCTIONS-TXID-SNAPSHOT
     if recovery:
         query = connection.execute(
-            "SET TRANSACTION ISOLATION LEVEL READ COMMITTED, READ ONLY;"
-            "SELECT txid_snapshot_xmin(txid_current_snapshot());"
+            'SET TRANSACTION ISOLATION LEVEL READ COMMITTED, READ ONLY;'
+            'SELECT txid_snapshot_xmin(txid_current_snapshot());'
         )
     else:
         query = connection.execute(
-            "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE, READ ONLY, DEFERRABLE;"
-            "SELECT txid_snapshot_xmin(txid_current_snapshot());"
+            'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE, READ ONLY, DEFERRABLE;'
+            'SELECT txid_snapshot_xmin(txid_current_snapshot());'
         )
     # DEFERRABLE prevents query cancelling due to conflicts but requires SERIALIZABLE mode
     # which is not available in recovery.
@@ -702,10 +705,10 @@ class Indexer(object):
             cp_q_ops['batch_size'] = cp_q_ops['get_size']
             self.queue_server_backup = SimpleUuidServer(cp_q_ops)
             if (
-                    not queue_type or
-                    queue_type == DEFAULT_QUEUE or
-                    queue_type not in registry['available_queues']
-                ):
+                not queue_type or
+                queue_type == DEFAULT_QUEUE or
+                queue_type not in registry['available_queues']
+            ):
                 self.queue_type = DEFAULT_QUEUE
                 self.queue_server = self.queue_server_backup
                 self.queue_server_backup = None
@@ -772,7 +775,6 @@ class Indexer(object):
         self.queue_type = DEFAULT_QUEUE
         if set_worker:
             self.queue_worker = self.queue_server.get_worker()
-    
 
     def _serve_objects_init(self, uuids):
         err_msg = 'Cannot initialize indexing process: '
@@ -814,14 +816,14 @@ class Indexer(object):
         return err_msg
 
     def serve_objects(
-            self,
-            request,
-            uuids,
-            xmin,
-            snapshot_id=None,
-            restart=False,
-            timeout=None,
-        ):
+        self,
+        request,
+        uuids,
+        xmin,
+        snapshot_id=None,
+        restart=False,
+        timeout=None,
+    ):
         '''Run indexing process with queue server and optional worker'''
         # pylint: disable=too-many-arguments
         errors = []
@@ -858,7 +860,7 @@ class Indexer(object):
                 if not uuids_ran:
                     break
                 self.worker_runs.append({
-                    'worker_id':self.queue_worker.worker_id,
+                    'worker_id': self.queue_worker.worker_id,
                     'uuids': uuids_ran,
                 })
             # Handling Errors must happen or queue will not stop
@@ -904,13 +906,13 @@ class Indexer(object):
         return update_infos, None
 
     def update_objects(
-            self,
-            request,
-            uuids,
-            xmin,
-            snapshot_id=None,
-            restart=False,
-        ):
+        self,
+        request,
+        uuids,
+        xmin,
+        snapshot_id=None,
+        restart=False,
+    ):
         # pylint: disable=too-many-arguments, unused-argument
         '''Run indexing process on uuids'''
         errors = []
@@ -957,7 +959,7 @@ class Indexer(object):
         req_info['start_time'] = time.time()
         backoff = 0
         try:
-            req_info['url'] ='/%s/@@index-data/' % uuid
+            req_info['url'] = '/%s/@@index-data/' % uuid
             doc = request.embed(req_info['url'], as_user='INDEXER')
         except StatementError:
             # Can't reconnect until invalid transaction is rolled back

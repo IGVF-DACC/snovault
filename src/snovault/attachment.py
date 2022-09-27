@@ -91,7 +91,7 @@ class ItemWithAttachment(Item):
         href = attachment['href']
 
         if not href.startswith('data:'):
-            msg = "Expected data URI."
+            msg = 'Expected data URI.'
             raise ValidationFailure('body', [prop_name, 'href'], msg)
 
         properties[prop_name] = attachment = attachment.copy()
@@ -132,7 +132,7 @@ class ItemWithAttachment(Item):
             except json.JSONDecodeError:
                 raise ValidationFailure(
                     'body', [prop_name, 'href'],
-                    f"JSON could not be parsed"
+                    f'JSON could not be parsed'
                 )
 
         # Make sure the mimetype appears to be what the client says it is
@@ -143,7 +143,7 @@ class ItemWithAttachment(Item):
             mime_type_detected = magic.from_buffer(data, mime=True)
 
         if not json_file_loaded and not mimetypes_are_equal(mime_type, mime_type_detected):
-            msg = "Incorrect file type. (Appears to be %s)" % mime_type_detected
+            msg = 'Incorrect file type. (Appears to be %s)' % mime_type_detected
             raise ValidationFailure('body', [prop_name, 'href'], msg)
 
         attachment['type'] = mime_type
@@ -220,7 +220,7 @@ class ItemWithAttachment(Item):
 
             attachment = properties[prop_name]
             if 'href' not in attachment:
-                msg = "Expected data uri or existing uri."
+                msg = 'Expected data uri or existing uri.'
                 raise ValidationFailure('body', [prop_name, 'href'], msg)
 
             href = attachment['href']
@@ -230,7 +230,7 @@ class ItemWithAttachment(Item):
                 except KeyError:
                     existing = None
                 if existing != href:
-                    msg = "Expected data uri or existing uri."
+                    msg = 'Expected data uri or existing uri.'
                     raise ValidationFailure('body', [prop_name, 'href'], msg)
                 unchanged.append(prop_name)
             else:

@@ -28,6 +28,7 @@ SMALL_UUIDS_CNT = 20
 SMALL_SERVE_TIMEOUT = SMALL_UUIDS_CNT * SMALL_REQ_EMBED_WAIT + 5.0
 SMALL_BATCH_DIV = 3
 
+
 def _get_uuids(cnt):
     """
     Return things like this 75659c39-eaea-47b7-ba26-92e9ff183e6c
@@ -47,15 +48,15 @@ class MockES(object):  # pylint: disable=too-few-public-methods
     """
     @staticmethod
     def index(
-            index=None,
-            doc_type=None,
-            body=None,
-            id=None,
-            version=None,
-            version_type=None,
-            request_timeout=None,
-            raise_ecp=None,
-        ):  # pylint: disable=unused-argument, too-many-arguments, invalid-name, redefined-builtin
+        index=None,
+        doc_type=None,
+        body=None,
+        id=None,
+        version=None,
+        version_type=None,
+        request_timeout=None,
+        raise_ecp=None,
+    ):  # pylint: disable=unused-argument, too-many-arguments, invalid-name, redefined-builtin
         '''Fake index'''
         if raise_ecp:
             raise raise_ecp('Fake es index exception.')
@@ -69,14 +70,14 @@ class MockRegistry(dict):
     """
 
     def __init__(
-            self,
-            batch_size,
-            processes=1,
-            queue_name='mockindxQ',
-            queue_host=None,
-            queue_port=None,
-            queue_db=2,
-        ):
+        self,
+        batch_size,
+        processes=1,
+        queue_name='mockindxQ',
+        queue_host=None,
+        queue_port=None,
+        queue_db=2,
+    ):
         super().__init__()
         queue_type = 'Simple'
         self[ELASTIC_SEARCH] = MockES()
@@ -106,6 +107,7 @@ class MockRequest(object):  # pylint: disable=too-few-public-methods
 
     There is probably a better way to do this!
     """
+
     def __init__(self, embed_wait=None):
         self.embeded_uuids = []
         self._embed_wait = embed_wait
@@ -208,6 +210,7 @@ def test_smsimp_indexrun(small_index_objs):
     for worker_run in indexer.worker_runs:
         uuids_ran += worker_run['uuids']
     assert uuids_ran == SMALL_UUIDS_CNT
+
 
 def _test_smsimp_indexrun_emberr(small_index_objs):
     """test simple indexer run  with small vars with embed errors"""

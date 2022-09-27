@@ -91,7 +91,7 @@ def schema_mapping(name, schema):
             'properties': properties,
         }
 
-    if type_ == ["number", "string"]:
+    if type_ == ['number', 'string']:
         return {
             'type': 'keyword',
             'copy_to': [],
@@ -271,8 +271,8 @@ def es_mapping(mapping):
         'dynamic_templates': [
             {
                 'template_principals_allowed': {
-                    'path_match': "principals_allowed.*",
-                    'match_mapping_type': "string",
+                    'path_match': 'principals_allowed.*',
+                    'match_mapping_type': 'string',
                     'mapping': {
                         'type': 'keyword',
                         'include_in_all': False,
@@ -281,8 +281,8 @@ def es_mapping(mapping):
             },
             {
                 'template_unique_keys': {
-                    'path_match': "unique_keys.*",
-                    'match_mapping_type': "string",
+                    'path_match': 'unique_keys.*',
+                    'match_mapping_type': 'string',
                     'mapping': {
                         'type': 'keyword',
                     },
@@ -290,8 +290,8 @@ def es_mapping(mapping):
             },
             {
                 'template_links': {
-                    'path_match': "links.*",
-                    'match_mapping_type': "string",
+                    'path_match': 'links.*',
+                    'match_mapping_type': 'string',
                     'mapping': {
                         'type': 'keyword',
                         'include_in_all': False,
@@ -300,7 +300,7 @@ def es_mapping(mapping):
             },
             {
                 'strings': {
-                    'match_mapping_type': "string",
+                    'match_mapping_type': 'string',
                     'mapping': {
                         'type': 'keyword',
                         'include_in_all': False,
@@ -309,7 +309,7 @@ def es_mapping(mapping):
             },
             {
                 'integers': {
-                    'match_mapping_type': "long",
+                    'match_mapping_type': 'long',
                     'mapping': {
                         'type': 'long',
                         'fields': {
@@ -317,7 +317,7 @@ def es_mapping(mapping):
                                 'type': 'keyword'
                             }
                         },
-                       'include_in_all': False,
+                        'include_in_all': False,
                     },
                 },
             }
@@ -465,7 +465,8 @@ def type_mapping(types, item_type, embed=True):
 
 
 def create_elasticsearch_index(es, index, body):
-    es.indices.create(index=index, body=body, wait_for_active_shards=1, ignore=[400, 404], master_timeout='5m', request_timeout=300)
+    es.indices.create(index=index, body=body, wait_for_active_shards=1, ignore=[
+                      400, 404], master_timeout='5m', request_timeout=300)
 
 
 def set_index_mapping(es, index, doc_type, mapping):
@@ -512,14 +513,14 @@ def run(app, collections=None, dry_run=False):
 def main():
     import argparse
     parser = argparse.ArgumentParser(
-        description="Create Elasticsearch mapping", epilog=EPILOG,
+        description='Create Elasticsearch mapping', epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('--item-type', action='append', help="Item type")
-    parser.add_argument('--app-name', help="Pyramid app name in configfile")
+    parser.add_argument('--item-type', action='append', help='Item type')
+    parser.add_argument('--app-name', help='Pyramid app name in configfile')
     parser.add_argument(
         '--dry-run', action='store_true', help="Don't post to ES, just print")
-    parser.add_argument('config_uri', help="path to configfile")
+    parser.add_argument('config_uri', help='path to configfile')
     args = parser.parse_args()
 
     logging.basicConfig()

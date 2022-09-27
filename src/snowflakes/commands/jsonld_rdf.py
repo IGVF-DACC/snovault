@@ -4,9 +4,8 @@ Example.
 
     %(prog)s "$SITE_URL/search/?type=Item&frame=object"
 """
-EPILOG = __doc__
-
 import rdflib
+EPILOG = __doc__
 
 
 def run(sources, output, parser='json-ld', serializer='xml', base=None):
@@ -30,10 +29,10 @@ def main():
         p.name for p in rdflib.plugin.plugins(kind=rdflib.serializer.Serializer)
         if '/' not in p.name)
     parser = argparse.ArgumentParser(
-        description="Convert JSON-LD from source URLs to RDF", epilog=EPILOG,
+        description='Convert JSON-LD from source URLs to RDF', epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('sources', metavar='URL', nargs='+', help="URLs to convert")
+    parser.add_argument('sources', metavar='URL', nargs='+', help='URLs to convert')
     parser.add_argument(
         '-p', '--parser', default='json-ld', help=', '.join(rdflib_parsers))
     parser.add_argument(
@@ -42,7 +41,7 @@ def main():
         '-b', '--base', default=None, help='Base URL')
     parser.add_argument(
         '-o', '--output', type=argparse.FileType('wb'), default=stdout,
-        help="Output file.")
+        help='Output file.')
     args = parser.parse_args()
     run(args.sources, args.output, args.parser, args.serializer, args.base)
 

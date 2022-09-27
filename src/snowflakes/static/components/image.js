@@ -155,4 +155,3 @@ var Image = React.createClass({
 
 
 globals.content_views.register(Image, 'Image');
-

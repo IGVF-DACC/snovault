@@ -73,28 +73,28 @@ def main():
 
     import argparse
     parser = argparse.ArgumentParser(
-        description="Import data", epilog=EPILOG,
+        description='Import data', epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument('--test-only', action='store_true')
-    parser.add_argument('--item-type', help="Item type")
+    parser.add_argument('--item-type', help='Item type')
     parser.add_argument('--post', dest='method', action='store_const',
-        const="POST", help="Create new data")
+                        const='POST', help='Create new data')
     parser.add_argument('--put', dest='method', action='store_const',
-        const="PUT", help="Replace existing data")
+                        const='PUT', help='Replace existing data')
     parser.add_argument('--patch', dest='method', action='store_const',
-        const="PATCH", help="Patch existing data")
+                        const='PATCH', help='Patch existing data')
     parser.add_argument('--username', '-u', default='',
-        help="HTTP username (access_key_id) or import user uuid/email")
+                        help='HTTP username (access_key_id) or import user uuid/email')
     parser.add_argument('--password', '-p', default='',
-        help="HTTP password (secret_access_key)")
+                        help='HTTP password (secret_access_key)')
     parser.add_argument('--attach', '-a', action='append', default=[],
-        help="Directory to search for attachments")
-    parser.add_argument('--app-name', help="Pyramid app name in configfile")
+                        help='Directory to search for attachments')
+    parser.add_argument('--app-name', help='Pyramid app name in configfile')
     parser.add_argument('inpath',
-        help="input zip file/directory of excel/csv/tsv sheets.")
+                        help='input zip file/directory of excel/csv/tsv sheets.')
     parser.add_argument('url',
-        help="either the url to the application or path to configfile")
+                        help='either the url to the application or path to configfile')
     args = parser.parse_args()
 
     logging.basicConfig()

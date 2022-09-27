@@ -234,7 +234,7 @@ def item_view_object_with_select_calculated_properties(context, request):
         request,
         ns=properties,
         select_properties=select_properties
-        )
+    )
     properties.update(calculated)
     return properties
 

@@ -42,6 +42,7 @@ def test_schema_utils_update_resolved_data(mocker):
     from snovault.schema_utils import _update_resolved_data
     from snovault.schema_utils import resolve_merge_ref
     resolve_merge_ref = mocker.patch('snovault.schema_utils.resolve_merge_ref')
+
     def custom_resolver(ref, resolver):
         if ref == 'xyz':
             return {
@@ -79,6 +80,7 @@ def test_schema_utils_handle_list_or_string_value(mocker):
     from snovault.schema_utils import _handle_list_or_string_value
     from snovault.schema_utils import resolve_merge_ref
     resolve_merge_ref = mocker.patch('snovault.schema_utils.resolve_merge_ref')
+
     def custom_resolver(ref, resolver):
         if ref == 'xyz':
             return {
@@ -121,6 +123,7 @@ def test_schema_utils_handle_list_or_string_value(mocker):
         'and': 'a ref',
         'inside': 'of a ref'
     }
+
     def custom_resolver(ref, resolver):
         if ref == 'xyz':
             return {
@@ -138,6 +141,7 @@ def test_schema_utils_handle_list_or_string_value(mocker):
         'a': 'b',
         'c': 'd',
     }
+
     def custom_resolver(ref, resolver):
         if ref == 'xyz':
             return {
@@ -258,6 +262,7 @@ def test_schema_utils_resolve_merge_refs_fills_in_refs(mocker):
             ]
         }
     }
+
     def custom_resolver(ref, resolver):
         if ref == 'xyz':
             return {
@@ -596,14 +601,14 @@ def test_schema_utils_resolve_merge_ref_in_real_schema():
     resolved = resolve_merge_refs(schema['properties'], resolver)
     expected = {
         'status': {
-            "title": "Status",
-            "type": "string",
-            "default": "current",
-            "enum" : [
-                "current",
-                "deleted",
-                "replaced",
-                "disabled"
+            'title': 'Status',
+            'type': 'string',
+            'default': 'current',
+            'enum': [
+                'current',
+                'deleted',
+                'replaced',
+                'disabled'
             ]
         },
         'attachment': {

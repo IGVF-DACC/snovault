@@ -31,7 +31,7 @@ class UpgradeError(Exception):
 
 class UpgradePathNotFound(UpgradeError):
     def __str__(self):
-        return "%r from %r to %r (at %r)" % self.args
+        return '%r from %r to %r (at %r)' % self.args
 
 
 class VersionTooHigh(UpgradeError):
@@ -41,6 +41,7 @@ class VersionTooHigh(UpgradeError):
 class Upgrader(object):
     """ Upgrade manager
     """
+
     def __init__(self, registry):
         self.types = registry[TYPES]
         self.schema_upgraders = {}
@@ -71,6 +72,7 @@ class Upgrader(object):
 class SchemaUpgrader(object):
     """ Manages upgrade steps
     """
+
     def __init__(self, name, version, finalizer=None):
         self.__name__ = name
         self.version = version
@@ -81,7 +83,7 @@ class SchemaUpgrader(object):
         if dest is None:
             dest = self.version
         if parse_version(dest) <= parse_version(source):
-            raise ValueError("dest is less than source", dest, source)
+            raise ValueError('dest is less than source', dest, source)
         if parse_version(source) in self.upgrade_steps:
             raise ConfigurationError('duplicate step for source', source)
         self.upgrade_steps[parse_version(source)] = UpgradeStep(step, source, dest)

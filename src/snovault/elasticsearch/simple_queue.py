@@ -6,8 +6,9 @@ the proper functions used in the indexer classes.
 import time
 
 
-class SimpleUuidServer(object):    #pylint: disable=too-many-instance-attributes
+class SimpleUuidServer(object):  # pylint: disable=too-many-instance-attributes
     '''Simple uuid queue as a list'''
+
     def __init__(self, queue_options):
         self._queue_options = queue_options
         self._start_us = int(time.time() * 1000000)
@@ -172,8 +173,9 @@ class SimpleUuidServer(object):    #pylint: disable=too-many-instance-attributes
         pass
 
 
-class SimpleUuidWorker(object):  #pylint: disable=too-many-instance-attributes
+class SimpleUuidWorker(object):  # pylint: disable=too-many-instance-attributes
     '''Basic uuid worker to get uuids for indexing'''
+
     def __init__(self, queue_options, worker_id, queue):
         self.queue_options = queue_options
         self.worker_id = worker_id

@@ -39,31 +39,31 @@ def click_element(browser, css):
 
     # Scroll element to middle of window so webdriver does not scroll the
     # element underneath the floating header.
-    browser.execute_script("window.scrollTo(0, 0);")
+    browser.execute_script('window.scrollTo(0, 0);')
     location = elements.first._element.location  # webdriver element
     size = browser.driver.get_window_size()
     x = location['x'] - (size['width'] / 2)
     y = location['y'] - (size['height'] / 2)
-    browser.execute_script("window.scrollTo(%d, %d);" % (x, y))
+    browser.execute_script('window.scrollTo(%d, %d);' % (x, y))
 
     elements.first.click()
 
 
 @when('I wait for the table to fully load')
 def wait_for_table(browser):
-    assert browser.is_element_present_by_css("table.collection-table")
-    assert browser.is_element_not_present_by_css("table.collection-table.communicating")
+    assert browser.is_element_present_by_css('table.collection-table')
+    assert browser.is_element_not_present_by_css('table.collection-table.communicating')
 
 
 @when('I wait for deferred content to fully load')
 def wait_for_fetched_content(browser):
-    assert browser.is_element_present_by_css(".communicating")
-    assert browser.is_element_not_present_by_css(".communicating")
+    assert browser.is_element_present_by_css('.communicating')
+    assert browser.is_element_not_present_by_css('.communicating')
 
 
 @when(u'I wait for the form to fully load')
 def wait_for_form(browser):
-    assert browser.is_element_present_by_css("#content form")
+    assert browser.is_element_present_by_css('#content form')
 
 
 @when(u'I wait for the form to close')
@@ -73,8 +73,8 @@ def wait_for_form_close(browser):
 
 @when(u'I wait for the content to load')
 def wait_for_content(browser):
-    assert browser.is_element_present_by_css("#application")
-    assert browser.is_element_not_present_by_css("#application.communicating")
+    assert browser.is_element_present_by_css('#application')
+    assert browser.is_element_not_present_by_css('#application.communicating')
 
 
 @when(parse('I wait for an element with the css selector "{css}" to load'))

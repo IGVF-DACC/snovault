@@ -278,7 +278,7 @@ def no_deps(conn, DBSession):
     def check_dependencies(session, flush_context):
         assert not flush_context.cycles
 
-    @event.listens_for(conn, "before_execute", retval=True)
+    @event.listens_for(conn, 'before_execute', retval=True)
     def before_execute(conn, clauseelement, multiparams, params):
         return clauseelement, multiparams, params
 
@@ -338,7 +338,7 @@ def wsgi_server(request, wsgi_server_app, wsgi_server_host_port):
         clear_untrusted_proxy_headers=False,
     )
     assert server.wait()
-    print("wsgi server port {}".format(port))
+    print('wsgi server port {}'.format(port))
 
     yield 'http://%s:%s' % wsgi_server_host_port
 

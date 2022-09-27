@@ -15,6 +15,7 @@ from snovault.interfaces import TYPES
 
 log = logging.getLogger(__name__)
 
+
 def includeme(config):
     config.add_route('graph_svg', '/profiles/graph.svg')
     config.add_route('graph_dot', '/profiles/graph.dot')
@@ -101,7 +102,7 @@ def schema_svg(request):
             assert p.returncode == 0, err.decode('utf-8')
             return Response(svg, content_type='image/svg+xml', charset='utf-8')
     except Exception as excpt:
-        log.warning("graph.svg is not available exception: {repr(excpt)}")
+        log.warning('graph.svg is not available exception: {repr(excpt)}')
         pass
     msg = 'graph.svg is not available'
     log.warning(msg)

@@ -89,7 +89,7 @@ def batch_upgrade(request):
             item_type = item.type_info.item_type
             update, errors = update_item(storage, item)
         except Exception as ecp:
-            error_msg = "Exception: {} updating: /{}/{}".format(
+            error_msg = 'Exception: {} updating: /{}/{}'.format(
                 ecp,
                 item_type,
                 uuid,
@@ -103,7 +103,7 @@ def batch_upgrade(request):
                     '%s: %s' % ('/'.join([str(x) or '<root>' for x in error.path]), error.message)
                     for error in errors
                 ]
-                error_msg = "Validation failure: /{}/{}\n{}".format(
+                error_msg = 'Validation failure: /{}/{}\n{}'.format(
                     item_type,
                     uuid,
                     '\n'.join(errortext),
@@ -166,7 +166,7 @@ def _run_pool(uuids, args):
                 if error_msg
             ]
             updated_cnt = sum(update for _, _, update, _, _ in results)
-            log_msg = "{} of ~{} Batch: Updated {} of {} (errors {})".format(
+            log_msg = '{} of ~{} Batch: Updated {} of {} (errors {})'.format(
                 loop,
                 est_loops,
                 updated_cnt,
@@ -175,7 +175,7 @@ def _run_pool(uuids, args):
             )
             BATCH_UPGRADE_LOG.info(log_msg)
             for error_msg in error_msgs:
-                BATCH_UPGRADE_LOG.error("\t%s", error_msg)
+                BATCH_UPGRADE_LOG.error('\t%s', error_msg)
             all_results.extend(results)
     finally:
         pool.terminate()
@@ -196,7 +196,7 @@ def _summarize_results(all_results, runtime_str=None, verbose=False):
         results = list(results)
         errors_cnt = sum(error for _, _, _, error, _ in results)
         updated_cnt = sum(update for _, _, update, _, _ in results)
-        log_message = "Collection {}: Updated {} of {} (errors {})".format(
+        log_message = 'Collection {}: Updated {} of {} (errors {})'.format(
             item_type,
             updated_cnt,
             len(results),
@@ -220,7 +220,7 @@ def _summarize_results(all_results, runtime_str=None, verbose=False):
         for log_msg in error_logs:
             BATCH_UPGRADE_LOG.error(log_msg)
     if runtime_str:
-        BATCH_UPGRADE_LOG.info("Run Time: %s" % runtime_str)
+        BATCH_UPGRADE_LOG.info('Run Time: %s' % runtime_str)
 
 
 def _internal_app(configfile, app_name=None, username=None):
@@ -246,7 +246,7 @@ def main():
     connection = testapp.app.registry[CONNECTION]
     uuids = [str(uuid) for uuid in connection.__iter__(*args.item_types)]
     if uuids:
-        log_msg = "Start Upgrade with {} items: {}, {}, {}, {}".format(
+        log_msg = 'Start Upgrade with {} items: {}, {}, {}, {}'.format(
             len(uuids),
             args.batchsize,
             args.chunksize,
@@ -256,7 +256,7 @@ def main():
         BATCH_UPGRADE_LOG.info(log_msg)
         pool_start = time.time()
         all_results = _run_pool(uuids, args)
-        runtime_mins_str = "{:0.2f} minutes".format(
+        runtime_mins_str = '{:0.2f} minutes'.format(
             (time.time() - pool_start) / 60
         )
         BATCH_UPGRADE_LOG.info('End Upgrade')
@@ -268,11 +268,11 @@ def main():
 def _parse_args():
     import argparse
     parser = argparse.ArgumentParser(
-        description="Batch upgrade content items.", epilog=EPILOG,
+        description='Batch upgrade content items.', epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('config_uri', help="path to configfile")
-    parser.add_argument('--app-name', help="Pyramid app name in configfile")
+    parser.add_argument('config_uri', help='path to configfile')
+    parser.add_argument('--app-name', help='Pyramid app name in configfile')
     parser.add_argument('--batchsize', type=int, default=50)
     parser.add_argument('--chunksize', type=int, default=1)
     parser.add_argument('--item-types', action='append', default=[])

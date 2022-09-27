@@ -201,7 +201,7 @@ def context_from_schema(schema, prefix, class_name, base_types):
             pass
         elif 'linkTo' in subschema or 'linkFrom' in subschema:
             prop_ld['@type'] = '@id'
-        elif subschema.get('anyOf') == [{"format": "date-time"}, {"format": "date"}]:
+        elif subschema.get('anyOf') == [{'format': 'date-time'}, {'format': 'date'}]:
             prop_ld['@type'] = 'xsd:dateTime'
         elif subschema.get('format') == 'date-time':
             prop_ld['@type'] = 'xsd:date'

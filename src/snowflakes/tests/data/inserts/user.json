@@ -1010,7 +1010,7 @@
         "uuid": "7e763d5a-634b-4181-a812-4361183359e9"
     },
     {
-        "uuid": "e7bb4fa6-ef92-41b7-871a-5f64db3848fe",
+        "uuid": "04d1cd63-d5d9-4ea4-8d9b-7adad3d5377d",
         "email": "david@glicksoftware.com",
         "first_name": "David",
         "groups": [
@@ -1021,8 +1021,7 @@
         "submits_for": [
             "/labs/j-michael-cherry/"
         ],
-        "timezone": "US/Pacific",
-        "uuid": "04d1cd63-d5d9-4ea4-8d9b-7adad3d5377d"
+        "timezone": "US/Pacific"
     },
     {
         "email": "fytanaka@stanford.edu",
@@ -1122,5 +1121,4 @@
         "timezone": "US/Pacific",
         "uuid": "986b362f-4eb6-4a9c-8173-3ab267307e3b"
     }
-
 ]

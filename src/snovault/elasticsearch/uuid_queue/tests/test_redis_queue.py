@@ -48,6 +48,7 @@ DEFAULT_QUEUE_OPTS = {
 class TestRedisClient(TestCase):
     '''Test Redis Queue Client Class'''
     queue_options = DEFAULT_QUEUE_OPTS.copy()
+
     def test_get_queue(self):
         '''Test get_queue'''
         for queue_type, queue_class in REDIS_QUEUE_CLASSES:
@@ -112,20 +113,18 @@ class TestRedisQueueMeta(TestCase):
         # base - not used?
         'get_worker_conn_count',
         '_get_blank_worker',
-        '_init_persistant_data', # not tested
-        'get_server_restarts', # not tested
-        'update_errors_count', # not tested
+        '_init_persistant_data',  # not tested
+        'get_server_restarts',  # not tested
+        'update_errors_count',  # not tested
     ]
 
     @classmethod
     def start_redis_server(cls):
         '''Helper to start redis-server'''
 
-
     @classmethod
     def stop_redis_server(cls):
         '''Helper to stop redis-server'''
-
 
     @classmethod
     @mock.patch('time.time', mock.MagicMock(return_value=MOCK_TIME))
@@ -578,10 +577,10 @@ class TestRedisQueue(TestCase):
         'update_uuid_count',
         # Run Args
         'update_finished',
-        'close_indexing', # not tested
-        'get_server_restarts', # not tested
-        'update_errors_count', # not tested
-        'update_success_count', # not tested
+        'close_indexing',  # not tested
+        'get_server_restarts',  # not tested
+        'update_errors_count',  # not tested
+        'update_success_count',  # not tested
     ]
 
     @classmethod

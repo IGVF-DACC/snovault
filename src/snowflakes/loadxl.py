@@ -260,6 +260,7 @@ def request_url(item_type, method):
 
     return component
 
+
 def make_request(testapp, item_type, method):
     json_method = getattr(testapp, method.lower() + '_json')
 
@@ -346,7 +347,7 @@ def pipeline_logger(item_type, phase):
 
         loaded = created + updated
         logger.info('Loaded %d of %d %s (phase %s). CREATED: %d, UPDATED: %d, SKIPPED: %d, ERRORS: %d' % (
-             loaded, count, item_type, phase, created, updated, skipped, errors))
+            loaded, count, item_type, phase, created, updated, skipped, errors))
 
     return component
 
@@ -407,13 +408,13 @@ def attachment(path):
             im = Image.open(stream)
             im.verify()
             if im.format != minor.upper():
-                msg = "Image file format %r does not match extension for %s"
+                msg = 'Image file format %r does not match extension for %s'
                 raise ValueError(msg % (im.format, filename))
 
             attach['width'], attach['height'] = im.size
             return attach
 
-    raise ValueError("Unknown file type for %s" % filename)
+    raise ValueError('Unknown file type for %s' % filename)
 
 
 ##############################################################################
@@ -523,10 +524,9 @@ def load_test_data(app):
     db = app.registry['dbsession']
     from snovault.storage import User
     for count, user in enumerate(db.query(User).all()):
-        user.password = "Steve"
+        user.password = 'Steve'
 
     import transaction
     transaction.commit()
 
-    print ("all %s users get the password Steve" % (count))
-
+    print('all %s users get the password Steve' % (count))

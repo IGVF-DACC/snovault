@@ -70,17 +70,17 @@ REDIS_DEFAULTS = [
 def initdb(datadir, redis_port, echo=False):
     '''Create redis db config in data dir'''
     redis_config_lines = REDIS_DEFAULTS.copy()
-    redis_config_lines.append(f"port {redis_port}")
-    redis_config_lines.append(f"pidfile /var/run/redis_{redis_port}.pid")
-    redis_config_lines.append(f"dir {datadir}")
+    redis_config_lines.append(f'port {redis_port}')
+    redis_config_lines.append(f'pidfile /var/run/redis_{redis_port}.pid')
+    redis_config_lines.append(f'dir {datadir}')
     redis_config_lines.append('bind 127.0.0.1')
-    redis_config_path = f"{datadir}/redis.conf"
+    redis_config_path = f'{datadir}/redis.conf'
     if not os.path.exists(datadir):
         os.makedirs(datadir)
     with open(redis_config_path, '+w') as file_handler:
         file_handler.writelines('\n'.join(redis_config_lines))
     if echo:
-        print(f"Redis Config created: {redis_config_path}")
+        print(f'Redis Config created: {redis_config_path}')
     return redis_config_path
 
 
@@ -88,7 +88,7 @@ def server_process(redis_config_path, redis_port, redis_index, echo=False):
     '''Start redis server'''
     args = [
         os.path.join('redis-server'),
-        f"{redis_config_path}",
+        f'{redis_config_path}',
     ]
     if echo:
         print(f"Starting redis server: {' '.join(args)}")
@@ -110,10 +110,10 @@ def _main():
 
     def _cleanup():
         shutil.rmtree(datadir)
-        print(f"Redis Cleaned dir: {datadir}")
+        print(f'Redis Cleaned dir: {datadir}')
 
     try:
-        print(f"Starting in dir: {datadir}")
+        print(f'Starting in dir: {datadir}')
         redis_config_path = initdb(datadir, 6378, echo=True)
         redis_process = server_process(redis_config_path, 6378, echo=True)
     except Exception as ecp:  # pylint: disable=broad-except

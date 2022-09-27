@@ -43,17 +43,16 @@ def convert(filename, sheetname=None, outputdir=None, skip_blanks=False):
     json.dump(data, out, sort_keys=True, indent=4, separators=(',', ': '))
 
 
-
 def main():
     import argparse
     parser = argparse.ArgumentParser(
-        description="Convert spreadsheet to json list", epilog=EPILOG,
+        description='Convert spreadsheet to json list', epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('filenames', metavar='FILE', nargs='+', help="Files to convert")
-    parser.add_argument('--outputdir', help="Directory to write converted output")
-    parser.add_argument('--sheetname', help="xlsx sheet name")
-    parser.add_argument('--skip-blanks', help="Skip blank columns")
+    parser.add_argument('filenames', metavar='FILE', nargs='+', help='Files to convert')
+    parser.add_argument('--outputdir', help='Directory to write converted output')
+    parser.add_argument('--sheetname', help='xlsx sheet name')
+    parser.add_argument('--skip-blanks', help='Skip blank columns')
     args = parser.parse_args()
 
     for filename in args.filenames:

@@ -67,4 +67,3 @@ module.exports.BrowserFeat = {
         document.documentElement.className = htmlclass.join(' ');
     }
 };
-

@@ -23,6 +23,7 @@ pytest_plugins = [
 
 tempfile.tempdir = '/tmp'
 
+
 @pytest.fixture(autouse=True)
 def autouse_external_tx(external_tx):
     pass
@@ -43,16 +44,16 @@ _app_settings = {
     'multiauth.policy.accesskey.namespace': 'accesskey',
     'multiauth.policy.accesskey.base': 'snovault.authentication.BasicAuthAuthenticationPolicy',
     'multiauth.policy.accesskey.check': 'snovault.authentication.basic_auth_check',
-    'multiauth.policy.webuser.use' : 'snovault.authentication.NamespacedAuthenticationPolicy',
-    'multiauth.policy.webuser.namespace' : 'webuser',
-    'multiauth.policy.webuser.base' : 'snovault.authentication.WebUserAuthenticationPolicy',
+    'multiauth.policy.webuser.use': 'snovault.authentication.NamespacedAuthenticationPolicy',
+    'multiauth.policy.webuser.namespace': 'webuser',
+    'multiauth.policy.webuser.base': 'snovault.authentication.WebUserAuthenticationPolicy',
     'load_test_only': True,
     'testing': True,
     'pyramid.debug_authorization': True,
     'postgresql.statement_timeout': 20,
     'retry.attempts': 3,
-    "ontology_path": (
-        pkg_resources.resource_filename("snowflakes", "") + "/../../ontology.json"
+    'ontology_path': (
+        pkg_resources.resource_filename('snowflakes', '') + '/../../ontology.json'
     ),
     # Local Storage
     'local_storage_host': 'localhost',

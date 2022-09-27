@@ -1,5 +1,6 @@
 import pytest
 
+
 @pytest.fixture(scope='session')
 def test_user():
     return {'username': 'user@test.com', 'password': 'test'}
@@ -8,13 +9,14 @@ def test_user():
 def test_login_unknown_user(anontestapp, test_user):
     res = anontestapp.post_json('/login', test_user, status=403)
 
+
 def test_invalid_create_user(testapp):
     url = '/users/'
     item = {
         'emailllll': 'blah@blah.com',
         'first_name': 'Persona',
         'last_name': 'Test User',
-        'password' : 'password'
+        'password': 'password'
     }
     resp = testapp.post_json(url, item, status=422)
     print(resp)
@@ -28,12 +30,12 @@ def test_login_logout(testapp, anontestapp, app_settings, test_user):
         'email': test_user['username'],
         'first_name': 'Persona',
         'last_name': 'Test User',
-        'password' : test_user['password']
+        'password': test_user['password']
     }
     testapp.post_json(url, item, status=201)
 
     # Log in
-    login = {'username' : item['email'], 'password': item['password']}
+    login = {'username': item['email'], 'password': item['password']}
     res = anontestapp.post_json('/login', login, status=200)
     assert 'Set-Cookie' in res.headers
     assert res.json['auth.userid'] == login['username']
@@ -42,6 +44,7 @@ def test_login_logout(testapp, anontestapp, app_settings, test_user):
     res = anontestapp.get('/logout?redirect=false', status=200)
     assert 'Set-Cookie' in res.headers
     assert 'auth.userid' not in res.json
+
 
 def test_impersonate_user(anontestapp, admin, submitter):
     res = anontestapp.post_json(

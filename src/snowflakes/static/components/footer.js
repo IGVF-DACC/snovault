@@ -101,7 +101,7 @@ var LoginBoxes = React.createClass({
       })
       .then(session_properties => {
           console.log("got session props as", session_properties);
-          this.context.session['auth.userid'] = data.username; 
+          this.context.session['auth.userid'] = data.username;
           var next_url = window.location.href;
           if (window.location.hash == '#logged-out') {
               next_url = window.location.pathname + window.location.search;

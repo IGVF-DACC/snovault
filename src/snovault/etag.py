@@ -36,7 +36,7 @@ def if_match_tid(view_callable):
             conn.get_by_uuid(uuid).tid != tid
             for uuid, tid in uuid_tid)
         if any(mismatching):
-            raise HTTPPreconditionFailed("The resource has changed.")
+            raise HTTPPreconditionFailed('The resource has changed.')
         return view_callable(context, request)
 
     return wrapped

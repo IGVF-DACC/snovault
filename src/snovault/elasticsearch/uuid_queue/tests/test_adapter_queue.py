@@ -216,7 +216,7 @@ class TestQueueTypes(TestCase):
             elif queue_type in REDIS_QUEUE_TYPES:
                 self.assertTrue(queue_client is RedisClient)
             else:
-                print("New Queue(%s) not handled in test" % queue_type)
+                print('New Queue(%s) not handled in test' % queue_type)
                 assert False
 
     def test_check_queue_type_true(self):
@@ -261,7 +261,7 @@ class TestQueueAdapter(TestCase):
         ('_queue_options', dict),
         ('_start_us', int),
         ('queue_id', str),
-        ('_queue', None), # depends on _queue_type
+        ('_queue', None),  # depends on _queue_type
     ]
     meth_func = [
         # Errors
@@ -280,7 +280,7 @@ class TestQueueAdapter(TestCase):
         'is_indexing',
         # Queue Client
         '_get_queue',
-        'close_indexing', # not tested
+        'close_indexing',  # not tested
     ]
 
     @classmethod
@@ -663,7 +663,7 @@ class TestWorkerAdapater(TestCase):
         ('_queue_name', str),
         ('_queue_options', dict),
         ('worker_id', str),
-        ('_queue', None), # depends on _queue_type
+        ('_queue', None),  # depends on _queue_type
         ('is_running', bool),
         ('get_cnt', int),
         ('uuid_cnt', int),
@@ -767,7 +767,6 @@ class TestWorkerAdapater(TestCase):
         self.assertEqual(0, self.base_worker.get_cnt)
         self.assertEqual(0, self.base_worker.uuid_cnt)
 
-
     def test_get_uuids_batchsize_one(self):
         '''Test _get_uuids when batch size is one'''
         # pylint: disable=protected-access
@@ -782,7 +781,6 @@ class TestWorkerAdapater(TestCase):
         self.assertEqual(0, self.base_worker._get_uncombined_uuids.call_count)
         self.base_worker._queue.get_uuids = org_queue_get_uuids
         self.base_worker._get_uncombined_uuids = org_get_uncombined_uuids
-
 
     def test_get_uuids_batchsize_many(self):
         '''Test _get_uuids when batch size is greater than one'''

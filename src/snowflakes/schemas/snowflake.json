@@ -4,16 +4,36 @@
     "$id": "/profiles/snowflake.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "required": ["snowset", "type","award", "lab"],
-    "identifyingProperties": ["uuid", "accession"],
+    "required": [
+        "snowset",
+        "type",
+        "award",
+        "lab"
+    ],
+    "identifyingProperties": [
+        "uuid",
+        "accession"
+    ],
     "additionalProperties": false,
     "mixinProperties": [
-        { "$ref": "mixins.json#/schema_version" },
-        { "$ref": "mixins.json#/uuid" },
-        { "$ref": "mixins.json#/accession" },
-        { "$ref": "mixins.json#/submitted" },
-        { "$ref": "mixins.json#/attribution" },
-        { "$ref": "mixins.json#/accessioned_status" }
+        {
+            "$ref": "mixins.json#/schema_version"
+        },
+        {
+            "$ref": "mixins.json#/uuid"
+        },
+        {
+            "$ref": "mixins.json#/accession"
+        },
+        {
+            "$ref": "mixins.json#/submitted"
+        },
+        {
+            "$ref": "mixins.json#/attribution"
+        },
+        {
+            "$ref": "mixins.json#/accessioned_status"
+        }
     ],
     "facets": {
         "status": {
@@ -29,7 +49,9 @@
     "dependentSchemas": {
         "external_accession": {
             "not": {
-                "required": ["accession"]
+                "required": [
+                    "accession"
+                ]
             }
         }
     },
@@ -51,20 +73,24 @@
             "title": "Snowflake type",
             "type": "string",
             "enum": [
-                    "fluffy",
-                    "crisp",
-                    "slushy",
-                    "assymetric",
-                    "wet",
-                    "dry"
-             ]
+                "fluffy",
+                "crisp",
+                "slushy",
+                "assymetric",
+                "wet",
+                "dry"
+            ]
         },
         "snowset": {
             "title": "Snowset",
             "description": "The snowset (ball, fort, etc.) the snowflake belongs to.",
             "type": "string",
-            "linkTo": ["Snowset", "Snowball", "Snowfort"]
-        } 
+            "linkTo": [
+                "Snowset",
+                "Snowball",
+                "Snowfort"
+            ]
+        }
     },
     "columns": {
         "title": {

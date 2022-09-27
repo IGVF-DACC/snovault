@@ -79,7 +79,7 @@ def run(testapp, timeout=DEFAULT_TIMEOUT, dry_run=False, path='/index', control=
                     if not recovery:
                         # http://initd.org/psycopg/docs/advanced.html#asynchronous-notifications
                         cursor.execute("""LISTEN "snovault.transaction";""")
-                        log.debug("Listener connected")
+                        log.debug('Listener connected')
                         listening = True
 
                 cursor.execute("""SELECT txid_current_snapshot();""")
@@ -271,7 +271,7 @@ def composite(loader, global_conf, **settings):
         response_headers = [('Content-type', 'application/json; charset=utf-8')]
         start_response(status, response_headers)
         body = json.dumps(status_holder['status'])
-        return [body.encode("utf-8")]
+        return [body.encode('utf-8')]
 
     return status_app
 
@@ -292,24 +292,24 @@ def internal_app(configfile, app_name=None, username=None):
 def main():
     import argparse
     parser = argparse.ArgumentParser(
-        description="Listen for changes from postgres and index in elasticsearch",
+        description='Listen for changes from postgres and index in elasticsearch',
         epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('--app-name', help="Pyramid app name in configfile")
+    parser.add_argument('--app-name', help='Pyramid app name in configfile')
     parser.add_argument(
-        '--username', '-u', default='INDEXER', help="Import username")
+        '--username', '-u', default='INDEXER', help='Import username')
     parser.add_argument(
         '--dry-run', action='store_true', help="Don't post to ES, just print")
     parser.add_argument(
-        '-v', '--verbose', action='store_true', help="Print debug level logging")
+        '-v', '--verbose', action='store_true', help='Print debug level logging')
     parser.add_argument(
         '--poll-interval', type=int, default=DEFAULT_TIMEOUT,
-        help="Poll interval between notifications")
+        help='Poll interval between notifications')
     parser.add_argument(
         '--path', default='/index',
-        help="Path of indexing view (/index or /index_file)")
-    parser.add_argument('config_uri', help="path to configfile")
+        help='Path of indexing view (/index or /index_file)')
+    parser.add_argument('config_uri', help='path to configfile')
     args = parser.parse_args()
 
     logging.basicConfig()

@@ -257,7 +257,7 @@ var Graph = module.exports.Graph = React.createClass({
                     this.cv.viewBoxWidth = viewBoxWidth;
                     this.cv.viewBoxHeight = viewBoxHeight;
 
-                    // Based on the size of the graph and view box, 
+                    // Based on the size of the graph and view box,
                     var initialZoomLevel = this.setInitialZoomLevel(el, svg);
                     this.setState({zoomLevel: initialZoomLevel});
 
