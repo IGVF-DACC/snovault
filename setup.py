@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 here = os.path.abspath(os.path.dirname(__file__))
 README = open(os.path.join(here, 'README.rst')).read()
 CHANGES = open(os.path.join(here, 'CHANGES.rst')).read()
-VERSION = "1.0.62"
+VERSION = "2.0.0"
 
 
 INSTALL_REQUIRES = [
@@ -106,7 +106,7 @@ setup(
         profile = snowflakes.commands.profile:main
         spreadsheet-to-json = snowflakes.commands.spreadsheet_to_json:main
         migrate-attachments-aws = snowflakes.commands.migrate_attachments_aws:main
-        create-admin-user = snowflakes.commands.create_admin_user:main 
+        create-admin-user = snowflakes.commands.create_admin_user:main
 
         [paste.app_factory]
         main = snowflakes:main
