@@ -27,9 +27,9 @@ from pyramid.settings import (
     asbool,
     aslist,
 )
-from snovault import ROOT
+from snovault.interfaces import COLLECTIONS
+from snovault.interfaces import ROOT
 from snovault.storage import User
-from snovault import COLLECTIONS
 from snovault.calculated import calculate_properties
 from snovault.validation import ValidationFailure
 from snovault.validators import no_validate_item_content_post

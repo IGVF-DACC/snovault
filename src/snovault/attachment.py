@@ -14,10 +14,11 @@ from urllib.parse import (
     quote,
     unquote,
 )
-from snovault import (
-    BLOBS,
-    Item,
-)
+
+from snovault.interfaces import BLOBS
+
+from snovault import Item
+
 from .validation import ValidationFailure
 import magic
 import mimetypes

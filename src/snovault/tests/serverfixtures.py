@@ -28,37 +28,13 @@ def pytest_configure():
 
 @pytest.mark.fixture_cost(10)
 @pytest.yield_fixture(scope='session')
-def engine_url(request):
-    # Ideally this would use a different database on the same postgres server
-    from urllib.parse import quote
-    from .postgresql_fixture import initdb, server_process
-    tmpdir = request.config._tmpdirhandler.mktemp('postgresql-engine', numbered=True)
-    tmpdir = str(tmpdir)
-    initdb(tmpdir)
-    process = server_process(tmpdir)
-
-    yield 'postgresql://postgres@:5432/postgres?host=%s' % quote(tmpdir)
-
-    if process.poll() is None:
-        process.terminate()
-        process.wait()
+def engine_url(request, ini_file):
+    yield ini_file.get('sqlalchemy.url')
 
 
-@pytest.mark.fixture_cost(10)
 @pytest.yield_fixture(scope='session')
-def postgresql_server(request):
-    from urllib.parse import quote
-    from .postgresql_fixture import initdb, server_process
-    tmpdir = request.config._tmpdirhandler.mktemp('postgresql', numbered=True)
-    tmpdir = str(tmpdir)
-    initdb(tmpdir)
-    process = server_process(tmpdir)
-
-    yield 'postgresql://postgres@:5432/postgres?host=%s' % quote(tmpdir)
-
-    if process.poll() is None:
-        process.terminate()
-        process.wait()
+def postgresql_server(engine_url):
+    yield engine_url
 
 
 @pytest.fixture(scope='session')
@@ -85,35 +61,6 @@ def elasticsearch_server(request, elasticsearch_host_port):
         except TimeoutExpired:
             process.kill()
 
-
-@pytest.mark.fixture_cost(10)
-@pytest.yield_fixture(scope='session')
-def redis_server(request):
-    from .redis_storage_fixture import initdb, server_process
-    datadir = str(request.config._tmpdirhandler.mktemp('redisdatatest', numbered=True))
-    appsettings = get_appsettings('development.ini', name='app')
-    # Required settings in config
-    local_storage_host = appsettings['local_storage_host']
-    local_storage_port = appsettings['local_storage_port']
-    local_storage_redis_index = appsettings['local_storage_redis_index']
-    local_storage_timeout = appsettings['local_storage_timeout']
-    # Build fixture
-    redis_config_path = initdb(datadir, local_storage_port, echo=True)
-    process = server_process(redis_config_path, local_storage_port, local_storage_redis_index, echo=True)
-    # Sleep for short time to allow redis db to initialize
-    sleep(0.25)
-    yield f"Redis testing: redis-cli -p {local_storage_port} -n {local_storage_redis_index})"
-    if 'process' in locals() and process.poll() is None:
-        process.terminate()
-        try:
-            process.wait(timeout=10)
-        except TimeoutExpired:
-            process.kill()
-
-
-# http://docs.sqlalchemy.org/en/rel_0_8/orm/session.html#joining-a-session-into-an-external-transaction
-# By binding the SQLAlchemy Session to an external transaction multiple testapp
-# requests can be rolled back at the end of the test.
 
 @pytest.yield_fixture(scope='session')
 def conn(engine_url):

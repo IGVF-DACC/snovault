@@ -245,6 +245,9 @@ def should_transform(request, response):
     if format == 'json':
         return False
 
+    # Always return False
+    return False
+
     request._transform_start = time.time()
     return True
 

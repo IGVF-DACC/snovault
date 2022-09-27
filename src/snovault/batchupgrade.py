@@ -20,11 +20,10 @@ from pyramid import paster
 from pyramid.traversal import find_resource
 from pyramid.view import view_config
 
-from snovault import (
-    CONNECTION,
-    STORAGE,
-    UPGRADER,
-)
+from snovault.interfaces import CONNECTION
+from snovault.interfaces import STORAGE
+from snovault.interfaces import UPGRADER
+
 from snovault.schema_utils import validate
 
 

@@ -8,6 +8,11 @@ import tempfile
 import pytest
 from pytest import fixture
 
+import os
+
+from pyramid.paster import get_appsettings
+
+
 pytest_plugins = [
     'snowflakes.tests.datafixtures',
     'snovault.tests.serverfixtures',
@@ -59,7 +64,7 @@ _app_settings = {
 
 
 @fixture(scope='session')
-def app_settings(request, wsgi_server_host_port, conn, DBSession, redis_server):
+def app_settings(request, wsgi_server_host_port, conn, DBSession):
     from snovault import DBSESSION
     settings = _app_settings.copy()
     settings[DBSESSION] = DBSession
@@ -122,3 +127,11 @@ def submitter_testapp(app):
         'REMOTE_USER': 'TEST_SUBMITTER',
     }
     return TestApp(app, environ)
+
+
+@pytest.fixture(scope='session')
+def ini_file(request):
+    path = os.path.abspath(
+        'config/pyramid/ini/development.ini'
+    )
+    return get_appsettings(path, name='app')

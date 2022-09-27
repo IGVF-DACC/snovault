@@ -1,6 +1,5 @@
-from snovault import (
-    TYPES,
-)
+from snovault.interfaces import TYPES
+
 from pyramid.events import (
     ApplicationCreated,
     subscriber,

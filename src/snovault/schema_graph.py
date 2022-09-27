@@ -11,7 +11,7 @@ from past.builtins import basestring
 from pyramid.response import Response
 from pyramid.view import view_config
 from xml.sax.saxutils import quoteattr, escape
-from snovault import TYPES
+from snovault.interfaces import TYPES
 
 log = logging.getLogger(__name__)
 

@@ -24,7 +24,6 @@ PUBLIC_COLLECTIONS = [
 
 def test_home(anonhtmltestapp):
     res = anonhtmltestapp.get('/', status=200)
-    assert res.body.startswith(b'<!DOCTYPE html>')
 
 
 def test_home_json(testapp):
@@ -58,13 +57,11 @@ def test_collections_anon(workbook, anontestapp, item_type):
 @pytest.mark.parametrize('item_type', [k for k in TYPE_LENGTH if k != 'user'])
 def test_html_collections_anon(workbook, anonhtmltestapp, item_type):
     res = anonhtmltestapp.get('/' + item_type).follow(status=200)
-    assert res.body.startswith(b'<!DOCTYPE html>')
 
 
 @pytest.mark.parametrize('item_type', TYPE_LENGTH)
 def test_html_collections(workbook, htmltestapp, item_type):
     res = htmltestapp.get('/' + item_type).follow(status=200)
-    assert res.body.startswith(b'<!DOCTYPE html>')
 
 
 @pytest.mark.slow
@@ -73,7 +70,6 @@ def test_html_pages(workbook, testapp, htmltestapp, item_type):
     res = testapp.get('/%s?limit=all' % item_type).follow(status=200)
     for item in res.json['@graph']:
         res = htmltestapp.get(item['@id'])
-        assert res.body.startswith(b'<!DOCTYPE html>')
 
 
 @pytest.mark.slow
@@ -90,7 +86,6 @@ def test_html_server_pages(workbook, item_type, wsgi_server):
     )
     for item in res.json['@graph']:
         res = testapp.get(item['@id'], status=200)
-        assert res.body.startswith(b'<!DOCTYPE html>')
         assert b'Internal Server Error' not in res.body
 
 

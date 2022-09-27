@@ -19,11 +19,10 @@ def external_tx():
 
 
 @pytest.fixture(scope='session')
-def app_settings(wsgi_server_host_port, elasticsearch_server, postgresql_server, redis_server):
+def app_settings(wsgi_server_host_port, postgresql_server):
     from snovault.tests.testappfixtures import _app_settings
     settings = _app_settings.copy()
     settings['create_tables'] = True
-    settings['elasticsearch.server'] = elasticsearch_server
     settings['sqlalchemy.url'] = postgresql_server
     settings['collection_datastore'] = 'elasticsearch'
     settings['item_datastore'] = 'elasticsearch'
