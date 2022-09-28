@@ -214,7 +214,7 @@ class IndexerState(object):
     # Private-ish primitives...
     def get_obj(self, id):
         try:
-            return self.es.get(index=self.index, id=id).get('_source',{})  # TODO: snovault/meta
+            return self.es.get(index=self.index, id=id).get('_source', {})  # TODO: snovault/meta
         except:
             return {}
 
