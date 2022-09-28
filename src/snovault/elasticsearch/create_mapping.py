@@ -444,7 +444,6 @@ def type_mapping(types, item_type, embed=True):
         new_mapping = mapping['properties']
         for prop in props:
             new_mapping = new_mapping[prop]['properties']
-        new_mapping[last]['boost'] = boost
         new_mapping[last]['copy_to'] = '_all'
     return mapping
 

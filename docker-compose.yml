@@ -11,6 +11,28 @@ services:
     ports:
       - "5432:5432"
 
+  opensearch:
+    build:
+      context: ./docker/opensearch/
+    image: igvfd-opensearch
+    environment:
+      - "discovery.type=single-node"
+      - "node.name=opensearch-node1"
+      - "OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
+    volumes:
+      - "./config/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml"
+    ports:
+      - "9200:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+
   loader:
     build:
       context: .
@@ -36,3 +58,15 @@ services:
       - "6543:6543"
     depends_on:
       - loader
+
+  create-mapping:
+    build:
+      context: .
+      dockerfile: ./docker/pyramid/Dockerfile
+    image: igvfd-pyramid
+    volumes:
+      - ".:/igvfd"
+      - "/igvfd/src/igvfd.egg-info"
+    command: /scripts/pyramid/run-create-mapping.sh
+    depends_on:
+      - pyramid
