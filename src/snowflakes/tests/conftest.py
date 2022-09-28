@@ -8,6 +8,11 @@ import tempfile
 import pytest
 from pytest import fixture
 
+import os
+
+from pyramid.paster import get_appsettings
+
+
 pytest_plugins = [
     'snowflakes.tests.datafixtures',
     'snovault.tests.serverfixtures',
@@ -17,6 +22,7 @@ pytest_plugins = [
 ]
 
 tempfile.tempdir = '/tmp'
+
 
 @pytest.fixture(autouse=True)
 def autouse_external_tx(external_tx):
@@ -38,16 +44,16 @@ _app_settings = {
     'multiauth.policy.accesskey.namespace': 'accesskey',
     'multiauth.policy.accesskey.base': 'snovault.authentication.BasicAuthAuthenticationPolicy',
     'multiauth.policy.accesskey.check': 'snovault.authentication.basic_auth_check',
-    'multiauth.policy.webuser.use' : 'snovault.authentication.NamespacedAuthenticationPolicy',
-    'multiauth.policy.webuser.namespace' : 'webuser',
-    'multiauth.policy.webuser.base' : 'snovault.authentication.WebUserAuthenticationPolicy',
+    'multiauth.policy.webuser.use': 'snovault.authentication.NamespacedAuthenticationPolicy',
+    'multiauth.policy.webuser.namespace': 'webuser',
+    'multiauth.policy.webuser.base': 'snovault.authentication.WebUserAuthenticationPolicy',
     'load_test_only': True,
     'testing': True,
     'pyramid.debug_authorization': True,
     'postgresql.statement_timeout': 20,
     'retry.attempts': 3,
-    "ontology_path": (
-        pkg_resources.resource_filename("snowflakes", "") + "/../../ontology.json"
+    'ontology_path': (
+        pkg_resources.resource_filename('snowflakes', '') + '/../../ontology.json'
     ),
     # Local Storage
     'local_storage_host': 'localhost',
@@ -59,7 +65,7 @@ _app_settings = {
 
 
 @fixture(scope='session')
-def app_settings(request, wsgi_server_host_port, conn, DBSession, redis_server):
+def app_settings(request, wsgi_server_host_port, conn, DBSession):
     from snovault import DBSESSION
     settings = _app_settings.copy()
     settings[DBSESSION] = DBSession
@@ -122,3 +128,11 @@ def submitter_testapp(app):
         'REMOTE_USER': 'TEST_SUBMITTER',
     }
     return TestApp(app, environ)
+
+
+@pytest.fixture(scope='session')
+def ini_file(request):
+    path = os.path.abspath(
+        'config/pyramid/ini/development.ini'
+    )
+    return get_appsettings(path, name='app')

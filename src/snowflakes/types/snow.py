@@ -21,7 +21,7 @@ def item_is_revoked(request, path):
     name='snowsets',
     unique_key='accession',
     properties={
-        'title': "Snowsets",
+        'title': 'Snowsets',
         'description': 'Abstract class describing different collections of snowflakes.',
     })
 class Snowset(Item):
@@ -46,18 +46,18 @@ class Snowset(Item):
     }
 
     @calculated_property(condition='date_released', schema={
-        "title": "Month released",
-        "type": "string",
+        'title': 'Month released',
+        'type': 'string',
     })
     def month_released(self, date_released):
         return datetime.datetime.strptime(date_released, '%Y-%m-%d').strftime('%B, %Y')
 
     @calculated_property(schema={
-        "title": "snowflakes",
-        "type": "array",
-        "items": {
-            "type": ['string', 'object'],
-            "linkFrom": "Snowflake.snowset",
+        'title': 'snowflakes',
+        'type': 'array',
+        'items': {
+            'type': ['string', 'object'],
+            'linkFrom': 'Snowflake.snowset',
         },
     })
     def snowflakes(self, request, snowflakes):
@@ -68,7 +68,7 @@ class Snowset(Item):
     name='snowballs',
     unique_key='accession',
     properties={
-        'title': "Snowball style snowset",
+        'title': 'Snowball style snowset',
         'description': 'A set of snowflakes packed into a snowball.',
     })
 class Snowball(Snowset):
@@ -77,8 +77,8 @@ class Snowball(Snowset):
 
     @calculated_property(
         schema={
-        "title": "test_calculated",
-        "type": "string",
+            'title': 'test_calculated',
+            'type': 'string',
         },
         define=True
     )
@@ -87,22 +87,22 @@ class Snowball(Snowset):
 
     @calculated_property(
         schema={
-        "title": "another_test_calculated",
-        "type": "string",
-    })
+            'title': 'another_test_calculated',
+            'type': 'string',
+        })
     def another_test_calculated(self):
         return 'another_test_calculated_value'
-    
+
     @calculated_property(
         schema={
-        "title": "conditional_test_calculated",
-        "type": "string",
+            'title': 'conditional_test_calculated',
+            'type': 'string',
         },
         condition='test_calculated'
     )
     def conditional_test_calculated(self):
         return 'conditional_test_calculated_value'
-    
+
     matrix = {
         'x': {
             'group_by': 'snowflakes.type'
@@ -111,7 +111,7 @@ class Snowball(Snowset):
             'group_by': ['award.rfa', 'lab.title']
         }
     }
-    
+
     missing_matrix = {
         'x': {
             'group_by': 'snowflakes.type'
@@ -120,7 +120,7 @@ class Snowball(Snowset):
             'group_by': ['award.rfa', ('lab.not_a_real_value', 'some_lab')]
         }
     }
-    
+
     summary_matrix = {
         'x': {
             'group_by': 'status'
@@ -158,7 +158,7 @@ class Snowball(Snowset):
     name='snowforts',
     unique_key='accession',
     properties={
-        'title': "Snowfort style snowset",
+        'title': 'Snowfort style snowset',
         'description': 'A set of snowflakes packed into a snowfort.',
     })
 class Snowfort(Snowset):

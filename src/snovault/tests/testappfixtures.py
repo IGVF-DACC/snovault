@@ -33,7 +33,7 @@ _app_settings = {
 
 
 @pytest.fixture(scope='session')
-def app_settings(request, wsgi_server_host_port, conn, DBSession, redis_server):
+def app_settings(request, wsgi_server_host_port, conn, DBSession):
     from snovault import DBSESSION
     settings = _app_settings.copy()
     settings[DBSESSION] = DBSession

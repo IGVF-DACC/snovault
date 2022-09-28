@@ -30,7 +30,7 @@ def includeme(config):
     config.add_request_method(datastore, 'datastore', reify=True)
 
     addresses = aslist(
-        os.environ.get("ELASTICSEARCH_URL") or settings['elasticsearch.server']
+        os.environ.get('ELASTICSEARCH_URL') or settings['elasticsearch.server']
     )
     config.registry[ELASTIC_SEARCH] = Elasticsearch(
         addresses,

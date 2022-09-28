@@ -63,7 +63,7 @@ var SearchBlock = React.createClass({
             var url = '/search/' + (this.props.value.search || '');
             var Component = this.props.value.display === 'table' ? Table : SearchResultsLayout;
             return (
-                <fetched.FetchedData> 
+                <fetched.FetchedData>
                     <fetched.Param name="context" url={url} />
                     <Component href={url} />
                 </fetched.FetchedData>

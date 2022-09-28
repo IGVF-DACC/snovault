@@ -23,6 +23,7 @@ def _award_viewing_group(award_uuid, root):
 
 # Item acls
 
+
 ONLY_ADMIN_VIEW = [
     (Allow, 'group.admin', ['view', 'edit']),
     (Allow, 'group.read-only-admin', ['view']),
@@ -64,7 +65,6 @@ DELETED = [
 ALLOW_SUBMITTER_ADD = [
     (Allow, 'group.submitter', ['add']),
 ]
-
 
 
 def paths_filtered_by_status(request, paths, exclude=('deleted', 'replaced'), include=None):
@@ -182,6 +182,7 @@ def item_search_config():
 class SharedItem(Item):
     ''' An Item visible to all authenticated users while "proposed" or "in progress".
     '''
+
     def __ac_local_roles__(self):
         roles = {}
         properties = self.upgrade_properties().copy()

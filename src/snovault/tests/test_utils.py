@@ -101,6 +101,7 @@ def test_util_path_include_and_exclude_and_frame():
     )
     assert p.frame == '@@embedded'
 
+
 def test_util_path_build_frame():
     from snovault.util import Path
     p = Path('/snoflakes/SNS123ABC/', include=['@id', '@type', 'uuid'])

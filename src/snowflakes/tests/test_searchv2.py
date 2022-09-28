@@ -1,8 +1,10 @@
+from webob.multidict import MultiDict
+from .features.conftest import app_settings, app, workbook
 import pytest
 
+pytestmark = [pytest.mark.indexing]
+
 # Use workbook fixture from BDD tests (including elasticsearch)
-from .features.conftest import app_settings, app, workbook
-from webob.multidict import MultiDict
 
 
 def test_searchv2_view(workbook, testapp):
@@ -209,6 +211,7 @@ def test_searchv2_view_object_frame(workbook, testapp):
             for x in ['accession', '@type', '@id', 'status']
         ]
     )
+
 
 def test_searchv2_view_debug_query(workbook, testapp):
     r = testapp.get(

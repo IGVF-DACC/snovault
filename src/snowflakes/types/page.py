@@ -50,8 +50,8 @@ class Page(SharedItem):
     @calculated_property(
         condition=lambda context, request: request.resource_path(context.__parent__) == '/pages/',
         schema={
-            "title": "Canonical URI",
-            "type": "string",
+            'title': 'Canonical URI',
+            'type': 'string',
         })
     def canonical_uri(self, name):
         if name == 'homepage':
@@ -115,6 +115,7 @@ def isNotCollectionDefaultPage(value, schema):
         if page.is_default_page():
             return 'You may not place pages inside an object collection.'
 
+
 VALIDATOR_REGISTRY['isNotCollectionDefaultPage'] = isNotCollectionDefaultPage
 
 
@@ -135,9 +136,9 @@ def page_view_page(context, request):
     name='default_page',
     context=Collection,
     schema={
-        "title": "Default page",
-        "type": "string",
-        "linkTo": "Page",
+        'title': 'Default page',
+        'type': 'string',
+        'linkTo': 'Page',
     })
 def collection_default_page(context, request):
     try:
@@ -151,9 +152,9 @@ def collection_default_page(context, request):
     name='default_page',
     context=Root,
     schema={
-        "title": "Default page",
-        "type": "string",
-        "linkTo": "Page",
+        'title': 'Default page',
+        'type': 'string',
+        'linkTo': 'Page',
     })
 def root_default_page(context, request):
     try:

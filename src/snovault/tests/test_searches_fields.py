@@ -12,6 +12,7 @@ def dummy_parent(dummy_request):
     dummy_request.registry[ELASTIC_SEARCH] = Elasticsearch()
     dummy_request.context = DummyResource()
     dummy_request.context.__acl__ = lambda: [(Allow, 'group.submitter', 'search_audit')]
+
     class DummyParent():
         def __init__(self):
             self._meta = {}

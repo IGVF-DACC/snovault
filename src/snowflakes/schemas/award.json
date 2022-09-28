@@ -2,13 +2,27 @@
     "title": "Grant",
     "$id": "/profiles/award.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "required": [ "name", "project", "rfa"],
-    "identifyingProperties": ["uuid", "name", "title"],
+    "required": [
+        "name",
+        "project",
+        "rfa"
+    ],
+    "identifyingProperties": [
+        "uuid",
+        "name",
+        "title"
+    ],
     "additionalProperties": false,
     "mixinProperties": [
-        { "$ref": "mixins.json#/schema_version" },
-        { "$ref": "mixins.json#/uuid" },
-        { "$ref": "mixins.json#/shared_status" }
+        {
+            "$ref": "mixins.json#/schema_version"
+        },
+        {
+            "$ref": "mixins.json#/uuid"
+        },
+        {
+            "$ref": "mixins.json#/shared_status"
+        }
     ],
     "type": "object",
     "properties": {
@@ -27,7 +41,7 @@
             "type": "string",
             "pattern": "^[A-Za-z0-9\\-]+$",
             "uniqueKey": true
-       },
+        },
         "description": {
             "rdfs:subPropertyOf": "dc:description",
             "title": "Description",
@@ -38,17 +52,25 @@
             "comment": "Date can be submitted as YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSTZD (TZD is the time zone designator; use Z to express time in UTC or for time expressed in local time add a time zone offset from UTC +HH:MM or -HH:MM).",
             "type": "string",
             "anyOf": [
-                {"format": "date-time"},
-                {"format": "date"}
+                {
+                    "format": "date-time"
+                },
+                {
+                    "format": "date"
+                }
             ]
         },
         "end_date": {
             "title": "End date",
-             "comment": "Date can be submitted as YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSTZD (TZD is the time zone designator; use Z to express time in UTC or for time expressed in local time add a time zone offset from UTC +HH:MM or -HH:MM).",
+            "comment": "Date can be submitted as YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSTZD (TZD is the time zone designator; use Z to express time in UTC or for time expressed in local time add a time zone offset from UTC +HH:MM or -HH:MM).",
             "type": "string",
             "anyOf": [
-                {"format": "date-time"},
-                {"format": "date"}
+                {
+                    "format": "date-time"
+                },
+                {
+                    "format": "date"
+                }
             ]
         },
         "url": {
@@ -66,7 +88,7 @@
             "type": "string",
             "linkTo": "User"
         },
-         "rfa": {
+        "rfa": {
             "title": "Phase",
             "description": "The name of the bioproject phase.",
             "type": "string",

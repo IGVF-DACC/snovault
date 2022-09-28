@@ -76,7 +76,7 @@ def test_access_key_self_create(anontestapp, access_key, submitter):
     extra_environ = {'REMOTE_USER': str(submitter['email'])}
     res = anontestapp.post_json(
         '/access_key/', {}, extra_environ=extra_environ
-        )
+    )
     access_key_id = res.json['access_key_id']
     headers = {
         'Authorization': basic_auth(access_key_id, res.json['secret_access_key']),

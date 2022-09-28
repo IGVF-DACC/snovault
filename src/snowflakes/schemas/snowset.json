@@ -4,16 +4,34 @@
     "$id": "/profiles/snowset.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "required": [ "award", "lab"],
-    "identifyingProperties": ["uuid", "accession"],
+    "required": [
+        "award",
+        "lab"
+    ],
+    "identifyingProperties": [
+        "uuid",
+        "accession"
+    ],
     "additionalProperties": false,
     "mixinProperties": [
-        { "$ref": "mixins.json#/schema_version" },
-        { "$ref": "mixins.json#/uuid" },
-        { "$ref": "mixins.json#/accession" },
-        { "$ref": "mixins.json#/attribution" },
-        { "$ref": "mixins.json#/accessioned_status" },
-        { "$ref": "mixins.json#/submitted" }
+        {
+            "$ref": "mixins.json#/schema_version"
+        },
+        {
+            "$ref": "mixins.json#/uuid"
+        },
+        {
+            "$ref": "mixins.json#/accession"
+        },
+        {
+            "$ref": "mixins.json#/attribution"
+        },
+        {
+            "$ref": "mixins.json#/accessioned_status"
+        },
+        {
+            "$ref": "mixins.json#/submitted"
+        }
     ],
     "properties": {
         "schema_version": {
@@ -60,8 +78,12 @@
             "comment": "Do not submit, value is assigned whe the object is releaesd.",
             "type": "string",
             "anyOf": [
-                {"format": "date-time"},
-                {"format": "date"}
+                {
+                    "format": "date-time"
+                },
+                {
+                    "format": "date"
+                }
             ],
             "permission": "import_items"
         },
@@ -69,7 +91,7 @@
             "title": "Status",
             "type": "string",
             "default": "proposed",
-            "enum" : [
+            "enum": [
                 "proposed",
                 "started",
                 "submitted",
@@ -91,7 +113,7 @@
         },
         "date_released": {
             "title": "Date released"
-        },  
+        },
         "lab.title": {
             "title": "Lab"
         },

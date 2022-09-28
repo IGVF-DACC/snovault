@@ -11,9 +11,10 @@ from past.builtins import basestring
 from pyramid.response import Response
 from pyramid.view import view_config
 from xml.sax.saxutils import quoteattr, escape
-from snovault import TYPES
+from snovault.interfaces import TYPES
 
 log = logging.getLogger(__name__)
+
 
 def includeme(config):
     config.add_route('graph_svg', '/profiles/graph.svg')
@@ -101,7 +102,7 @@ def schema_svg(request):
             assert p.returncode == 0, err.decode('utf-8')
             return Response(svg, content_type='image/svg+xml', charset='utf-8')
     except Exception as excpt:
-        log.warning("graph.svg is not available exception: {repr(excpt)}")
+        log.warning('graph.svg is not available exception: {repr(excpt)}')
         pass
     msg = 'graph.svg is not available'
     log.warning(msg)

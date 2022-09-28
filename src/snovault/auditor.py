@@ -16,7 +16,7 @@ from .interfaces import (
 )
 from .resources import Item
 
-logger = logging.getLogger("__name__")
+logger = logging.getLogger('__name__')
 logger.setLevel(logging.ERROR)
 
 

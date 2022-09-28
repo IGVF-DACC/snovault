@@ -64,7 +64,7 @@ STATUS_LEVEL = {
     'deleted': 0,
     'replaced': 0,
     'disabled': 0
-    }
+}
 
 
 @audit_checker('Item', frame='object')
@@ -92,7 +92,7 @@ def audit_item_relations_status(value, system):
                             value['status'],
                             linked_value['@id'],
                             linked_value['status']
-                            )
+                        )
                     if level == 100 and linked_level in [0, 50, 100]:
                         yield AuditFailure(
                             'mismatched status',
@@ -132,7 +132,7 @@ def audit_item_relations_status(value, system):
                                 message,
                                 linked_value['@id'],
                                 linked_value['status']
-                                )
+                            )
                         yield AuditFailure(
                             'mismatched status',
                             detail,

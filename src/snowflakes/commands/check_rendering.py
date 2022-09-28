@@ -19,6 +19,7 @@ EPILOG = __doc__
 
 logger = logging.getLogger(__name__)
 
+
 def check_path(testapp, path):
     try:
         res = testapp.get(path, status='*').maybe_follow(status='*')
@@ -55,10 +56,10 @@ def run(testapp, collections=None):
                 failed += 1
         if failed:
             logger.info('Collection %s: %d of %d failed to render.',
-                collection_path, failed, count)
+                        collection_path, failed, count)
         else:
             logger.info('Collection %s: all %d rendered ok',
-                collection_path, count)
+                        collection_path, count)
 
 
 def internal_app(configfile, app_name=None, username='TEST', accept='text/html'):
@@ -75,15 +76,15 @@ def internal_app(configfile, app_name=None, username='TEST', accept='text/html')
 def main():
     import argparse
     parser = argparse.ArgumentParser(
-        description="Check rendering of items", epilog=EPILOG,
+        description='Check rendering of items', epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('--item-type', action='append', help="Item type")
-    parser.add_argument('--app-name', help="Pyramid app name in configfile")
+    parser.add_argument('--item-type', action='append', help='Item type')
+    parser.add_argument('--app-name', help='Pyramid app name in configfile')
     parser.add_argument('--username', '-u', default='TEST',
-        help="User uuid/email")
-    parser.add_argument('config_uri', help="path to configfile")
-    parser.add_argument('path', nargs='*', help="path to test")
+                        help='User uuid/email')
+    parser.add_argument('config_uri', help='path to configfile')
+    parser.add_argument('path', nargs='*', help='path to test')
     args = parser.parse_args()
 
     logging.basicConfig()
@@ -98,7 +99,7 @@ def main():
                 failed += 1
         if failed:
             logger.info('Paths: %d of %d failed to render.',
-                failed, len(args.path))
+                        failed, len(args.path))
         else:
             logger.info('Paths: all %d rendered ok', len(args.path))
     else:

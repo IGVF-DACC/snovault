@@ -68,7 +68,7 @@ def set_snapshot(xmin, snapshot_id):
         session = app.registry[DBSESSION]()
         connection = session.connection()
         db_xmin = connection.execute(
-            "SELECT txid_snapshot_xmin(txid_current_snapshot());").scalar()
+            'SELECT txid_snapshot_xmin(txid_current_snapshot());').scalar()
         if db_xmin >= xmin:
             break
         transaction.abort()
@@ -113,7 +113,7 @@ def update_object_in_snapshot(args):
             'start_time': time.time(),
             'end_time': None,
             'run_time': None,
-            'pid':os.getpid(),
+            'pid': os.getpid(),
         }
         update_info = Indexer.update_object(
             encoded_es,
@@ -149,13 +149,13 @@ class MPIndexer(Indexer):
         )
 
     def update_objects(
-            self,
-            request,
-            uuids,
-            xmin,
-            snapshot_id=None,
-            restart=False,
-        ):
+        self,
+        request,
+        uuids,
+        xmin,
+        snapshot_id=None,
+        restart=False,
+    ):
         # pylint: disable=too-many-arguments, unused-argument
         '''Run multiprocess indexing process on uuids'''
         # Ensure that we iterate over uuids in this thread not the pool task handler.
@@ -174,11 +174,11 @@ class MPIndexer(Indexer):
         start_time = time.time()
         try:
             for i, update_info in enumerate(
-                    self.pool.imap_unordered(
-                        update_object_in_snapshot,
-                        tasks,
-                        chunkiness)
-                ):
+                self.pool.imap_unordered(
+                    update_object_in_snapshot,
+                    tasks,
+                    chunkiness)
+            ):
                 update_info['return_time'] = time.time()
                 update_infos.append(update_info)
                 error = update_info.get('error')

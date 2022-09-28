@@ -11,6 +11,7 @@ def includeme(config):
 class JSON(pyramid.renderers.JSON):
     '''Provide easier access to the configured serializer
     '''
+
     def dumps(self, value):
         request = get_current_request()
         default = self._make_default(request)

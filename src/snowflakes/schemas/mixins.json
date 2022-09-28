@@ -1,12 +1,12 @@
 {
     "title": "Mixin properties",
     "schema_version": {
-	"schema_version": {
-	    "title": "Schema Version",
-	    "comment":  "Do not submit, value is assigned by the server. The version of the JSON schema that the server uses to validate the object. Schema version indicates generation of schema used to save version to enable upgrade steps to work. Individual schemas should set the default.",
-	    "type": "string",
-	    "pattern": "^\\d+(\\.\\d+)*$",
-	    "requestMethod": []
+        "schema_version": {
+            "title": "Schema Version",
+            "comment": "Do not submit, value is assigned by the server. The version of the JSON schema that the server uses to validate the object. Schema version indicates generation of schema used to save version to enable upgrade steps to work. Individual schemas should set the default.",
+            "type": "string",
+            "pattern": "^\\d+(\\.\\d+)*$",
+            "requestMethod": []
         }
     },
     "uuid": {
@@ -15,7 +15,9 @@
             "type": "string",
             "format": "uuid",
             "serverDefault": "uuid4",
-            "requestMethod": ["POST"]
+            "requestMethod": [
+                "POST"
+            ]
         }
     },
     "standard_status": {
@@ -23,7 +25,7 @@
             "title": "Status",
             "type": "string",
             "default": "in progress",
-            "enum" : [
+            "enum": [
                 "in progress",
                 "deleted",
                 "replaced",
@@ -36,7 +38,7 @@
             "title": "Status",
             "type": "string",
             "default": "current",
-            "enum" : [
+            "enum": [
                 "current",
                 "deleted",
                 "replaced",
@@ -58,7 +60,7 @@
             ]
         }
     },
-   "accession": {
+    "accession": {
         "accession": {
             "title": "Accession",
             "description": "A unique identifier to be used to reference the object prefixed with a db specific char set",
@@ -93,8 +95,12 @@
             "comment": "Do not submit, value is assigned by the server. The date the object is created.",
             "type": "string",
             "anyOf": [
-                {"format": "date-time"},
-                {"format": "date"}
+                {
+                    "format": "date-time"
+                },
+                {
+                    "format": "date"
+                }
             ],
             "serverDefault": "now",
             "permission": "import_items"
@@ -112,7 +118,7 @@
     "attribution": {
         "lab": {
             "title": "Lab",
-             "description": "Lab associated with the submission.",
+            "description": "Lab associated with the submission.",
             "comment": "See lab.json for list of available identifiers.",
             "type": "string",
             "linkTo": "Lab",

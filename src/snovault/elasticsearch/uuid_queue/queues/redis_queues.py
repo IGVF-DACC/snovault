@@ -26,7 +26,7 @@ class RedisClient(StrictRedis):
 
     def __init__(self, queue_options):
         super().__init__(
-            encoding="utf-8",
+            encoding='utf-8',
             decode_responses=True,
             db=queue_options.get('db', 0),
             host=queue_options['host'],
@@ -58,6 +58,7 @@ class RedisQueueMeta(BaseQueueMeta):
 
     - Server and client(workers) use meta store in redis
     '''
+
     def __init__(self, queue_name, client, is_worker=False):
         self._base_id = int(time.time() * 1000000)
         self._client = client
@@ -371,7 +372,7 @@ class RedisPipeQueue(RedisQueue):
             # Each item is the length of the queue when it was added.
             ret_list = pipe.execute()
             return ret_list
-        except ConnectionError: # pylint: disable=undefined-variable
+        except ConnectionError:  # pylint: disable=undefined-variable
             return None
 
     def _get_pipe(self, func_str):

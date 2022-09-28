@@ -16,13 +16,11 @@ def autouse_external_tx(external_tx):
 
 
 @pytest.fixture(scope='session')
-def app_settings(wsgi_server_host_port, elasticsearch_server, postgresql_server, redis_server):
+def app_settings(wsgi_server_host_port):
     from .testappfixtures import _app_settings
     settings = _app_settings.copy()
     settings['create_tables'] = True
     settings['persona.audiences'] = 'http://%s:%s' % wsgi_server_host_port
-    settings['elasticsearch.server'] = elasticsearch_server
-    settings['sqlalchemy.url'] = postgresql_server
     settings['collection_datastore'] = 'elasticsearch'
     settings['item_datastore'] = 'elasticsearch'
     settings['indexer'] = True
@@ -112,13 +110,13 @@ def test_indexer_state(dummy_request):
     from snovault.elasticsearch.indexer_state import IndexerState
     INDEX = dummy_request.registry.settings['snovault.elasticsearch.index']
     es = dummy_request.registry['elasticsearch']
-    state = IndexerState(es,INDEX)
+    state = IndexerState(es, INDEX)
     result = state.get_initial_state()
     assert result['title'] == 'primary_indexer'
-    result = state.start_cycle(['1','2','3'], result)
+    result = state.start_cycle(['1', '2', '3'], result)
     assert result['cycle_count'] == 3
     assert result['status'] == 'indexing'
-    cycles = result.get('cycles',0)
+    cycles = result.get('cycles', 0)
     result = state.finish_cycle(result, [])
     assert result['cycles'] == (cycles + 1)
     assert result['status'] == 'done'

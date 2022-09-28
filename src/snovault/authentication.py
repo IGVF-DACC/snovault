@@ -27,9 +27,9 @@ from pyramid.settings import (
     asbool,
     aslist,
 )
-from snovault import ROOT
+from snovault.interfaces import COLLECTIONS
+from snovault.interfaces import ROOT
 from snovault.storage import User
-from snovault import COLLECTIONS
 from snovault.calculated import calculate_properties
 from snovault.validation import ValidationFailure
 from snovault.validators import no_validate_item_content_post
@@ -148,8 +148,8 @@ class WebUserAuthenticationPolicy(CallbackAuthenticationPolicy):
         if cached is not _fake_user:
             return cached
 
-        login = request.json.get("username")
-        password = request.json.get("password")
+        login = request.json.get('username')
+        password = request.json.get('password')
         if not User.check_password(login, password):
             request._webuser_authenticated = None
             return None
@@ -199,6 +199,7 @@ def logout(request):
         raise HTTPFound(location=request.resource_path(request.root))
     return {}
 
+
 @view_config(route_name='session-properties', request_method='GET',
              permission=NO_PERMISSION_REQUIRED)
 def session_properties(request):
@@ -224,12 +225,13 @@ def session_properties(request):
 
 
 def webuser_check(username, password, request):
-    #webusers have email address for username, thus, make sure we have an email address
+    # webusers have email address for username, thus, make sure we have an email address
     if not '@' in username:
         return None
     if not User.check_password(username, password):
         return None
     return []
+
 
 def basic_auth_check(username, password, request):
     # We may get called before the context is found and the root set
@@ -249,10 +251,11 @@ def basic_auth_check(username, password, request):
         return None
 
     #valid, new_hash = crypt_context.verify_and_update(password, hash)
-    #if new_hash:
+    # if new_hash:
     #    replace_user_hash(user, new_hash)
 
     return []
+
 
 @view_config(route_name='impersonate-user', request_method='POST',
              validators=[no_validate_item_content_post],
@@ -279,6 +282,7 @@ def impersonate_user(request):
 
     return user_properties
 
+
 def generate_user():
     """ Generate a random user name with 64 bits of entropy
         used to generate access_key
@@ -288,8 +292,9 @@ def generate_user():
     # entropy) and encode it as upper cased base32 (8 chars)
     random_bytes = os.urandom(5)
     user = base64.b32encode(random_bytes).decode('ascii').rstrip('=').upper()
-    user = user.replace("@", "")
+    user = user.replace('@', '')
     return user
+
 
 def generate_password():
     """ Generate a password with 80 bits of entropy

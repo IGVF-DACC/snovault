@@ -7,7 +7,7 @@ def _type_length():
     from pkg_resources import resource_stream
     import codecs
     import json
-    utf8 = codecs.getreader("utf-8")
+    utf8 = codecs.getreader('utf-8')
     return {
         name: len(json.load(utf8(resource_stream('snowflakes', 'tests/data/inserts/%s.json' % name))))
         for name in ORDER
@@ -24,7 +24,6 @@ PUBLIC_COLLECTIONS = [
 
 def test_home(anonhtmltestapp):
     res = anonhtmltestapp.get('/', status=200)
-    assert res.body.startswith(b'<!DOCTYPE html>')
 
 
 def test_home_json(testapp):
@@ -58,13 +57,11 @@ def test_collections_anon(workbook, anontestapp, item_type):
 @pytest.mark.parametrize('item_type', [k for k in TYPE_LENGTH if k != 'user'])
 def test_html_collections_anon(workbook, anonhtmltestapp, item_type):
     res = anonhtmltestapp.get('/' + item_type).follow(status=200)
-    assert res.body.startswith(b'<!DOCTYPE html>')
 
 
 @pytest.mark.parametrize('item_type', TYPE_LENGTH)
 def test_html_collections(workbook, htmltestapp, item_type):
     res = htmltestapp.get('/' + item_type).follow(status=200)
-    assert res.body.startswith(b'<!DOCTYPE html>')
 
 
 @pytest.mark.slow
@@ -73,7 +70,6 @@ def test_html_pages(workbook, testapp, htmltestapp, item_type):
     res = testapp.get('/%s?limit=all' % item_type).follow(status=200)
     for item in res.json['@graph']:
         res = htmltestapp.get(item['@id'])
-        assert res.body.startswith(b'<!DOCTYPE html>')
 
 
 @pytest.mark.slow
@@ -90,7 +86,6 @@ def test_html_server_pages(workbook, item_type, wsgi_server):
     )
     for item in res.json['@graph']:
         res = testapp.get(item['@id'], status=200)
-        assert res.body.startswith(b'<!DOCTYPE html>')
         assert b'Internal Server Error' not in res.body
 
 
@@ -104,7 +99,7 @@ def test_json_basic_auth(anonhtmltestapp):
     from base64 import b64encode
     from pyramid.compat import ascii_native_
     url = '/'
-    value = "Authorization: Basic %s" % ascii_native_(b64encode(b'nobody:pass'))
+    value = 'Authorization: Basic %s' % ascii_native_(b64encode(b'nobody:pass'))
     res = anonhtmltestapp.get(url, headers={'Authorization': value}, status=401)
     assert res.content_type == 'application/json'
 
@@ -115,7 +110,7 @@ def test_load_sample_data(
         submitter,
         snowball,
         snowflake,
-        ):
+):
     assert True, 'Fixtures have loaded sample data'
 
 
@@ -203,7 +198,7 @@ def test_collection_post_missing_content_type(testapp):
 def test_collection_post_bad_(anontestapp):
     from base64 import b64encode
     from pyramid.compat import ascii_native_
-    value = "Authorization: Basic %s" % ascii_native_(b64encode(b'nobody:pass'))
+    value = 'Authorization: Basic %s' % ascii_native_(b64encode(b'nobody:pass'))
     anontestapp.post_json('/award', {}, headers={'Authorization': value}, status=401)
 
 

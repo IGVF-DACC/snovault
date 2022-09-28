@@ -30,5 +30,5 @@ def click_link_with_text_that_contains_link_text(browser, link_text):
 
 @then('I should see an element with the css selector ".view-item.type-<type_name>"')
 def should_see_element_with_css_type_name(browser, type_name):
-    css = ".view-item.type-{}".format(type_name)
+    css = '.view-item.type-{}'.format(type_name)
     browsersteps.should_see_element_with_css(browser, css)

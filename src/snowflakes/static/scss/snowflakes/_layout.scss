@@ -35,8 +35,8 @@
 	//line-height: 0;
 	text-align: center;
 	overflow: hidden;
-	a { 
-		color: rgb(255, 255, 255); 
+	a {
+		color: rgb(255, 255, 255);
 		font-weight: bold;
 	}
 	ul {
@@ -65,9 +65,9 @@
         background-color: darken($footerBackground, 0.1%);
         @include border-radius(3px);
     }
-    a:hover { 
-        text-decoration: none; 
-        background-color: darken($footerBackground, 6%);   
+    a:hover {
+        text-decoration: none;
+        background-color: darken($footerBackground, 6%);
     }
     a:active {
         background-color: darken($footerBackground, 15%);

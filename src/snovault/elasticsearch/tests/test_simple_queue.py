@@ -392,7 +392,7 @@ class TestSimpleServer(TestCase):
         res_msg = self.queue_server.update_finished(worker_id, results)
         self.assertEqual(
             res_msg,
-            "Worker id(%s) DNE." % worker_id
+            'Worker id(%s) DNE.' % worker_id
         )
 
     def test_update_finished_cntoffsucc(self):

@@ -24,7 +24,7 @@ TEST_QUEUE_NAME = 'testindxQ'
 TEST_REDIS_DB = 3
 
 
-@pytest.mark.skipif(True, reason="Redis is not install by default")
+@pytest.mark.skipif(True, reason='Redis is not install by default')
 class TestIndexerRedisQueue(TestCase):
     """Test Indexer in indexer.py with base queue set"""
     @classmethod

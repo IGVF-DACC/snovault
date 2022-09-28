@@ -9,7 +9,7 @@ def included(config):
     config.register_search_config(
         'OtherConfigItem', new_item_search_config
     )
-    
+
 
 def test_searches_configs_search_config_decorator(config, dummy_request):
     from snovault.elasticsearch.searches.interfaces import SEARCH_CONFIG

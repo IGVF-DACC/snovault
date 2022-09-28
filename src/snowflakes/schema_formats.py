@@ -9,7 +9,8 @@ accession_re = re.compile(r'^SNO(SS|FL)[0-9][0-9][0-9][A-Z][A-Z][A-Z]$')
 test_accession_re = re.compile(r'^TST(SS|FL)[0-9][0-9][0-9]([0-9][0-9][0-9]|[A-Z][A-Z][A-Z])$')
 uuid_re = re.compile(r'(?i)\{?(?:[0-9a-f]{4}-?){8}\}?')
 
-@FormatChecker.cls_checks("uuid")
+
+@FormatChecker.cls_checks('uuid')
 def is_uuid(instance):
     # Python's UUID ignores all dashes, whereas Postgres is more strict
     # http://www.postgresql.org/docs/9.2/static/datatype-uuid.html
@@ -25,7 +26,7 @@ def is_accession(instance):
     )
 
 
-@FormatChecker.cls_checks("accession")
+@FormatChecker.cls_checks('accession')
 def is_accession_for_server(instance):
     from .server_defaults import (
         ACCESSION_FACTORY,
@@ -41,9 +42,9 @@ def is_accession_for_server(instance):
     return False
 
 
-@FormatChecker.cls_checks("uri", raises=ValueError)
+@FormatChecker.cls_checks('uri', raises=ValueError)
 def is_uri(instance):
     if ':' not in instance:
         # We want only absolute uris
         return False
-    return rfc3987.parse(instance, rule="URI_reference")
+    return rfc3987.parse(instance, rule='URI_reference')

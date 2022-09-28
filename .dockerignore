@@ -1,0 +1,12 @@
+.circleci
+.git
+.gitignore
+.pre-commit-config.yaml
+*.egg-info/
+**/__pycache__
+**/*.pyc
+**/.mypy_cache
+**/.pytest_cache
+**/.DS_Store
+**/*.egg-info
+Footer

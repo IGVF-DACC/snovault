@@ -47,7 +47,7 @@ def _get_uncombined_uuids(uuid_len, combo_uuid):
     uuid_count = len(combo_uuid) // uuid_len
     for ind in range(0, uuid_count):
         start = uuid_len * ind
-        uuid = combo_uuid[start:start  + uuid_len]
+        uuid = combo_uuid[start:start + uuid_len]
         uuids.append(uuid)
     return uuids
 
@@ -94,6 +94,7 @@ class QueueAdapter(object):
     """
     Indexer to Queue Adapter / Manager
     """
+
     def __init__(self, queue_name, queue_type, queue_options):
         self._queue_type = queue_type
         self._queue_options = queue_options
@@ -103,8 +104,8 @@ class QueueAdapter(object):
         if self._queue:
             self._queue_name = self._queue.queue_name
 
-
     # Errors
+
     def _has_errors(self):
         """Check if index session errors in queue meta through queue"""
         return self._queue.has_errors()
@@ -151,7 +152,7 @@ class QueueAdapter(object):
         '''Are there uuids in the queue'''
         return self._queue.has_uuids(errs_cnt=errs_cnt)
 
-    def _load_uuids(self, uuids): #
+    def _load_uuids(self, uuids):
         """
         Call load uuids on specific queue.
 
@@ -231,6 +232,7 @@ class WorkerAdapter(object):
     * For in memory base queue,
     the queue arg in init should be the same object as the server
     '''
+
     def __init__(self, queue_name, queue_options, worker_id, queue):
         self._queue_name = queue_name
         self._queue_options = queue_options

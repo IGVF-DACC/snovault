@@ -6,15 +6,17 @@ try:
 except ImportError:
     import subprocess
 from pyramid.config import Configurator
+
+from snovault import app_version
+
 from snovault.app import (
     json_asset,
-    app_version,
     session,
     configure_dbsession,
     # static_resources,
     changelogs,
     json_from_path,
-    )
+)
 from pyramid.settings import (
     aslist,
     asbool,

@@ -35,6 +35,7 @@ def print_to_terminal(stdout):
         if not printed:
             time.sleep(0.1)
 
+
 def nginx_server_process(prefix='', echo=False):
     args = [
         os.path.join(prefix, 'nginx'),
@@ -56,19 +57,20 @@ def nginx_server_process(prefix='', echo=False):
 
     return process
 
+
 def main():
-    set_start_method("fork")
+    set_start_method('fork')
     import argparse
     parser = argparse.ArgumentParser(
-        description="Run development servers", epilog=EPILOG,
+        description='Run development servers', epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('--app-name', help="Pyramid app name in configfile")
-    parser.add_argument('config_uri', help="path to configfile")
-    parser.add_argument('--clear', action="store_true", help="Clear existing data")
-    parser.add_argument('--init', action="store_true", help="Init database")
-    parser.add_argument('--load', action="store_true", help="Load test set")
-    parser.add_argument('--datadir', default='/tmp/snovault', help="path to datadir")
+    parser.add_argument('--app-name', help='Pyramid app name in configfile')
+    parser.add_argument('config_uri', help='path to configfile')
+    parser.add_argument('--clear', action='store_true', help='Clear existing data')
+    parser.add_argument('--init', action='store_true', help='Init database')
+    parser.add_argument('--load', action='store_true', help='Load test set')
+    parser.add_argument('--datadir', default='/tmp/snovault', help='path to datadir')
     args = parser.parse_args()
 
     appsettings = get_appsettings(args.config_uri, name='app')
@@ -99,7 +101,8 @@ def main():
     elasticsearch = elasticsearch_fixture.server_process(esdata, echo=True)
     nginx = nginx_server_process(echo=True)
     redis_config_path = redis_storage_fixture.initdb(redisdata, local_storage_port, echo=True)
-    redis = redis_storage_fixture.server_process(redis_config_path, local_storage_port, local_storage_redis_index, echo=True)
+    redis = redis_storage_fixture.server_process(
+        redis_config_path, local_storage_port, local_storage_redis_index, echo=True)
     processes = [postgres, elasticsearch, nginx, redis]
 
     print_processes = []
@@ -139,6 +142,7 @@ def main():
         print_processes.append(Process(target=print_to_terminal, args=(stdout,)))
     for p in print_processes:
         p.start()
+
 
 if __name__ == '__main__':
     main()

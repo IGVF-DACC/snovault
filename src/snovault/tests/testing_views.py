@@ -152,11 +152,11 @@ class TestingLinkTarget(Item):
     audit_inherit = ['*']
 
     @calculated_property(schema={
-        "title": "Sources",
-        "type": "array",
-        "items": {
-            "type": ['string', 'object'],
-            "linkFrom": "TestingLinkSource.target",
+        'title': 'Sources',
+        'type': 'array',
+        'items': {
+            'type': ['string', 'object'],
+            'linkFrom': 'TestingLinkSource.target',
         },
     })
     def reverse(self, request, reverse):
@@ -283,26 +283,26 @@ class TestingPostPutPatch(Item):
         'required': ['required'],
         'type': 'object',
         'properties': {
-            "schema_version": {
-                "type": "string",
-                "pattern": "^\\d+(\\.\\d+)*$",
-                "requestMethod": [],
-                "default": "1",
+            'schema_version': {
+                'type': 'string',
+                'pattern': '^\\d+(\\.\\d+)*$',
+                'requestMethod': [],
+                'default': '1',
             },
-            "uuid": {
-                "title": "UUID",
-                "description": "",
-                "type": "string",
-                "format": "uuid",
-                "permission": "import_items",
-                "requestMethod": "POST",
+            'uuid': {
+                'title': 'UUID',
+                'description': '',
+                'type': 'string',
+                'format': 'uuid',
+                'permission': 'import_items',
+                'requestMethod': 'POST',
             },
-            "accession": {
-                "title": "Accession",
-                "description": "",
-                "type": "string",
-                "format": "accession",
-                "permission": "import_items"
+            'accession': {
+                'title': 'Accession',
+                'description': '',
+                'type': 'string',
+                'format': 'accession',
+                'permission': 'import_items'
             },
             'required': {
                 'type': 'string',
@@ -338,18 +338,18 @@ class TestingServerDefault(Item):
     schema = {
         'type': 'object',
         'properties': {
-            "schema_version": {
-                "type": "string",
-                "pattern": "^\\d+(\\.\\d+)*$",
-                "requestMethod": [],
+            'schema_version': {
+                'type': 'string',
+                'pattern': '^\\d+(\\.\\d+)*$',
+                'requestMethod': [],
             },
-            "uuid": {
-                "title": "UUID",
-                "description": "",
-                "type": "string",
-                "format": "uuid",
-                "permission": "import_items",
-                "requestMethod": "POST",
+            'uuid': {
+                'title': 'UUID',
+                'description': '',
+                'type': 'string',
+                'format': 'uuid',
+                'permission': 'import_items',
+                'requestMethod': 'POST',
             },
             'user': {
                 'serverDefault': 'userid',
@@ -377,20 +377,20 @@ class TestingBadAccession(Item):
     schema = {
         'type': 'object',
         'properties': {
-            "schema_version": {
-                "type": "string",
-                "pattern": "^\\d+(\\.\\d+)*$",
+            'schema_version': {
+                'type': 'string',
+                'pattern': '^\\d+(\\.\\d+)*$',
             },
-            "uuid": {
-                "title": "UUID",
-                "description": "",
-                "type": "string",
-                "format": "uuid",
-                "permission": "import_items",
-                "requestMethod": "POST",
+            'uuid': {
+                'title': 'UUID',
+                'description': '',
+                'type': 'string',
+                'format': 'uuid',
+                'permission': 'import_items',
+                'requestMethod': 'POST',
             },
             'thing': {
-                'type': "number",
+                'type': 'number',
                 'default': 3,
             },
             'user': {
@@ -520,45 +520,44 @@ class TestingCustomEmbedTarget(Item):
     audit_inherit = ['*']
 
     @calculated_property(schema={
-        "title": "Sources",
-        "type": "array",
-        "items": {
-            "type": ['string', 'object'],
-            "linkFrom": "TestingCustomEmbedSource.target",
+        'title': 'Sources',
+        'type': 'array',
+        'items': {
+            'type': ['string', 'object'],
+            'linkFrom': 'TestingCustomEmbedSource.target',
         },
     })
     def reverse(self, request, reverse):
         return paths_filtered_by_status(request, reverse)
 
-
     @calculated_property(schema={
-        "title": "Filtered sources",
-        "type": "array",
-        "items": {
-            "type": ['string', 'object'],
-            "linkFrom": "TestingCustomEmbedSource.target",
+        'title': 'Filtered sources',
+        'type': 'array',
+        'items': {
+            'type': ['string', 'object'],
+            'linkFrom': 'TestingCustomEmbedSource.target',
         },
     })
     def filtered_reverse(self, request, reverse):
         return paths_filtered_by_status(request, reverse)
 
     @calculated_property(schema={
-        "title": "Filtered sources1",
-        "type": "array",
-        "items": {
-            "type": ['string', 'object'],
-            "linkFrom": "TestingCustomEmbedSource.target",
+        'title': 'Filtered sources1',
+        'type': 'array',
+        'items': {
+            'type': ['string', 'object'],
+            'linkFrom': 'TestingCustomEmbedSource.target',
         },
     })
     def filtered_reverse1(self, request, reverse):
         return paths_filtered_by_status(request, reverse)
 
     @calculated_property(schema={
-        "title": "Uncalculated sources",
-        "type": "array",
-        "items": {
-            "type": ['string', 'object'],
-            "linkFrom": "TestingCustomEmbedSource.target",
+        'title': 'Uncalculated sources',
+        'type': 'array',
+        'items': {
+            'type': ['string', 'object'],
+            'linkFrom': 'TestingCustomEmbedSource.target',
         },
     })
     def reverse_uncalculated(self, request, reverse):

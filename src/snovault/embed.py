@@ -44,7 +44,6 @@ def make_subrequest(request, path):
     return subreq
 
 
-
 def embed(request, *elements, **kw):
     """ as_user=True for current user
     """
@@ -86,6 +85,7 @@ def _embed(request, path, as_user='EMBED'):
 class NullRenderer:
     '''Sets result value directly as response.
     '''
+
     def __init__(self, info):
         pass
 

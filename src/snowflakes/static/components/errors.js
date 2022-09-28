@@ -76,7 +76,7 @@ var LoginDenied = module.exports.LoginDenied = React.createClass({
                         <h1>Login failure</h1>
                         <p>Access is restricted to valid logins.</p>
                         <p><a href='mailto:snowflake-help@lists.stanford.edu'>Request an account</a></p>
-                        
+
                     </div>
                 </div>
             </div>

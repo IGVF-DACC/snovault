@@ -1,7 +1,7 @@
 /* top padding for small screens */
 #content {
     padding-top: 0;
-    
+
     @media (min-width: $screen-md-min) {
         padding-top: 75px;
     }
@@ -38,7 +38,7 @@
         list-style: none outside none;
         margin-left: -5px;
         padding-left: 0;
-        li { 
+        li {
             display: inline-block;
             padding-left: 10px;
             padding-right: 10px;
@@ -47,18 +47,18 @@
             display: inline;
             margin: 0;
             padding: 0;
-            background-color: transparent;   
+            background-color: transparent;
         }
-        a:hover { 
+        a:hover {
             text-decoration: underline;
-            background-color: transparent; 
+            background-color: transparent;
         }
         a:active { background-color: transparent; }
     }
-    
+
     .footer-logos {
         margin-top: 16px;
-        li { 
+        li {
             display: inline-block;
             padding-left: 10px;
             padding-right: 10px;

@@ -114,7 +114,7 @@ var AccessKeyTable = React.createClass({
 
     onError: function(error) {
         var View = globals.content_views.lookup(error);
-        this.setState({modal: 
+        this.setState({modal:
             <Modal title="Error" onRequestHide={this.hideModal}>
                 <div className="modal-body">
                     <View context={error} loadingComplete={true} />
@@ -166,7 +166,7 @@ var User = module.exports.User = React.createClass({
                         </div>
                     </div>
                 : ''}
-                {context.access_keys ? 
+                {context.access_keys ?
                     <div className="access-keys">
                         <h3>Access Keys</h3>
                         <div className="panel data-display">

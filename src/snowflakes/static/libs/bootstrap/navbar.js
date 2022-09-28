@@ -89,7 +89,7 @@ var Navbar = module.exports.Navbar = React.createClass({
             expanded: false // True if mobile version of menu is expanded
         };
     },
-    
+
     collapseClick: function(e) {
         // Click on the Navbar mobile "collapse" button
         console.log('collapse: %s', this.state.expanded);
@@ -112,7 +112,7 @@ var Navbar = module.exports.Navbar = React.createClass({
                         <a className="navbar-brand" href={brandlink}>{brand}</a>
                     : null}
                 </div>
-                
+
                 <div className={'collapse navbar-collapse' + (this.state.expanded ? ' in' : '')} id={label}>
                     {this.props.children}
                 </div>

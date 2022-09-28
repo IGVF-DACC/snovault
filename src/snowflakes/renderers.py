@@ -245,6 +245,9 @@ def should_transform(request, response):
     if format == 'json':
         return False
 
+    # Always return False
+    return False
+
     request._transform_start = time.time()
     return True
 
@@ -271,6 +274,7 @@ rss_limit = 256 * (1024 ** 2)  # MB
 
 def reload_process(process):
     return psutil.Process(process.pid).memory_info().rss > rss_limit
+
 
 node_env = os.environ.copy()
 node_env['NODE_PATH'] = ''

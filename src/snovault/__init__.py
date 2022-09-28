@@ -1,44 +1,57 @@
-import sys
-if sys.version_info.major == 2:
-    from future.standard_library import install_aliases
-    install_aliases()
-    import functools
-    from backports.functools_lru_cache import lru_cache
-    functools.lru_cache = lru_cache
+__version__ = '2.0.0'
+
+
 from pyramid.config import Configurator
-from pyramid.settings import (
-    asbool,
-)
 
+from pyramid.settings import asbool
 
-from .auditor import (  # noqa
-    AuditFailure,
-    audit_checker,
-)
-from .calculated import calculated_property  # noqa
-from .config import (  # noqa
+from .config import (
     abstract_collection,
     collection,
     root,
 )
-from .interfaces import *  # noqa
-from .resources import (  # noqa
+
+from snovault.auditor import AuditFailure
+from snovault.auditor import audit_checker
+
+from snovault.interfaces import AUDITOR
+from snovault.interfaces import BLOBS
+from snovault.interfaces import CALCULATED_PROPERTIES
+from snovault.interfaces import COLLECTIONS
+from snovault.interfaces import CONNECTION
+from snovault.interfaces import DBSESSION
+from snovault.interfaces import STORAGE
+from snovault.interfaces import ROOT
+from snovault.interfaces import TYPES
+from snovault.interfaces import UPGRADER
+from snovault.interfaces import PHASE1_5_CONFIG
+from snovault.interfaces import PHASE2_5_CONFIG
+from snovault.interfaces import Created
+from snovault.interfaces import BeforeModified
+from snovault.interfaces import AfterModified
+from snovault.interfaces import AfterUpgrade
+
+from .calculated import calculated_property
+
+from .schema_utils import load_schema
+
+from .upgrader import upgrade_step
+
+from .resources import (
     AbstractCollection,
     Collection,
     Item,
     Resource,
     Root,
 )
-from .schema_utils import load_schema  # noqa
-from .upgrader import upgrade_step  # noqa
+
 from .app import (
-    app_version,
     session,
     configure_dbsession,
     static_resources,
     changelogs,
     json_from_path,
-    )
+)
 
 
 def includeme(config):
@@ -68,6 +81,10 @@ def includeme(config):
     config.include('.indexing_views')
     config.include('.resource_views')
     config.include('.elasticsearch.searches.configs')
+
+
+def app_version(config):
+    config.registry.settings['snovault.app_version'] = __version__
 
 
 def main(global_config, **local_config):

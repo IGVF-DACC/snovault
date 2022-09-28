@@ -45,7 +45,7 @@ describe('ItemStore', function() {
             fetch.mockResponse({
                 '@graph': [{'@id': '/items/bar/'}]
             });
-            
+
             store = new ItemStore(items, view, 'items');
             done = store.create('/items/', {'@id': 'bar'});
         });
@@ -75,7 +75,7 @@ describe('ItemStore', function() {
         beforeEach(function() {
             view.onUpdate = jest.fn();
             fetch.mockResponse({});
-            
+
             store = new ItemStore(items, view, 'items');
             done = store.update({'@id': '/items/foo/', updated: true});
         });
@@ -105,7 +105,7 @@ describe('ItemStore', function() {
         beforeEach(function() {
             view.onDelete = jest.fn();
             fetch.mockResponse({});
-            
+
             store = new ItemStore(items, view, 'items');
             done = store.delete('/items/foo/');
         });

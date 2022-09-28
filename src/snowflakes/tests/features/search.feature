@@ -28,4 +28,3 @@ Feature: Search
     Scenario: Search BoxI
         When I fill in "searchTerm" with "hand-packed"
         Then I should see at least 10 elements with the css selector "ul.nav.result-table > li"
-

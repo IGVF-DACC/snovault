@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+
+  postgres:
+    build:
+      context: ./docker/postgres/
+    image: snovault-postgres
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+
+  loader:
+    build:
+      context: .
+      dockerfile: ./docker/pyramid/Dockerfile
+    image: snovault-pyramid
+    volumes:
+      - ".:/snovault"
+      - "/snovault/src/snovault.egg-info"
+    command: load-development
+    depends_on:
+      - postgres
+
+  pyramid:
+    build:
+      context: .
+      dockerfile: ./docker/pyramid/Dockerfile
+    image: snovault-pyramid
+    volumes:
+      - ".:/snovault"
+      - "/snovault/src/snovault.egg-info"
+    command: /scripts/pyramid/run-development.sh
+    ports:
+      - "6543:6543"
+    depends_on:
+      - loader

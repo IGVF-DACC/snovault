@@ -82,8 +82,8 @@ class SnowflakesRoot(Root):
         return default
 
     @calculated_property(schema={
-        "title": "Application version",
-        "type": "string",
+        'title': 'Application version',
+        'type': 'string',
     })
     def app_version(self, registry):
         return registry.settings['snovault.app_version']

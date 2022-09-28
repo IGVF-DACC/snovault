@@ -154,8 +154,8 @@ def resize_viewport(browser, width, height):
     b_size = browser.driver.get_window_size()
     b_width = b_size['width']
     b_height = b_size['height']
-    v_width = browser.evaluate_script("document.documentElement.clientWidth")
-    v_height = browser.evaluate_script("document.documentElement.clientHeight")
+    v_width = browser.evaluate_script('document.documentElement.clientWidth')
+    v_height = browser.evaluate_script('document.documentElement.clientHeight')
 
     browser.driver.set_window_size(
         b_width + width - v_width,
@@ -272,7 +272,7 @@ def field_has_value(browser, name, value):
         ("//*[@id='%(name)s']|"
          "//*[@name='%(name)s']") % {'name': name})
     assert el, u'Element not found'
-    assert el.first.value == value, "Values do not match, expected %s but got %s" % (value, el.first.value)
+    assert el.first.value == value, 'Values do not match, expected %s but got %s' % (value, el.first.value)
 
 
 @then(parse('"{name}" should be enabled'))

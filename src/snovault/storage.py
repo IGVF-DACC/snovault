@@ -463,7 +463,7 @@ class CurrentPropertySheet(Base):
                  ForeignKey('propsheets.sid'), nullable=False)
     propsheet = orm.relationship(
         'PropertySheet', lazy='joined', innerjoin=True,
-        primaryjoin="CurrentPropertySheet.sid==PropertySheet.sid",
+        primaryjoin='CurrentPropertySheet.sid==PropertySheet.sid',
     )
     history = orm.relationship(
         'PropertySheet', order_by=PropertySheet.sid,
@@ -595,7 +595,7 @@ class User(Base):
         self.name = name
         self.email = email
         self.password = password
-    
+
     @classmethod
     def get_by_username(cls, email):
         return _DBSESSION.query(cls).filter(cls.email == email).first()
@@ -607,6 +607,8 @@ class User(Base):
         if not user:
             return False
         return bcrypt.verify(password, user.password)
+
+
 notify_ddl = DDL("""
     ALTER TABLE %(table)s ALTER COLUMN "xid" SET DEFAULT txid_current();
     CREATE OR REPLACE FUNCTION snovault_transaction_notify() RETURNS trigger AS $$
@@ -681,8 +683,8 @@ def record_transaction_data(session):
 
 
 _set_transaction_snapshot = text(
-    "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE, READ ONLY;"
-    "SET TRANSACTION SNAPSHOT :snapshot_id;"
+    'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE, READ ONLY;'
+    'SET TRANSACTION SNAPSHOT :snapshot_id;'
 )
 
 
@@ -708,4 +710,4 @@ def set_transaction_isolation_level(session, sqla_txn, connection):
             _set_transaction_snapshot,
             snapshot_id=data['snapshot_id'])
     else:
-        connection.execute("SET TRANSACTION READ ONLY;")
+        connection.execute('SET TRANSACTION READ ONLY;')

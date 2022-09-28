@@ -20,6 +20,7 @@ class TestBaseClient(TestCase):
     queue_options = {}
     queue_name = 'base-test-queue'
     queue_type = BASE_QUEUE_TYPE
+
     def test_get_queue(self):
         '''Test get_queue'''
         client = BaseQueueClient(self.queue_options)
@@ -47,9 +48,9 @@ class TestBaseQueueMeta(TestCase):
         ('_worker_conns', dict),
         ('_worker_results', dict),
         ('queue_name', str),
-        ('_added_count', int), # not tested
-        ('_errors_count', int), # not tested
-        ('_success_count', int), # not tested
+        ('_added_count', int),  # not tested
+        ('_errors_count', int),  # not tested
+        ('_success_count', int),  # not tested
     ]
     meth_func = [
         # Errors
@@ -66,9 +67,9 @@ class TestBaseQueueMeta(TestCase):
         # Uuids
         'has_uuids',
         'update_uuid_count',
-        'get_server_restarts', # not tested
-        'update_errors_count', # not tested
-        'update_success_count', # not tested
+        'get_server_restarts',  # not tested
+        'update_errors_count',  # not tested
+        'update_success_count',  # not tested
     ]
 
     @classmethod
@@ -273,10 +274,10 @@ class TestBaseQueue(TestCase):
         '_load_uuid',
         'load_uuids',
         'update_finished',
-        'close_indexing', # not tested
-        'get_server_restarts', # not tested
-        'update_errors_count', # not tested
-        'update_success_count', # not tested
+        'close_indexing',  # not tested
+        'get_server_restarts',  # not tested
+        'update_errors_count',  # not tested
+        'update_success_count',  # not tested
     ]
 
     @classmethod

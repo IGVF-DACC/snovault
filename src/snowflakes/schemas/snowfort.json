@@ -5,25 +5,48 @@
     "$id": "/profiles/snowfort.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "required": ["award", "lab"],
-    "identifyingProperties": ["uuid", "accession"],
+    "required": [
+        "award",
+        "lab"
+    ],
+    "identifyingProperties": [
+        "uuid",
+        "accession"
+    ],
     "additionalProperties": false,
     "mixinProperties": [
-        { "$ref": "mixins.json#/schema_version" },
-        { "$ref": "mixins.json#/uuid" },
-        { "$ref": "mixins.json#/accession" },
-        { "$ref": "mixins.json#/attribution" },
-        { "$ref": "mixins.json#/submitted" },
-        { "$ref": "snowset.json#/properties" }
+        {
+            "$ref": "mixins.json#/schema_version"
+        },
+        {
+            "$ref": "mixins.json#/uuid"
+        },
+        {
+            "$ref": "mixins.json#/accession"
+        },
+        {
+            "$ref": "mixins.json#/attribution"
+        },
+        {
+            "$ref": "mixins.json#/submitted"
+        },
+        {
+            "$ref": "snowset.json#/properties"
+        }
     ],
     "dependentSchemas": {
         "status": {
             "oneOf": [
                 {
-                    "required": ["date_released"],
+                    "required": [
+                        "date_released"
+                    ],
                     "properties": {
                         "status": {
-                            "enum": ["released", "revoked"]
+                            "enum": [
+                                "released",
+                                "revoked"
+                            ]
                         }
                     }
                 },
@@ -31,7 +54,10 @@
                     "not": {
                         "properties": {
                             "status": {
-                                "enum": ["released", "revoked"]
+                                "enum": [
+                                    "released",
+                                    "revoked"
+                                ]
                             }
                         }
                     }
@@ -50,9 +76,9 @@
             "type": "string",
             "default": "hand",
             "enum": [
-                    "shovel",
-                    "bulldozer",
-                    "natural feature"
+                "shovel",
+                "bulldozer",
+                "natural feature"
             ]
         },
         "size": {
@@ -61,11 +87,10 @@
             "type": "string",
             "default": "tall",
             "enum": [
-                    "tall",
-                    "venti",
-                    "grande"
+                "tall",
+                "venti",
+                "grande"
             ]
-           
         }
     },
     "facets": {

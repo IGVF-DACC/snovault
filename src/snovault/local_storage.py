@@ -12,7 +12,7 @@ def base_result(local_store):
     return {
         '@type': ['result'],
         'utc_now': str(datetime.utcnow()),
-        'lcl_now': f"{local_store.local_tz}: {local_dt}",
+        'lcl_now': f'{local_store.local_tz}: {local_dt}',
     }
 
 
@@ -22,6 +22,7 @@ class LocalStoreClient():
     - get_tag function was added to return hex str
     - Can access client directly for full functionality
     '''
+
     def __init__(self, **kwargs):
         self.local_tz = kwargs.get('local_tz', 'GMT')
         self.client = StrictRedis(
@@ -40,7 +41,7 @@ class LocalStoreClient():
         - Bytes string length is 2 * num bytes
         '''
         rand_hex_str = binascii.b2a_hex(urandom(num_bytes)).decode('utf-8')
-        return f"{tag}:{rand_hex_str}"
+        return f'{tag}:{rand_hex_str}'
 
     def ping(self):
         return self.client.ping()
@@ -51,18 +52,18 @@ class LocalStoreClient():
     def dict_set(self, key, hash_dict):
         for k, v in hash_dict.items():
             self.client.hset(name=key, key=k, value=v)
-    
+
     def get_tag_keys(self, tag):
-        return self.client.keys(f"{tag}:*")
+        return self.client.keys(f'{tag}:*')
 
     def item_get(self, key):
         return self.client.get(key)
-    
+
     def item_set(self, key, item):
         return self.client.set(key, item)
 
     def list_add(self, key, item):
         return self.client.lpush(key, item)
-    
+
     def list_get(self, key, start=0, stop=-1):
         return self.client.lrange(key, start, stop)

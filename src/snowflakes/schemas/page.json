@@ -4,15 +4,31 @@
     "$id": "/profiles/page.json",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "type": "object",
-    "required": [ "name", "title" ],
-    "identifyingProperties": ["uuid", "name" ],
+    "required": [
+        "name",
+        "title"
+    ],
+    "identifyingProperties": [
+        "uuid",
+        "name"
+    ],
     "additionalProperties": false,
     "mixinProperties": [
-        { "$ref": "mixins.json#/schema_version" },
-        { "$ref": "mixins.json#/uuid" },
-        { "$ref": "mixins.json#/standard_status" },
-        { "$ref": "mixins.json#/submitted" },
-        { "$ref": "mixins.json#/attribution" }
+        {
+            "$ref": "mixins.json#/schema_version"
+        },
+        {
+            "$ref": "mixins.json#/uuid"
+        },
+        {
+            "$ref": "mixins.json#/standard_status"
+        },
+        {
+            "$ref": "mixins.json#/submitted"
+        },
+        {
+            "$ref": "mixins.json#/attribution"
+        }
     ],
     "properties": {
         "schema_version": {
@@ -20,9 +36,14 @@
         },
         "parent": {
             "title": "Parent Page",
-            "type": ["string", "null"],
+            "type": [
+                "string",
+                "null"
+            ],
             "linkTo": "Page",
-            "validators": ["isNotCollectionDefaultPage"]
+            "validators": [
+                "isNotCollectionDefaultPage"
+            ]
         },
         "name": {
             "title": "URL Name",
@@ -87,7 +108,9 @@
                     {
                         "cols": [
                             {
-                                "blocks": ["#block1"]
+                                "blocks": [
+                                    "#block1"
+                                ]
                             }
                         ]
                     }

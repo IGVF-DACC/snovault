@@ -67,8 +67,8 @@ class User(Item):
     }
 
     @calculated_property(schema={
-        "title": "Title",
-        "type": "string",
+        'title': 'Title',
+        'type': 'string',
     })
     def title(self, first_name, last_name):
         return u'{} {}'.format(first_name, last_name)
@@ -90,7 +90,7 @@ class User(Item):
         if db.query(AuthUser).filter_by(email=email).first():
             return
 
-        name ="%s %s" % (properties['first_name'], properties['last_name'])
+        name = '%s %s' % (properties['first_name'], properties['last_name'])
         # we don't keep passwords in our user schema, so just create a random one here
         pwd = str(uuid.uuid4())
 
@@ -99,11 +99,11 @@ class User(Item):
         db.add(auth_user)
 
     @calculated_property(schema={
-        "title": "Access Keys",
-        "type": "array",
-        "items": {
-            "type": ['string', 'object'],
-            "linkFrom": "AccessKey.user",
+        'title': 'Access Keys',
+        'type': 'array',
+        'items': {
+            'type': ['string', 'object'],
+            'linkFrom': 'AccessKey.user',
         },
     }, category='page')
     def access_keys(self, request):
@@ -142,13 +142,13 @@ def user_basic_view(context, request):
 
 
 @view_config(context=User.Collection, permission='add', request_method='POST',
-             physical_path="/users")
-def user_add(context,request):
+             physical_path='/users')
+def user_add(context, request):
     ''' if we have a password in our request, create and auth entry
      for the user as well
      '''
 
-    #do we have valid data
+    # do we have valid data
     pwd = request.json.get('password', None)
     pwd_less_data = request.json.copy()
 
@@ -158,8 +158,8 @@ def user_add(context,request):
     validate_request(context.type_info.schema, request, pwd_less_data)
 
     if request.errors:
-        return HTTPUnprocessableEntity(json={'errors':request.errors},
-                                     content_type='application/json')
+        return HTTPUnprocessableEntity(json={'errors': request.errors},
+                                       content_type='application/json')
 
     # this will create an AuthUser with random password
     result = collection_add(context, request)

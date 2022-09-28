@@ -25,15 +25,15 @@ def main():
 
     import argparse
     parser = argparse.ArgumentParser(
-        description="Creates an admin user", epilog=EPILOG,
+        description='Creates an admin user', epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
-    parser.add_argument('--first-name', default='Admin', help="First name")
-    parser.add_argument('--last-name', default='Test', help="Last name")
-    parser.add_argument('--email', default='admin_test@example.org', help="E-mail")
-    parser.add_argument('--lab', default='/labs/j-michael-cherry/', help="Lab")
-    parser.add_argument('--app-name', help="Pyramid app name in configfile")
-    parser.add_argument('config_uri', help="path to configfile")
+    parser.add_argument('--first-name', default='Admin', help='First name')
+    parser.add_argument('--last-name', default='Test', help='Last name')
+    parser.add_argument('--email', default='admin_test@example.org', help='E-mail')
+    parser.add_argument('--lab', default='/labs/j-michael-cherry/', help='Lab')
+    parser.add_argument('--app-name', help='Pyramid app name in configfile')
+    parser.add_argument('config_uri', help='path to configfile')
     args = parser.parse_args()
 
     logging.basicConfig()
