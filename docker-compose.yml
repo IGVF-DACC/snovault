@@ -14,7 +14,7 @@ services:
   opensearch:
     build:
       context: ./docker/opensearch/
-    image: igvfd-opensearch
+    image: snovault-opensearch
     environment:
       - "discovery.type=single-node"
       - "node.name=opensearch-node1"
@@ -65,8 +65,8 @@ services:
       dockerfile: ./docker/pyramid/Dockerfile
     image: igvfd-pyramid
     volumes:
-      - ".:/igvfd"
-      - "/igvfd/src/igvfd.egg-info"
+      - ".:/snovault"
+      - "/snovault/src/snovault.egg-info"
     command: /scripts/pyramid/run-create-mapping.sh
     depends_on:
       - pyramid
