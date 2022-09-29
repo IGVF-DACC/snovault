@@ -538,7 +538,7 @@ def index(request):
         request.registry[ELASTIC_SEARCH].indices.refresh(RESOURCES_INDEX)
         if flush:
             try:
-                request.registry[ELASTIC_SEARCH].indices.flush_synced(
+                request.registry[ELASTIC_SEARCH].indices.flush(
                     index=RESOURCES_INDEX)  # Faster recovery on ES restart
             except ConflictError:
                 pass

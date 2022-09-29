@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+
+  postgres:
+    build:
+      context: ./docker/postgres/
+    image: snovault-postgres
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+
+  opensearch:
+    build:
+      context: ./docker/opensearch/
+    image: snovault-opensearch
+    environment:
+      - "discovery.type=single-node"
+      - "node.name=opensearch-node1"
+      - "OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m"
+      - "DISABLE_INSTALL_DEMO_CONFIG=true"
+      - "DISABLE_SECURITY_PLUGIN=true"
+    volumes:
+      - "./config/opensearch/opensearch.yml:/usr/share/opensearch/config/opensearch.yml"
+    ports:
+      - "9200:9200"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+
+  pyramid:
+    build:
+      context: .
+      dockerfile: ./docker/pyramid/Dockerfile
+    image: snovault-pyramid
+    volumes:
+      - ".:/snovault"
+      - "/snovault/src/snovault.egg-info"
+    command: /scripts/pyramid/run-indexer-tests.sh
+    ports:
+      - "6543:6543"
+    depends_on:
+      - postgres
+      - opensearch

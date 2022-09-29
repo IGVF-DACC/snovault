@@ -45,21 +45,8 @@ def elasticsearch_host_port():
 
 @pytest.mark.fixture_cost(10)
 @pytest.yield_fixture(scope='session')
-def elasticsearch_server(request, elasticsearch_host_port):
-    from .elasticsearch_fixture import server_process
-    host, port = elasticsearch_host_port
-    tmpdir = request.config._tmpdirhandler.mktemp('elasticsearch', numbered=True)
-    tmpdir = str(tmpdir)
-    process = server_process(str(tmpdir), host=host, port=9201, echo=False)
-    print('PORT CHANGED')
-    yield 'http://%s:%d' % (host, 9201)
-
-    if 'process' in locals() and process.poll() is None:
-        process.terminate()
-        try:
-            process.wait(timeout=10)
-        except TimeoutExpired:
-            process.kill()
+def elasticsearch_server(request, elasticsearch_host_port, ini_file):
+    yield ini_file.get('elasticsearch.server')
 
 
 @pytest.yield_fixture(scope='session')

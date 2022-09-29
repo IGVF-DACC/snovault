@@ -39,3 +39,25 @@ jobs:
           name: Run tests
           command: |
               docker-compose -f docker-compose.test.yml up --exit-code-from pyramid
+
+  snovault-pytest-indexer:
+    machine:
+      image: ubuntu-2004:202111-02
+      docker_layer_caching: true
+    resource_class: medium
+    working_directory: ~/snovault
+    steps:
+      - checkout
+      - run:
+          name: Build Docker images
+          command: docker-compose -f docker-compose.test-indexer.yml build
+      - run:
+          name: Set folder permissions for mounted volume
+          command: |
+              sudo useradd -u 1444 snovault
+              sudo usermod -a -G snovault circleci
+              sudo chown -R circleci:snovault ./
+      - run:
+          name: Run tests
+          command: |
+              docker-compose -f docker-compose.test-indexer.yml up --exit-code-from pyramid
