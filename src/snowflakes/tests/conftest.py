@@ -128,11 +128,3 @@ def submitter_testapp(app):
         'REMOTE_USER': 'TEST_SUBMITTER',
     }
     return TestApp(app, environ)
-
-
-@pytest.fixture(scope='session')
-def ini_file(request):
-    path = os.path.abspath(
-        'config/pyramid/ini/development.ini'
-    )
-    return get_appsettings(path, name='app')
