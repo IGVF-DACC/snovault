@@ -16,11 +16,13 @@ def autouse_external_tx(external_tx):
 
 
 @pytest.fixture(scope='session')
-def app_settings(wsgi_server_host_port):
+def app_settings(wsgi_server_host_port, elasticsearch_server, postgresql_server):
     from .testappfixtures import _app_settings
     settings = _app_settings.copy()
     settings['create_tables'] = True
     settings['persona.audiences'] = 'http://%s:%s' % wsgi_server_host_port
+    settings['elasticsearch.server'] = elasticsearch_server
+    settings['sqlalchemy.url'] = postgresql_server
     settings['collection_datastore'] = 'elasticsearch'
     settings['item_datastore'] = 'elasticsearch'
     settings['indexer'] = True
@@ -91,7 +93,6 @@ def test_indexing_simple(testapp, indexer_testapp):
     testapp.post_json('/testing-post-put-patch/', {'required': ''})
     res = indexer_testapp.post_json('/index', {'record': True})
     assert res.json['indexed'] == 1
-    assert 'txn_count' not in res.json
 
     res = testapp.post_json('/testing-post-put-patch/', {'required': ''})
     uuid = res.json['@graph'][0]['uuid']

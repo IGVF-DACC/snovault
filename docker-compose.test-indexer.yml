@@ -33,18 +33,6 @@ services:
         soft: 65536
         hard: 65536
 
-  loader:
-    build:
-      context: .
-      dockerfile: ./docker/pyramid/Dockerfile
-    image: snovault-pyramid
-    volumes:
-      - ".:/snovault"
-      - "/snovault/src/snovault.egg-info"
-    command: load-development
-    depends_on:
-      - postgres
-
   pyramid:
     build:
       context: .
@@ -53,34 +41,9 @@ services:
     volumes:
       - ".:/snovault"
       - "/snovault/src/snovault.egg-info"
-    command: /scripts/pyramid/run-development.sh
+    command: /scripts/pyramid/run-indexer-tests.sh
     ports:
       - "6543:6543"
     depends_on:
-      - loader
-
-  create-mapping:
-    build:
-      context: .
-      dockerfile: ./docker/pyramid/Dockerfile
-    image: igvfd-pyramid
-    volumes:
-      - ".:/snovault"
-      - "/snovault/src/snovault.egg-info"
-    command: /scripts/pyramid/run-create-mapping.sh
-    depends_on:
-      - pyramid
-
-  indexer:
-    build:
-      context: .
-      dockerfile: ./docker/pyramid/Dockerfile
-    image: snovault-pyramid
-    volumes:
-      - ".:/snovault"
-      - "/snovault/src/snovault.egg-info"
-    command: /scripts/pyramid/run-indexer.sh
-    ports:
-      - "7000:7000"
-    depends_on:
-      - create-mapping
+      - postgres
+      - opensearch

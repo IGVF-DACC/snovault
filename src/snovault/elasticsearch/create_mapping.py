@@ -31,11 +31,6 @@ log = logging.getLogger(__name__)
 
 # An index to store non-content metadata
 META_MAPPING = {
-    '_all': {
-        'enabled': False,
-        'analyzer': 'snovault_index_analyzer',
-        'search_analyzer': 'snovault_search_analyzer'
-    },
     'dynamic_templates': [
         {
             'store_generic': {
@@ -87,7 +82,6 @@ def schema_mapping(name, schema):
                 properties[k] = mapping
         return {
             'type': 'object',
-            'include_in_all': False,
             'properties': properties,
         }
 
@@ -157,8 +151,8 @@ def index_settings():
         'settings': {
             'index.max_result_window': 99999,
             'index.mapping.total_fields.limit': 5000,
-            'index.number_of_shards': 5,
-            'index.number_of_replicas': 2,
+            'index.number_of_shards': 1,
+            'index.number_of_replicas': 0,
             'analysis': {
                 'filter': {
                     'substring': {
@@ -263,11 +257,6 @@ def audit_mapping():
 
 def es_mapping(mapping):
     return {
-        '_all': {
-            'enabled': True,
-            'analyzer': 'snovault_index_analyzer',
-            'search_analyzer': 'snovault_search_analyzer'
-        },
         'dynamic_templates': [
             {
                 'template_principals_allowed': {
@@ -275,7 +264,6 @@ def es_mapping(mapping):
                     'match_mapping_type': 'string',
                     'mapping': {
                         'type': 'keyword',
-                        'include_in_all': False,
                     },
                 },
             },
@@ -285,6 +273,7 @@ def es_mapping(mapping):
                     'match_mapping_type': 'string',
                     'mapping': {
                         'type': 'keyword',
+                        'copy_to': '_all',
                     },
                 },
             },
@@ -294,7 +283,6 @@ def es_mapping(mapping):
                     'match_mapping_type': 'string',
                     'mapping': {
                         'type': 'keyword',
-                        'include_in_all': False,
                     },
                 },
             },
@@ -303,7 +291,6 @@ def es_mapping(mapping):
                     'match_mapping_type': 'string',
                     'mapping': {
                         'type': 'keyword',
-                        'include_in_all': False,
                     },
                 },
             },
@@ -317,54 +304,52 @@ def es_mapping(mapping):
                                 'type': 'keyword'
                             }
                         },
-                        'include_in_all': False,
                     },
                 },
             }
         ],
         'properties': {
+            '_all': {
+                'type': 'text',
+                'store': False,
+                'analyzer': 'snovault_index_analyzer',
+                'search_analyzer': 'snovault_search_analyzer'
+            },
             'uuid': {
                 'type': 'keyword',
-                'include_in_all': False,
+                'copy_to': '_all',
             },
             'tid': {
                 'type': 'keyword',
-                'include_in_all': False,
             },
             'item_type': {
                 'type': 'keyword',
+                'copy_to': '_all',
             },
             'embedded': mapping,
             'object': {
                 'type': 'object',
                 'enabled': False,
-                'include_in_all': False,
             },
             'properties': {
                 'type': 'object',
                 'enabled': False,
-                'include_in_all': False,
             },
             'propsheets': {
                 'type': 'object',
                 'enabled': False,
-                'include_in_all': False,
             },
             'embedded_uuids': {
                 'type': 'keyword',
-                'include_in_all': False,
             },
             'linked_uuids': {
                 'type': 'keyword',
-                'include_in_all': False,
             },
             'paths': {
                 'type': 'keyword',
-                'include_in_all': False,
             },
             'audit': {
                 'type': 'object',
-                'include_in_all': False,
                 'properties': {
                     'ERROR': {
                         'type': 'object',
@@ -459,8 +444,7 @@ def type_mapping(types, item_type, embed=True):
         new_mapping = mapping['properties']
         for prop in props:
             new_mapping = new_mapping[prop]['properties']
-        new_mapping[last]['boost'] = boost
-        new_mapping[last]['include_in_all'] = True
+        new_mapping[last]['copy_to'] = '_all'
     return mapping
 
 
@@ -469,8 +453,8 @@ def create_elasticsearch_index(es, index, body):
                       400, 404], master_timeout='5m', request_timeout=300)
 
 
-def set_index_mapping(es, index, doc_type, mapping):
-    es.indices.put_mapping(index=index, doc_type=doc_type, body=mapping, ignore=[400], request_timeout=300)
+def set_index_mapping(es, index, mapping):
+    es.indices.put_mapping(index=index, body=mapping, ignore=[400], request_timeout=300)
 
 
 def create_snovault_index_alias(es, indices):
@@ -503,7 +487,7 @@ def run(app, collections=None, dry_run=False):
             print(json.dumps(sorted_dict({index: {doc_type: mapping}}), indent=4))
             continue
         create_elasticsearch_index(es, index, index_settings())
-        set_index_mapping(es, index, doc_type, {doc_type: mapping})
+        set_index_mapping(es, index, mapping)
         if collection_name != 'meta':
             indices.append(index)
 

@@ -8,7 +8,7 @@ def dummy_parent(dummy_request):
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
     from snovault.elasticsearch.interfaces import ELASTIC_SEARCH
-    from elasticsearch import Elasticsearch
+    from opensearchpy import OpenSearch as Elasticsearch
     dummy_request.registry[ELASTIC_SEARCH] = Elasticsearch()
     dummy_request.context = DummyResource()
     dummy_request.context.__acl__ = lambda: [(Allow, 'group.submitter', 'search_audit')]

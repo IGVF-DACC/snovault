@@ -10,7 +10,7 @@ from snovault import STORAGE
 from snovault.elasticsearch import ELASTIC_SEARCH
 import atexit
 import datetime
-import elasticsearch.exceptions
+import opensearchpy.exceptions
 import json
 import logging
 import os
@@ -173,7 +173,7 @@ class ErrorHandlingThread(threading.Thread):
         while True:
             try:
                 self._target(*self._args, **self._kwargs)
-            except (psycopg2.OperationalError, sqlalchemy.exc.OperationalError, elasticsearch.exceptions.ConnectionError) as e:
+            except (psycopg2.OperationalError, sqlalchemy.exc.OperationalError, opensearchpy.exceptions.ConnectionError) as e:
                 # Handle database restart
                 log.warning('Database not there, maybe starting up: %r', e)
                 timestamp = datetime.datetime.now().isoformat()

@@ -431,12 +431,11 @@ def test_search_cached_facets_view_values_invalid_search_term(workbook, testapp)
 def test_search_generator(workbook, threadlocals, dummy_request):
     from snosearch.parsers import ParamsParser
     from snovault.elasticsearch import ELASTIC_SEARCH
-    from elasticsearch import Elasticsearch
+    from opensearchpy import OpenSearch as Elasticsearch
     from types import GeneratorType
     dummy_request.environ['QUERY_STRING'] = (
         'type=*&limit=all'
     )
-    dummy_request.registry[ELASTIC_SEARCH] = Elasticsearch(port=9201)
     from snowflakes.search_views import search_generator
     r = search_generator(dummy_request)
     assert '@graph' in r
@@ -450,12 +449,11 @@ def test_search_generator(workbook, threadlocals, dummy_request):
 def test_search_generator_field_specified(workbook, threadlocals, dummy_request):
     from snosearch.parsers import ParamsParser
     from snovault.elasticsearch import ELASTIC_SEARCH
-    from elasticsearch import Elasticsearch
+    from opensearchpy import OpenSearch as Elasticsearch
     from types import GeneratorType
     dummy_request.environ['QUERY_STRING'] = (
         'type=Snowflake&field=@id&limit=5'
     )
-    dummy_request.registry[ELASTIC_SEARCH] = Elasticsearch(port=9201)
     from snowflakes.search_views import search_generator
     r = search_generator(dummy_request)
     assert '@graph' in r
@@ -600,7 +598,7 @@ def test_report_cached_facets_view(workbook, testapp):
 def test_matrixv2_raw_view_raw_response(workbook, testapp):
     r = testapp.get('/matrixv2_raw/?type=Snowball')
     assert 'hits' in r.json
-    assert r.json['hits']['total'] >= 22
+    assert r.json['hits']['total']['value'] >= 22
     assert len(r.json['hits']['hits']) == 0
     assert 'aggregations' in r.json
     assert 'x' in r.json['aggregations']

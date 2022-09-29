@@ -1,5 +1,5 @@
 from snovault.util import get_root_request
-from elasticsearch.helpers import scan
+from opensearchpy.helpers import scan
 from pyramid.threadlocal import get_current_request
 from zope.interface import alsoProvides
 from .interfaces import (
@@ -155,7 +155,7 @@ class ElasticSearchStorage(object):
             'version': True
         }
         result = self.es.search(index=self.index, body=query, _source=True, size=1)
-        if result['hits']['total'] == 0:
+        if result['hits']['total']['value'] == 0:
             return None
         hit = result['hits']['hits'][0]
         return CachedModel(hit)
