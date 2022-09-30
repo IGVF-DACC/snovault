@@ -1,3 +1,8 @@
+from snovault.remote.queue import TRANSACTION_QUEUE_URL
+from snovault.remote.queue import client as sqs_client
+from snovault.remote.queue import OutboundMessage
+from snovault.remote.queue import SQSQueue
+from snovault.remote.queue import SQSQueueProps
 from pyramid.httpexceptions import HTTPConflict
 from sqlalchemy import (
     Column,
@@ -711,3 +716,42 @@ def set_transaction_isolation_level(session, sqla_txn, connection):
             snapshot_id=data['snapshot_id'])
     else:
         connection.execute('SET TRANSACTION READ ONLY;')
+
+
+transaction_queue = SQSQueue(
+    props=SQSQueueProps(
+        queue_url=TRANSACTION_QUEUE_URL,
+        client=sqs_client,
+    )
+)
+
+transaction_queue.wait_for_queue_to_exist()
+
+
+@event.listens_for(TransactionRecord, 'after_update')
+def transaction_record_updated(mapper, connection, target):
+    data = target.data
+    if data is None or 'updated' not in data:
+        return None
+    event = {
+        'metadata': {
+            'xid': target.xid,
+            'tid': str(target.tid),
+        },
+        'data': {
+            'payload': {
+                k: v
+                for k, v in target.data.items()
+                if k != 'tid'
+            }
+        }
+    }
+    outbound_message = OutboundMessage(
+        unique_id=event['metadata']['tid'],
+        body=event,
+    )
+    transaction_queue.send_messages(
+        [
+            outbound_message,
+        ]
+    )

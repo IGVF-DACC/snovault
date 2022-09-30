@@ -86,7 +86,7 @@ services:
     depends_on:
       - pyramid
 
-  indexer:
+  invalidation-service:
     build:
       context: .
       dockerfile: ./docker/pyramid/Dockerfile
@@ -94,8 +94,18 @@ services:
     volumes:
       - ".:/snovault"
       - "/snovault/src/snovault.egg-info"
-    command: /scripts/pyramid/run-indexer.sh
-    ports:
-      - "7000:7000"
+    command: python src/snovault/services/invalidation.py
     depends_on:
-      - create-mapping
+      - pyramid
+
+  indexing-service:
+    build:
+      context: .
+      dockerfile: ./docker/pyramid/Dockerfile
+    image: snovault-pyramid
+    volumes:
+      - ".:/snovault"
+      - "/snovault/src/snovault.egg-info"
+    command: python src/snovault/services/indexing.py
+    depends_on:
+      - pyramid

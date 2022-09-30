@@ -18,7 +18,8 @@ ORDER = [
     'snowfort',
     'snowflake',
     'image',
-    'page'
+    'page',
+    'access_key',
 ]
 
 IS_ATTACHMENT = [
