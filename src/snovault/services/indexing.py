@@ -87,7 +87,7 @@ def poll():
     while True:
         messages = list(
             invalidation_queue.get_messages(
-                desired_number_of_messages=10
+                desired_number_of_messages=1
             )
         )
         if messages:

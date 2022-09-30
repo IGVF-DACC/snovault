@@ -1,5 +1,6 @@
 import requests
 import time
+import logging
 
 from dataclasses import dataclass
 
@@ -171,7 +172,19 @@ def handle_messages(messages):
     invalidate_all_related_uuids(messages)
 
 
+def wait_for_resource_index_to_exist():
+    logging.warning('Waiting for index to exist')
+    attempt = 0
+    while True:
+        attempt += 1
+        if opensearch_client.indices.exists(RESOURCES_INDEX):
+            logging.warning('Found resources index')
+            break
+        time.sleep(attempt * 5)
+
+
 def poll():
+    wait_for_resource_index_to_exist()
     print('LISTENING to transaction queue')
     number_of_handled_messages = 0
     while True:
