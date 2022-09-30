@@ -92,7 +92,7 @@ services:
     volumes:
       - ".:/snovault"
       - "/snovault/src/snovault.egg-info"
-    command: pytest -rf -m "indexing"
+    command: /scripts/pyramid/run-indexer-tests.sh
     depends_on:
       - postgres
       - opensearch
