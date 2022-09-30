@@ -184,9 +184,9 @@ def poll():
             handle_messages(messages)
             transaction_queue.mark_as_processed(messages)
             number_of_handled_messages += len(messages)
-            print(f'transaction queue messages handled so far: {number_of_handled_messages}')
+            if number_of_handled_messages % 100 == 0:
+                print(f'transaction queue messages handled so far: {number_of_handled_messages}')
 
 
 if __name__ == '__main__':
-    time.sleep(20)
     poll()

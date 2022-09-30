@@ -94,7 +94,7 @@ services:
     volumes:
       - ".:/snovault"
       - "/snovault/src/snovault.egg-info"
-    command: python src/snovault/services/invalidation.py
+    command: /scripts/pyramid/run-invalidation-service.sh
     depends_on:
       - pyramid
 
@@ -106,6 +106,6 @@ services:
     volumes:
       - ".:/snovault"
       - "/snovault/src/snovault.egg-info"
-    command: python src/snovault/services/indexing.py
+    command: /scripts/pyramid/run-indexing-service.sh
     depends_on:
       - pyramid

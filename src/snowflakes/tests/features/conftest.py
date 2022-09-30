@@ -1,4 +1,6 @@
 import pytest
+import time
+
 from selenium.webdriver.chrome.options import Options
 
 pytest_plugins = [
@@ -28,14 +30,6 @@ def app_settings(wsgi_server_host_port, postgresql_server, elasticsearch_server)
     settings['collection_datastore'] = 'elasticsearch'
     settings['item_datastore'] = 'elasticsearch'
     settings['snovault.elasticsearch.index'] = 'snovault'
-    settings['indexer'] = True
-    settings['indexer.processes'] = 2
-    settings['queue_type'] = 'Simple'
-    settings['queue_server'] = True
-    settings['queue_worker'] = True
-    settings['queue_worker_processes'] = 2
-    settings['queue_worker_chunk_size'] = 1024
-    settings['queue_worker_batch_size'] = 2000
     return settings
 
 
@@ -47,10 +41,6 @@ def app(app_settings):
 
     create_mapping.run(app)
     yield app
-
-    # Shutdown multiprocessing pool to close db conns.
-    from snovault.elasticsearch import INDEXER
-    app.registry[INDEXER].shutdown()
 
     from snovault import DBSESSION
     DBSession = app.registry[DBSESSION]
@@ -74,7 +64,9 @@ def workbook(app):
     docsdir = [resource_filename('snowflakes', 'tests/data/documents/')]
     load_all(testapp, inserts, docsdir)
 
-    testapp.post_json('/index', {})
+    print('Waiting for indexing')
+    time.sleep(20)
+
     yield
     # XXX cleanup
 

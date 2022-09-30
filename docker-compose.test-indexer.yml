@@ -2,6 +2,21 @@ version: "3.8"
 
 services:
 
+  localstack:
+    build:
+      context: ./docker/localstack/
+    image: snovault-localstack
+    environment:
+      - AWS_DEFAULT_REGION=us-west-2
+      - AWS_ACCESS_KEY_ID=testing
+      - AWS_SECRET_ACCESS_KEY=testing
+      - SERVICES=sqs
+      - LS_LOG=warn
+    ports:
+      - "4566:4566"
+    volumes:
+      - "./docker/localstack/create_localstack.sh:/docker-entrypoint-initaws.d/create_localstack.sh"
+
   postgres:
     build:
       context: ./docker/postgres/
@@ -41,9 +56,47 @@ services:
     volumes:
       - ".:/snovault"
       - "/snovault/src/snovault.egg-info"
-    command: /scripts/pyramid/run-indexer-tests.sh
+    command: /scripts/pyramid/run-development.sh
     ports:
       - "6543:6543"
+
+  invalidation-service:
+    build:
+      context: .
+      dockerfile: ./docker/pyramid/Dockerfile
+    image: snovault-pyramid
+    volumes:
+      - ".:/snovault"
+      - "/snovault/src/snovault.egg-info"
+    command: /scripts/pyramid/run-invalidation-service.sh
+    depends_on:
+      - pyramid
+
+  indexing-service:
+    build:
+      context: .
+      dockerfile: ./docker/pyramid/Dockerfile
+    image: snovault-pyramid
+    volumes:
+      - ".:/snovault"
+      - "/snovault/src/snovault.egg-info"
+    command: /scripts/pyramid/run-indexing-service.sh
+    depends_on:
+      - pyramid
+
+  indexer-tests:
+    build:
+      context: .
+      dockerfile: ./docker/pyramid/Dockerfile
+    image: snovault-pyramid
+    volumes:
+      - ".:/snovault"
+      - "/snovault/src/snovault.egg-info"
+    command: /scripts/pyramid/run-indexer-tests.sh
     depends_on:
       - postgres
       - opensearch
+      - localstack
+      - pyramid
+      - invalidation-service
+      - indexing-service

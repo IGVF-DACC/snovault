@@ -26,10 +26,6 @@ def app(app_settings):
 
     yield app
 
-    # Shutdown multiprocessing pool to close db conns.
-    from snovault.elasticsearch import INDEXER
-    app.registry[INDEXER].shutdown()
-
     from snovault import DBSESSION
     DBSession = app.registry[DBSESSION]
     # Dispose connections so postgres can tear down.
@@ -59,11 +55,3 @@ def dbapi_conn(DBSession):
     conn.autocommit = True
     yield conn
     conn.close()
-
-
-@pytest.yield_fixture
-def listening_conn(dbapi_conn):
-    cursor = dbapi_conn.cursor()
-    cursor.execute("""LISTEN "snovault.transaction";""")
-    yield dbapi_conn
-    cursor.close()

@@ -43,11 +43,6 @@ def includeme(config):
     config.include('.cached_views')
     config.include('.esstorage')
 
-    config.include('.indexer')
-    config.include('.indexer_state')
-    if asbool(settings.get('indexer')) and not PY2:
-        config.include('.mpindexer')
-
 
 def datastore(request):
     if request.__parent__ is not None:

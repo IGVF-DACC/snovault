@@ -97,7 +97,6 @@ def workbook(conn, app, app_settings):
         inserts = resource_filename('snowflakes', 'tests/data/inserts/')
         docsdir = [resource_filename('snowflakes', 'tests/data/documents/')]
         load_all(testapp, inserts, docsdir)
-
         yield
     finally:
         tx.rollback()

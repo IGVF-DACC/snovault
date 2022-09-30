@@ -181,7 +181,7 @@ class SQSQueue:
         )['Attributes']
 
     def wait_for_queue_to_exist(self):
-        logging.warn(f'Connecting to queue: {self.props.queue_url}')
+        logging.warning(f'Connecting to queue: {self.props.queue_url}')
         caught = None
         for attempt in range(1, 4):
             try:
