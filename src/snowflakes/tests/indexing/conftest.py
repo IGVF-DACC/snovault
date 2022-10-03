@@ -58,7 +58,7 @@ def workbook(app):
     load_all(testapp, inserts, docsdir)
 
     print('Waiting for indexing')
-    time.sleep(20)
+    time.sleep(30)
 
     yield
     # XXX cleanup
