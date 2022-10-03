@@ -1,27 +1,38 @@
+import logging
+import os
 import requests
 import time
-import logging
 
 from opensearchpy import OpenSearch
 
 from snovault.remote.queue import SQSQueue
 from snovault.remote.queue import SQSQueueProps
-from snovault.remote.queue import client
-from snovault.remote.queue import INVALIDATION_QUEUE_URL
+from snovault.remote.queue import get_sqs_client
 
 
-auth = ('foobar', 'bazqux')
-url = 'http://pyramid:6543'
-OPENSEARCH_URL = 'http://opensearch:9200'
+INVALIDATION_QUEUE_URL = os.environ['INVALIDATION_QUEUE_URL']
+
+BACKEND_URL = os.environ['BACKEND_URL']
+
+BACKEND_KEY = os.environ['BACKEND_KEY']
+
+BACKEND_SECRET_KEY = os.environ['BACKEND_SECRET_KEY']
+
+AUTH = (BACKEND_KEY, BACKEND_SECRET_KEY)
+
+OPENSEARCH_URL = os.environ['OPENSEARCH_URL']
+
 opensearch_client = OpenSearch(
     OPENSEARCH_URL
 )
 
+sqs_client = get_sqs_client()
+
 
 def get_item(uuid):
     return requests.get(
-        f'{url}/{uuid}/@@index-data-external/?datastore=database',
-        auth=auth
+        f'{BACKEND_URL}/{uuid}/@@index-data-external/?datastore=database',
+        auth=AUTH
     ).json()
 
 
@@ -52,7 +63,7 @@ def handle_messages(messages):
 def get_invalidation_queue():
     invalidation_queue = SQSQueue(
         props=SQSQueueProps(
-            client=client,
+            client=sqs_client,
             queue_url=INVALIDATION_QUEUE_URL,
         )
     )
@@ -61,16 +72,16 @@ def get_invalidation_queue():
 
 
 def wait_for_access_key_to_exist():
-    logging.warning(f'Checking for access key')
+    logging.warning('Checking for access key')
     attempt = 0
     while True:
         attempt += 1
         try:
             response = requests.get(
-                f'{url}/access-keys/?datastore=database',
-                auth=auth
+                f'{BACKEND_URL}/access-keys/?datastore=database',
+                auth=AUTH
             )
-        except requests.exceptions.ConnectionError as error:
+        except requests.exceptions.ConnectionError:
             time.sleep(attempt * 5)
             continue
         if response.status_code == 200:

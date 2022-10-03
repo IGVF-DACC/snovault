@@ -1,8 +1,5 @@
-from snovault.remote.queue import TRANSACTION_QUEUE_URL
-from snovault.remote.queue import client as sqs_client
-from snovault.remote.queue import OutboundMessage
-from snovault.remote.queue import SQSQueue
-from snovault.remote.queue import SQSQueueProps
+from functools import partial
+
 from pyramid.httpexceptions import HTTPConflict
 from sqlalchemy import (
     Column,
@@ -43,6 +40,7 @@ import json
 import transaction
 import uuid
 
+from snovault.remote.queue import OutboundMessage
 
 _DBSESSION = None
 
@@ -718,18 +716,7 @@ def set_transaction_isolation_level(session, sqla_txn, connection):
         connection.execute('SET TRANSACTION READ ONLY;')
 
 
-transaction_queue = SQSQueue(
-    props=SQSQueueProps(
-        queue_url=TRANSACTION_QUEUE_URL,
-        client=sqs_client,
-    )
-)
-
-transaction_queue.wait_for_queue_to_exist()
-
-
-@event.listens_for(TransactionRecord, 'after_update')
-def transaction_record_updated(mapper, connection, target):
+def transaction_record_updated(transaction_queue, mapper, connection, target):
     data = target.data
     if data is None or 'updated' not in data:
         return None
@@ -754,4 +741,16 @@ def transaction_record_updated(mapper, connection, target):
         [
             outbound_message,
         ]
+    )
+
+
+def notify_transaction_queue_when_transaction_record_updated(config):
+    bound_transaction_record_updated = partial(
+        transaction_record_updated,
+        config.registry['TRANSACTION_QUEUE'],
+    )
+    event.listen(
+        TransactionRecord,
+        'after_update',
+        bound_transaction_record_updated,
     )

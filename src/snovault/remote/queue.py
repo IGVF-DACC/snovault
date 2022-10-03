@@ -1,6 +1,7 @@
 import boto3
 import json
 import logging
+import os
 import time
 
 from botocore.client import BaseClient
@@ -13,22 +14,24 @@ from typing import Iterable
 from typing import List
 
 
-ENDPOINT_URL = 'http://localstack:4566'
-
-TRANSACTION_QUEUE_URL = 'http://localhost:4566/000000000000/transaction-queue'
-
-INVALIDATION_QUEUE_URL = 'http://localhost:4566/000000000000/invalidation-queue'
-
 AWS_SQS_MAX_NUMBER = 10
 
 
-client = boto3.client(
-    'sqs',
-    endpoint_url=ENDPOINT_URL,
-    aws_access_key_id='testing',
-    aws_secret_access_key='testing',
-    region_name='us-west-2',
-)
+def get_sqs_client():
+    localstack_endpoint_url = os.environ.get(
+        'LOCALSTACK_ENDPOINT_URL'
+    )
+    if localstack_endpoint_url:
+        return boto3.client(
+            'sqs',
+            endpoint_url=localstack_endpoint_url,
+            aws_access_key_id='testing',
+            aws_secret_access_key='testing',
+            region_name='us-west-2',
+        )
+    return boto3.client(
+        'sqs'
+    )
 
 
 field_mapping = {

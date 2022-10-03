@@ -124,6 +124,34 @@ def configure_dbsession(config):
     config.registry[DBSESSION] = DBSession
 
 
+def configure_sqs_client(config):
+    from snovault.remote.queue import get_sqs_client
+    config.registry['SQS_CLIENT'] = get_sqs_client()
+
+
+def configure_transaction_queue(config):
+    transaction_queue_url = os.environ.get(
+        'TRANSACTION_QUEUE_URL'
+    )
+    if transaction_queue_url is None:
+        return None
+    from snovault.remote.queue import SQSQueue
+    from snovault.remote.queue import SQSQueueProps
+    from snovault.storage import notify_transaction_queue_when_transaction_record_updated
+    sqs_client = config.registry['SQS_CLIENT']
+    transaction_queue = SQSQueue(
+        props=SQSQueueProps(
+            queue_url=transaction_queue_url,
+            client=sqs_client,
+        )
+    )
+    transaction_queue.wait_for_queue_to_exist()
+    config.registry['TRANSACTION_QUEUE'] = transaction_queue
+    notify_transaction_queue_when_transaction_record_updated(
+        config
+    )
+
+
 def session(config):
     """ To create a session secret on the server:
 

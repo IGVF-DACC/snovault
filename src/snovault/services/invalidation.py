@@ -1,8 +1,6 @@
-import requests
-import time
 import logging
-
-from dataclasses import dataclass
+import os
+import time
 
 from opensearchpy import OpenSearch
 from opensearch_dsl import Search
@@ -10,24 +8,26 @@ from opensearch_dsl import Search
 from snovault.remote.queue import SQSQueue
 from snovault.remote.queue import SQSQueueProps
 from snovault.remote.queue import OutboundMessage
-from snovault.remote.queue import client
-from snovault.remote.queue import TRANSACTION_QUEUE_URL
-from snovault.remote.queue import INVALIDATION_QUEUE_URL
+from snovault.remote.queue import get_sqs_client
 
 from snovault.elasticsearch.interfaces import RESOURCES_INDEX
 
 
-auth = ('foobar', 'bazqux')
-url = 'http://nginx:8000'
-OPENSEARCH_URL = 'http://opensearch:9200'
+TRANSACTION_QUEUE_URL = os.environ['TRANSACTION_QUEUE_URL']
+
+INVALIDATION_QUEUE_URL = os.environ['INVALIDATION_QUEUE_URL']
+
+OPENSEARCH_URL = os.environ['OPENSEARCH_URL']
+
 opensearch_client = OpenSearch(
     OPENSEARCH_URL
 )
 
+sqs_client = get_sqs_client()
 
 transaction_queue = SQSQueue(
     props=SQSQueueProps(
-        client=client,
+        client=sqs_client,
         queue_url=TRANSACTION_QUEUE_URL,
     )
 )
@@ -36,7 +36,7 @@ transaction_queue.wait_for_queue_to_exist()
 
 invalidation_queue = SQSQueue(
     props=SQSQueueProps(
-        client=client,
+        client=sqs_client,
         queue_url=INVALIDATION_QUEUE_URL,
     )
 )
