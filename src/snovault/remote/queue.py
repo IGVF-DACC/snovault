@@ -196,6 +196,29 @@ class SQSQueue:
                 continue
             raise caught
 
+    def _queue_has_zero_messages(self):
+        info = self.info()
+        conditions = [
+            info['ApproximateNumberOfMessages'] == '0',
+            info['ApproximateNumberOfMessagesNotVisible'] == '0',
+        ]
+        return all(conditions)
+
+    def wait_for_queue_to_drain(
+            self,
+            number_of_checks: int = 3,
+            seconds_between_checks: int = 3
+    ):
+        checks_left = number_of_checks
+        while True:
+            if self._queue_has_zero_messages():
+                checks_left -= 1
+            else:
+                checks_left = number_of_checks
+            if checks_left <= 0:
+                break
+            time.sleep(seconds_between_checks)
+
 
 class InMemoryQueue:
 
@@ -215,4 +238,7 @@ class InMemoryQueue:
         pass
 
     def wait_for_queue_to_exist(self):
+        pass
+
+    def wait_for_queue_to_drain(self):
         pass
