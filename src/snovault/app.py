@@ -135,8 +135,8 @@ def configure_transaction_queue(config):
     )
     if transaction_queue_url is None:
         return None
-    from snovault.remote.queue import SQSQueue
-    from snovault.remote.queue import SQSQueueProps
+    from snoindex.repository.queue.sqs import SQSQueue
+    from snoindex.repository.queue.sqs import SQSQueueProps
     from snovault.storage import notify_transaction_queue_when_transaction_record_updated
     sqs_client = config.registry['SQS_CLIENT']
     transaction_queue = SQSQueue(
