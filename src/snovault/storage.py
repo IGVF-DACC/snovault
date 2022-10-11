@@ -40,7 +40,7 @@ import json
 import transaction
 import uuid
 
-from snovault.remote.queue import OutboundMessage
+from snoindex.domain.message import OutboundMessage
 
 _DBSESSION = None
 
