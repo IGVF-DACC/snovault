@@ -65,26 +65,22 @@ services:
 
   invalidation-service:
     build:
-      context: .
-      dockerfile: ./docker/pyramid/Dockerfile
-    image: snovault-pyramid
+      context: ./docker/snoindex/
+    image: snovault-snoindex
     environment:
       - LOCALSTACK_ENDPOINT_URL=http://localstack:4566
       - OPENSEARCH_URL=http://opensearch:9200
       - TRANSACTION_QUEUE_URL=http://localstack:4566/000000000000/transaction-queue
       - INVALIDATION_QUEUE_URL=http://localhost:4566/000000000000/invalidation-queue
-    volumes:
-      - ".:/snovault"
-      - "/snovault/src/snovault.egg-info"
-    command: /scripts/pyramid/run-invalidation-service.sh
+      - RESOURCES_INDEX=snovault-resources
+    command: run-invalidation-service
     depends_on:
       - pyramid
 
   indexing-service:
     build:
-      context: .
-      dockerfile: ./docker/pyramid/Dockerfile
-    image: snovault-pyramid
+      context: ./docker/snoindex/
+    image: snovault-snoindex
     environment:
       - LOCALSTACK_ENDPOINT_URL=http://localstack:4566
       - INVALIDATION_QUEUE_URL=http://localhost:4566/000000000000/invalidation-queue
@@ -92,10 +88,8 @@ services:
       - BACKEND_URL=http://pyramid:6543
       - BACKEND_KEY=foobar
       - BACKEND_SECRET_KEY=bazqux
-    volumes:
-      - ".:/snovault"
-      - "/snovault/src/snovault.egg-info"
-    command: /scripts/pyramid/run-indexing-service.sh
+      - RESOURCES_INDEX=snovault-resources
+    command: run-indexing-service
     depends_on:
       - pyramid
 
