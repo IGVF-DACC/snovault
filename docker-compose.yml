@@ -97,7 +97,7 @@ services:
 
   invalidation-service:
     build:
-      dockerfile: ./docker/snoindex/Dockerfile
+      context: ./docker/snoindex/
     image: snovault-pyramid
     environment:
       - LOCALSTACK_ENDPOINT_URL=http://localstack:4566
@@ -110,7 +110,7 @@ services:
 
   indexing-service:
     build:
-      dockerfile: ./docker/snoindex/Dockerfile
+      context: ./docker/snoindex/
     image: snovault-pyramid
     environment:
       - LOCALSTACK_ENDPOINT_URL=http://localstack:4566
