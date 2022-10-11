@@ -16,6 +16,14 @@ from pyramid.settings import (
     asbool,
 )
 
+from snoindex.config import get_sqs_client
+
+from snoindex.repository.queue.sqs import SQSQueueProps
+from snoindex.repository.queue.sqs import SQSQueue
+
+from snovault.storage import notify_transaction_queue_when_transaction_record_updated
+
+
 STATIC_MAX_AGE = 0
 
 
@@ -125,7 +133,6 @@ def configure_dbsession(config):
 
 
 def configure_sqs_client(config):
-    from snovault.remote.queue import get_sqs_client
     config.registry['SQS_CLIENT'] = get_sqs_client()
 
 
@@ -133,23 +140,18 @@ def configure_transaction_queue(config):
     transaction_queue_url = os.environ.get(
         'TRANSACTION_QUEUE_URL'
     )
-    if transaction_queue_url is None:
-        return None
-    from snoindex.repository.queue.sqs import SQSQueue
-    from snoindex.repository.queue.sqs import SQSQueueProps
-    from snovault.storage import notify_transaction_queue_when_transaction_record_updated
-    sqs_client = config.registry['SQS_CLIENT']
-    transaction_queue = SQSQueue(
-        props=SQSQueueProps(
-            queue_url=transaction_queue_url,
-            client=sqs_client,
+    if transaction_queue_url is not None:
+        transaction_queue = SQSQueue(
+            props=SQSQueueProps(
+                queue_url=transaction_queue_url,
+                client=config.registry['SQS_CLIENT']
+            )
         )
-    )
-    transaction_queue.wait_for_queue_to_exist()
-    config.registry['TRANSACTION_QUEUE'] = transaction_queue
-    notify_transaction_queue_when_transaction_record_updated(
-        config
-    )
+        transaction_queue.wait_for_queue_to_exist()
+        config.registry['TRANSACTION_QUEUE'] = transaction_queue
+        notify_transaction_queue_when_transaction_record_updated(
+            config
+        )
 
 
 def session(config):
