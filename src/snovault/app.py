@@ -133,7 +133,11 @@ def configure_dbsession(config):
 
 
 def configure_sqs_client(config):
-    config.registry['SQS_CLIENT'] = get_sqs_client()
+    config.registry['SQS_CLIENT'] = get_sqs_client(
+        localstack_endpoint_url=os.environ.get(
+            'LOCALSTACK_ENDPOINT_URL'
+        )
+    )
 
 
 def configure_transaction_queue(config):
