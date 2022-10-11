@@ -84,7 +84,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/pyramid/Dockerfile
-    image: igvfd-pyramid
+    image: snovault-pyramid
     environment:
       - LOCALSTACK_ENDPOINT_URL=http://localstack:4566
       - TRANSACTION_QUEUE_URL=http://localstack:4566/000000000000/transaction-queue
@@ -98,7 +98,7 @@ services:
   invalidation-service:
     build:
       context: ./docker/snoindex/
-    image: snovault-pyramid
+    image: snoindex
     environment:
       - LOCALSTACK_ENDPOINT_URL=http://localstack:4566
       - OPENSEARCH_URL=http://opensearch:9200
@@ -111,7 +111,7 @@ services:
   indexing-service:
     build:
       context: ./docker/snoindex/
-    image: snovault-pyramid
+    image: snoindex
     environment:
       - LOCALSTACK_ENDPOINT_URL=http://localstack:4566
       - INVALIDATION_QUEUE_URL=http://localhost:4566/000000000000/invalidation-queue
