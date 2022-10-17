@@ -29,9 +29,9 @@ def test_indexing_updated_name_invalidates_dependents(testapp, dummy_request, wo
     testapp.get('/search/?type=User&lab.name=j-michael-cherry', status=404)
     testapp.patch_json(
         '/labs/some-other-name/',
-        {'name': 'j-micahel-cherry'}
+        {'name': 'j-michael-cherry'}
     )
     tq.wait_for_queue_to_drain()
     testapp.get('/search/?type=User&lab.name=some-other-lab', status=404)
-    response = testapp.get('/search/?type=User&lab.name=j-micahel-cherry')
+    response = testapp.get('/search/?type=User&lab.name=j-michael-cherry')
     assert len(response.json['@graph']) == 17
