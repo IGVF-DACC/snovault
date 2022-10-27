@@ -1,5 +1,7 @@
 from pyramid.view import view_config
 
+from snovault.interfaces import DBSESSION
+
 from snoindex.domain.message import OutboundMessage
 
 
