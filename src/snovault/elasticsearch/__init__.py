@@ -42,6 +42,7 @@ def includeme(config):
 
     config.include('.cached_views')
     config.include('.esstorage')
+    config.include('.index_views')
 
 
 def datastore(request):
