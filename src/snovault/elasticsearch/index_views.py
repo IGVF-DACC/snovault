@@ -47,7 +47,6 @@ def make_unique_id(uuid: str, xid: str) -> str:
 
 
 def make_outbound_message(uuid: str, xid: str) -> OutboundMessage:
-    print(make_unique_id(uuid, xid))
     body = {
         'metadata': {
             'xid': xid,
