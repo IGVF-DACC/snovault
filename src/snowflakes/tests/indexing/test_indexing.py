@@ -18,12 +18,12 @@ def test_indexing_simple_snowflakes(testapp, workbook):
 def test_indexing_updated_name_invalidates_dependents(testapp, dummy_request, workbook):
     response = testapp.get('/search/?type=User&lab.name=j-michael-cherry')
     assert len(response.json['@graph']) == 17
-    tq = dummy_request.registry['TRANSACTION_QUEUE']
+    iq = dummy_request.registry['INVALIDATION_QUEUE']
     testapp.patch_json(
         '/labs/j-michael-cherry/',
         {'name': 'some-other-name'}
     )
-    tq.wait_for_queue_to_drain()
+    iq.wait_for_queue_to_drain()
     response = testapp.get('/search/?type=User&lab.name=some-other-name')
     assert len(response.json['@graph']) == 17
     testapp.get('/search/?type=User&lab.name=j-michael-cherry', status=404)
@@ -31,7 +31,7 @@ def test_indexing_updated_name_invalidates_dependents(testapp, dummy_request, wo
         '/labs/some-other-name/',
         {'name': 'j-michael-cherry'}
     )
-    tq.wait_for_queue_to_drain()
+    iq.wait_for_queue_to_drain()
     testapp.get('/search/?type=User&lab.name=some-other-lab', status=404)
     response = testapp.get('/search/?type=User&lab.name=j-michael-cherry')
     assert len(response.json['@graph']) == 17
