@@ -1,5 +1,6 @@
 from pyramid.view import view_config
 
+from snovault.interfaces import COLLECTIONS
 from snovault.interfaces import DBSESSION
 
 from snoindex.domain.message import OutboundMessage
@@ -10,9 +11,9 @@ def includeme(config):
     config.scan(__name__)
 
 
-def get_all_uuids(registry, types=None):
+def get_all_uuids(request, types=None):
     # First index user and access_key so people can log in
-    collections = registry[COLLECTIONS]
+    collections = request.registry[COLLECTIONS]
     initial = ['user', 'access_key']
     for collection_name in initial:
         # for snovault test application, there are no users or keys
@@ -35,7 +36,6 @@ def get_current_xmin(request):
     session = request.registry[DBSESSION]()
     connection = session.connection()
     query = connection.execute(
-        'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE, READ ONLY, DEFERRABLE;'
         'SELECT pg_snapshot_xmin(pg_current_snapshot());'
     )
     xmin = query.scalar()
@@ -47,6 +47,7 @@ def make_unique_id(uuid: str, xid: str) -> str:
 
 
 def make_outbound_message(uuid: str, xid: str) -> OutboundMessage:
+    print(make_unique_id(uuid, xid))
     body = {
         'metadata': {
             'xid': xid,

@@ -158,6 +158,21 @@ def configure_transaction_queue(config):
         )
 
 
+def configure_invalidation_queue(config):
+    invalidation_queue_url = os.environ.get(
+        'INVALIDATION_QUEUE_URL'
+    )
+    if invalidation_queue_url is not None:
+        invalidation_queue = SQSQueue(
+            props=SQSQueueProps(
+                queue_url=invalidation_queue_url,
+                client=config.registry['SQS_CLIENT']
+            )
+        )
+        invalidation_queue.wait_for_queue_to_exist()
+        config.registry['INVALIDATION_QUEUE'] = invalidation_queue
+
+
 def session(config):
     """ To create a session secret on the server:
 
