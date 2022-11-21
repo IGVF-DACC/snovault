@@ -1,5 +1,5 @@
 from webob.multidict import MultiDict
-from .features.conftest import app_settings, app, workbook
+
 import pytest
 
 pytestmark = [pytest.mark.indexing]

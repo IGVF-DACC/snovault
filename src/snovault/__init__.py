@@ -48,6 +48,9 @@ from .resources import (
 from .app import (
     session,
     configure_dbsession,
+    configure_sqs_client,
+    configure_transaction_queue,
+    configure_invalidation_queue,
     static_resources,
     changelogs,
     json_from_path,
@@ -111,6 +114,9 @@ def main(global_config, **local_config):
     config.include(session)
 
     config.include(configure_dbsession)
+    config.include(configure_sqs_client)
+    config.include(configure_transaction_queue)
+    config.include(configure_invalidation_queue)
     config.include('snovault')
     config.commit()  # commit so search can override listing
 

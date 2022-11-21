@@ -26,6 +26,14 @@ def pytest_configure():
     logging.getLogger('sqlalchemy.engine.base.Engine').addFilter(Shorten())
 
 
+@pytest.fixture(scope='session')
+def ini_file(request):
+    path = os.path.abspath(
+        'config/pyramid/ini/development.ini'
+    )
+    return get_appsettings(path, name='app')
+
+
 @pytest.mark.fixture_cost(10)
 @pytest.yield_fixture(scope='session')
 def engine_url(request, ini_file):

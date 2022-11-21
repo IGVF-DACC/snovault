@@ -14,11 +14,12 @@ ORDER = [
     'user',
     'award',
     'lab',
+    'access_key',
     'snowball',
     'snowfort',
     'snowflake',
     'image',
-    'page'
+    'page',
 ]
 
 IS_ATTACHMENT = [

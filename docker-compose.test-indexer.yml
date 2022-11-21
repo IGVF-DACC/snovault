@@ -2,6 +2,21 @@ version: "3.8"
 
 services:
 
+  localstack:
+    build:
+      context: ./docker/localstack/
+    image: snovault-localstack
+    environment:
+      - AWS_DEFAULT_REGION=us-west-2
+      - AWS_ACCESS_KEY_ID=testing
+      - AWS_SECRET_ACCESS_KEY=testing
+      - SERVICES=sqs
+      - LS_LOG=warn
+    ports:
+      - "4566:4566"
+    volumes:
+      - "./docker/localstack/create_localstack.sh:/docker-entrypoint-initaws.d/create_localstack.sh"
+
   postgres:
     build:
       context: ./docker/postgres/
@@ -38,12 +53,64 @@ services:
       context: .
       dockerfile: ./docker/pyramid/Dockerfile
     image: snovault-pyramid
+    environment:
+      - LOCALSTACK_ENDPOINT_URL=http://localstack:4566
+      - TRANSACTION_QUEUE_URL=http://localstack:4566/000000000000/transaction-queue
+      - INVALIDATION_QUEUE_URL=http://localhost:4566/000000000000/invalidation-queue
+    volumes:
+      - ".:/snovault"
+      - "/snovault/src/snovault.egg-info"
+    command: /scripts/pyramid/run-development.sh
+    ports:
+      - "6543:6543"
+
+  invalidation-service:
+    build:
+      context: ./docker/snoindex/
+    image: snovault-snoindex
+    environment:
+      - LOCALSTACK_ENDPOINT_URL=http://localstack:4566
+      - OPENSEARCH_URL=http://opensearch:9200
+      - TRANSACTION_QUEUE_URL=http://localstack:4566/000000000000/transaction-queue
+      - INVALIDATION_QUEUE_URL=http://localhost:4566/000000000000/invalidation-queue
+      - RESOURCES_INDEX=snovault-resources
+    command: run-invalidation-service
+    depends_on:
+      - pyramid
+
+  indexing-service:
+    build:
+      context: ./docker/snoindex/
+    image: snovault-snoindex
+    environment:
+      - LOCALSTACK_ENDPOINT_URL=http://localstack:4566
+      - INVALIDATION_QUEUE_URL=http://localhost:4566/000000000000/invalidation-queue
+      - OPENSEARCH_URL=http://opensearch:9200
+      - BACKEND_URL=http://pyramid:6543
+      - BACKEND_KEY=foobar
+      - BACKEND_SECRET_KEY=bazqux
+      - RESOURCES_INDEX=snovault-resources
+    command: run-indexing-service
+    depends_on:
+      - pyramid
+
+  indexer-tests:
+    build:
+      context: .
+      dockerfile: ./docker/pyramid/Dockerfile
+    image: snovault-pyramid
+    environment:
+      - LOCALSTACK_ENDPOINT_URL=http://localstack:4566
+      - TRANSACTION_QUEUE_URL=http://localstack:4566/000000000000/transaction-queue
+      - INVALIDATION_QUEUE_URL=http://localhost:4566/000000000000/invalidation-queue
     volumes:
       - ".:/snovault"
       - "/snovault/src/snovault.egg-info"
     command: /scripts/pyramid/run-indexer-tests.sh
-    ports:
-      - "6543:6543"
     depends_on:
       - postgres
       - opensearch
+      - localstack
+      - pyramid
+      - invalidation-service
+      - indexing-service

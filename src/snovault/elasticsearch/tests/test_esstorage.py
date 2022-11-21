@@ -1,6 +1,8 @@
 import pytest
 from unittest.mock import Mock
 
+pytestmark = [pytest.mark.indexing]
+
 
 class TestPickStorage(object):
 

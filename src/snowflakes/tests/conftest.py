@@ -97,7 +97,6 @@ def workbook(conn, app, app_settings):
         inserts = resource_filename('snowflakes', 'tests/data/inserts/')
         docsdir = [resource_filename('snowflakes', 'tests/data/documents/')]
         load_all(testapp, inserts, docsdir)
-
         yield
     finally:
         tx.rollback()
@@ -128,11 +127,3 @@ def submitter_testapp(app):
         'REMOTE_USER': 'TEST_SUBMITTER',
     }
     return TestApp(app, environ)
-
-
-@pytest.fixture(scope='session')
-def ini_file(request):
-    path = os.path.abspath(
-        'config/pyramid/ini/development.ini'
-    )
-    return get_appsettings(path, name='app')

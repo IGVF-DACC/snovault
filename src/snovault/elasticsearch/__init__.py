@@ -42,11 +42,7 @@ def includeme(config):
 
     config.include('.cached_views')
     config.include('.esstorage')
-
-    config.include('.indexer')
-    config.include('.indexer_state')
-    if asbool(settings.get('indexer')) and not PY2:
-        config.include('.mpindexer')
+    config.include('.index_views')
 
 
 def datastore(request):

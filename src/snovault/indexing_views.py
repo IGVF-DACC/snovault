@@ -78,3 +78,13 @@ def item_index_data(context, request):
     }
 
     return document
+
+
+@view_config(context=Item, name='index-data-external', permission='index', request_method='GET')
+def item_index_data_external(context, request):
+    request.datastore = 'database'
+    uuid = str(context.uuid)
+    return request.embed(
+        f'/{uuid}/@@index-data',
+        as_user='INDEXER',
+    )

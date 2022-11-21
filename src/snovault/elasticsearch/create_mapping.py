@@ -491,7 +491,8 @@ def run(app, collections=None, dry_run=False):
         if collection_name != 'meta':
             indices.append(index)
 
-    create_snovault_index_alias(es, indices)
+    if not dry_run:
+        create_snovault_index_alias(es, indices)
 
 
 def main():

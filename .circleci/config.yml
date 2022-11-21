@@ -47,7 +47,7 @@ jobs:
     machine:
       image: ubuntu-2004:202111-02
       docker_layer_caching: true
-    resource_class: medium
+    resource_class: large
     working_directory: ~/snovault
     steps:
       - checkout
@@ -63,4 +63,4 @@ jobs:
       - run:
           name: Run tests
           command: |
-              docker-compose -f docker-compose.test-indexer.yml up --exit-code-from pyramid
+              docker-compose -f docker-compose.test-indexer.yml up --exit-code-from indexer-tests

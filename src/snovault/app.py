@@ -16,6 +16,14 @@ from pyramid.settings import (
     asbool,
 )
 
+from snoindex.config import get_sqs_client
+
+from snoindex.repository.queue.sqs import SQSQueueProps
+from snoindex.repository.queue.sqs import SQSQueue
+
+from snovault.storage import notify_transaction_queue_when_transaction_record_updated
+
+
 STATIC_MAX_AGE = 0
 
 
@@ -122,6 +130,47 @@ def configure_dbsession(config):
         snovault.storage.register(DBSession)
 
     config.registry[DBSESSION] = DBSession
+
+
+def configure_sqs_client(config):
+    config.registry['SQS_CLIENT'] = get_sqs_client(
+        localstack_endpoint_url=os.environ.get(
+            'LOCALSTACK_ENDPOINT_URL'
+        )
+    )
+
+
+def configure_transaction_queue(config):
+    transaction_queue_url = os.environ.get(
+        'TRANSACTION_QUEUE_URL'
+    )
+    if transaction_queue_url is not None:
+        transaction_queue = SQSQueue(
+            props=SQSQueueProps(
+                queue_url=transaction_queue_url,
+                client=config.registry['SQS_CLIENT']
+            )
+        )
+        transaction_queue.wait_for_queue_to_exist()
+        config.registry['TRANSACTION_QUEUE'] = transaction_queue
+        notify_transaction_queue_when_transaction_record_updated(
+            config
+        )
+
+
+def configure_invalidation_queue(config):
+    invalidation_queue_url = os.environ.get(
+        'INVALIDATION_QUEUE_URL'
+    )
+    if invalidation_queue_url is not None:
+        invalidation_queue = SQSQueue(
+            props=SQSQueueProps(
+                queue_url=invalidation_queue_url,
+                client=config.registry['SQS_CLIENT']
+            )
+        )
+        invalidation_queue.wait_for_queue_to_exist()
+        config.registry['INVALIDATION_QUEUE'] = invalidation_queue
 
 
 def session(config):
