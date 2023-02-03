@@ -5,9 +5,13 @@ from snovault.interfaces import DBSESSION
 
 from snoindex.domain.message import OutboundMessage
 
+from typing import Any
+from typing import Dict
+
 
 def includeme(config):
     config.add_route('_reindex', '/_reindex')
+    config.add_route('indexer_info', '/indexer-info')
     config.scan(__name__)
 
 
@@ -81,3 +85,46 @@ def put_uuids_on_invalidaiton_queue(request):
 )
 def reindex_view(request):
     put_uuids_on_invalidaiton_queue(request)
+
+
+def get_approximate_numbers_from_queue(info: Dict[str, Any]):
+    queue_info_fields_to_include = [
+        'ApproximateNumberOfMessages',
+        'ApproximateNumberOfMessagesNotVisible',
+        'ApproximateNumberOfMessagesDelayed',
+    ]
+    return {
+        k: int(v)
+        for k, v in info.items()
+        if k in queue_info_fields_to_include
+    }
+
+
+def is_indexing(indexer_info: Dict[str, Any]) -> bool:
+    return any(
+        (
+            indexer_info['transaction_queue']['ApproximateNumberOfMessages'] > 0,
+            indexer_info['invalidation_queue']['ApproximateNumberOfMessages'] > 0,
+        )
+    )
+
+
+@view_config(
+    route_name='indexer_info',
+    request_method='GET',
+)
+def indexer_info_view(request):
+    transaction_queue = request.registry['TRANSACTION_QUEUE']
+    invalidation_queue = request.registry['INVALIDATION_QUEUE']
+    indexer_info = {
+        'transaction_queue': get_approximate_numbers_from_queue(
+            transaction_queue.info()
+        ),
+        'invalidation_queue': get_approximate_numbers_from_queue(
+            invalidation_queue.info()
+        ),
+    }
+    indexer_info['is_indexing'] = is_indexing(
+        indexer_info
+    )
+    return indexer_info
