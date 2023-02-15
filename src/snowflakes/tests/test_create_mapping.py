@@ -60,284 +60,284 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
         'testing_server_default'
     ]
     assert mappings['award'] == {
-        "dynamic_templates": [
+        'dynamic_templates': [
             {
-                "template_principals_allowed": {
-                    "path_match": "principals_allowed.*",
-                    "match_mapping_type": "string",
-                    "mapping": {
-                        "type": "keyword"
+                'template_principals_allowed': {
+                    'path_match': 'principals_allowed.*',
+                    'match_mapping_type': 'string',
+                    'mapping': {
+                        'type': 'keyword'
                     }
                 }
             },
             {
-                "template_unique_keys": {
-                    "path_match": "unique_keys.*",
-                    "match_mapping_type": "string",
-                    "mapping": {
-                        "type": "keyword",
-                        "copy_to": "_all"
+                'template_unique_keys': {
+                    'path_match': 'unique_keys.*',
+                    'match_mapping_type': 'string',
+                    'mapping': {
+                        'type': 'keyword',
+                        'copy_to': '_all'
                     }
                 }
             },
             {
-                "template_links": {
-                    "path_match": "links.*",
-                    "match_mapping_type": "string",
-                    "mapping": {
-                        "type": "keyword"
+                'template_links': {
+                    'path_match': 'links.*',
+                    'match_mapping_type': 'string',
+                    'mapping': {
+                        'type': 'keyword'
                     }
                 }
             },
             {
-                "strings": {
-                    "match_mapping_type": "string",
-                    "mapping": {
-                        "type": "keyword"
+                'strings': {
+                    'match_mapping_type': 'string',
+                    'mapping': {
+                        'type': 'keyword'
                     }
                 }
             },
             {
-                "integers": {
-                    "match_mapping_type": "long",
-                    "mapping": {
-                        "type": "long",
-                        "fields": {
-                            "raw": {
-                                "type": "keyword"
+                'integers': {
+                    'match_mapping_type': 'long',
+                    'mapping': {
+                        'type': 'long',
+                        'fields': {
+                            'raw': {
+                                'type': 'keyword'
                             }
                         }
                     }
                 }
             }
         ],
-        "properties": {
-            "_all": {
-                "type": "text",
-                "store": False,
-                "analyzer": "snovault_index_analyzer",
-                "search_analyzer": "snovault_search_analyzer"
+        'properties': {
+            '_all': {
+                'type': 'text',
+                'store': False,
+                'analyzer': 'snovault_index_analyzer',
+                'search_analyzer': 'snovault_search_analyzer'
             },
-            "uuid": {
-                "type": "keyword",
-                "copy_to": "_all"
+            'uuid': {
+                'type': 'keyword',
+                'copy_to': '_all'
             },
-            "tid": {
-                "type": "keyword"
+            'tid': {
+                'type': 'keyword'
             },
-            "item_type": {
-                "type": "keyword",
-                "copy_to": "_all"
+            'item_type': {
+                'type': 'keyword',
+                'copy_to': '_all'
             },
-            "embedded": {
-                "type": "object",
-                "properties": {
-                    "status": {
-                        "type": "keyword"
+            'embedded': {
+                'type': 'object',
+                'properties': {
+                    'status': {
+                        'type': 'keyword'
                     },
-                    "uuid": {
-                        "type": "keyword"
+                    'uuid': {
+                        'type': 'keyword'
                     },
-                    "schema_version": {
-                        "type": "keyword"
+                    'schema_version': {
+                        'type': 'keyword'
                     },
-                    "title": {
-                        "type": "keyword",
-                        "copy_to": "_all"
+                    'title': {
+                        'type': 'keyword',
+                        'copy_to': '_all'
                     },
-                    "name": {
-                        "type": "keyword",
-                        "copy_to": "_all"
+                    'name': {
+                        'type': 'keyword',
+                        'copy_to': '_all'
                     },
-                    "description": {
-                        "type": "text"
+                    'description': {
+                        'type': 'text'
                     },
-                    "start_date": {
-                        "type": "keyword"
+                    'start_date': {
+                        'type': 'keyword'
                     },
-                    "end_date": {
-                        "type": "keyword"
+                    'end_date': {
+                        'type': 'keyword'
                     },
-                    "url": {
-                        "type": "keyword"
+                    'url': {
+                        'type': 'keyword'
                     },
-                    "pi": {
-                        "type": "object",
-                        "properties": {
-                            "status": {
-                                "type": "keyword"
+                    'pi': {
+                        'type': 'object',
+                        'properties': {
+                            'status': {
+                                'type': 'keyword'
                             },
-                            "uuid": {
-                                "type": "keyword"
+                            'uuid': {
+                                'type': 'keyword'
                             },
-                            "schema_version": {
-                                "type": "keyword"
+                            'schema_version': {
+                                'type': 'keyword'
                             },
-                            "email": {
-                                "type": "keyword"
+                            'email': {
+                                'type': 'keyword'
                             },
-                            "first_name": {
-                                "type": "keyword"
+                            'first_name': {
+                                'type': 'keyword'
                             },
-                            "last_name": {
-                                "type": "keyword"
+                            'last_name': {
+                                'type': 'keyword'
                             },
-                            "lab": {
-                                "type": "keyword"
+                            'lab': {
+                                'type': 'keyword'
                             },
-                            "submits_for": {
-                                "type": "keyword"
+                            'submits_for': {
+                                'type': 'keyword'
                             },
-                            "groups": {
-                                "type": "keyword"
+                            'groups': {
+                                'type': 'keyword'
                             },
-                            "viewing_groups": {
-                                "type": "keyword"
+                            'viewing_groups': {
+                                'type': 'keyword'
                             },
-                            "job_title": {
-                                "type": "keyword"
+                            'job_title': {
+                                'type': 'keyword'
                             },
-                            "phone1": {
-                                "type": "keyword"
+                            'phone1': {
+                                'type': 'keyword'
                             },
-                            "phone2": {
-                                "type": "keyword"
+                            'phone2': {
+                                'type': 'keyword'
                             },
-                            "fax": {
-                                "type": "keyword"
+                            'fax': {
+                                'type': 'keyword'
                             },
-                            "skype": {
-                                "type": "keyword"
+                            'skype': {
+                                'type': 'keyword'
                             },
-                            "google": {
-                                "type": "keyword"
+                            'google': {
+                                'type': 'keyword'
                             },
-                            "timezone": {
-                                "type": "keyword"
+                            'timezone': {
+                                'type': 'keyword'
                             },
-                            "@id": {
-                                "type": "keyword"
+                            '@id': {
+                                'type': 'keyword'
                             },
-                            "@type": {
-                                "type": "keyword"
+                            '@type': {
+                                'type': 'keyword'
                             },
-                            "title": {
-                                "type": "keyword",
-                                "copy_to": "_all"
+                            'title': {
+                                'type': 'keyword',
+                                'copy_to': '_all'
                             }
                         }
                     },
-                    "rfa": {
-                        "type": "keyword"
+                    'rfa': {
+                        'type': 'keyword'
                     },
-                    "project": {
-                        "type": "keyword",
-                        "copy_to": "_all"
+                    'project': {
+                        'type': 'keyword',
+                        'copy_to': '_all'
                     },
-                    "viewing_group": {
-                        "type": "keyword"
+                    'viewing_group': {
+                        'type': 'keyword'
                     },
-                    "@id": {
-                        "type": "keyword"
+                    '@id': {
+                        'type': 'keyword'
                     },
-                    "@type": {
-                        "type": "keyword"
+                    '@type': {
+                        'type': 'keyword'
                     }
                 }
             },
-            "object": {
-                "type": "object",
-                "enabled": False
+            'object': {
+                'type': 'object',
+                'enabled': False
             },
-            "properties": {
-                "type": "object",
-                "enabled": False
+            'properties': {
+                'type': 'object',
+                'enabled': False
             },
-            "propsheets": {
-                "type": "object",
-                "enabled": False
+            'propsheets': {
+                'type': 'object',
+                'enabled': False
             },
-            "embedded_uuids": {
-                "type": "keyword"
+            'embedded_uuids': {
+                'type': 'keyword'
             },
-            "linked_uuids": {
-                "type": "keyword"
+            'linked_uuids': {
+                'type': 'keyword'
             },
-            "paths": {
-                "type": "keyword"
+            'paths': {
+                'type': 'keyword'
             },
-            "audit": {
-                "type": "object",
-                "properties": {
-                    "ERROR": {
-                        "type": "object",
-                        "properties": {
-                            "category": {
-                                "type": "keyword"
+            'audit': {
+                'type': 'object',
+                'properties': {
+                    'ERROR': {
+                        'type': 'object',
+                        'properties': {
+                            'category': {
+                                'type': 'keyword'
                             },
-                            "detail": {
-                                "type": "text",
-                                "index": "true"
+                            'detail': {
+                                'type': 'text',
+                                'index': 'true'
                             },
-                            "level_name": {
-                                "type": "keyword"
+                            'level_name': {
+                                'type': 'keyword'
                             },
-                            "level": {
-                                "type": "integer"
+                            'level': {
+                                'type': 'integer'
                             }
                         }
                     },
-                    "NOT_COMPLIANT": {
-                        "type": "object",
-                        "properties": {
-                            "category": {
-                                "type": "keyword"
+                    'NOT_COMPLIANT': {
+                        'type': 'object',
+                        'properties': {
+                            'category': {
+                                'type': 'keyword'
                             },
-                            "detail": {
-                                "type": "text",
-                                "index": "true"
+                            'detail': {
+                                'type': 'text',
+                                'index': 'true'
                             },
-                            "level_name": {
-                                "type": "keyword"
+                            'level_name': {
+                                'type': 'keyword'
                             },
-                            "level": {
-                                "type": "integer"
+                            'level': {
+                                'type': 'integer'
                             }
                         }
                     },
-                    "WARNING": {
-                        "type": "object",
-                        "properties": {
-                            "category": {
-                                "type": "keyword"
+                    'WARNING': {
+                        'type': 'object',
+                        'properties': {
+                            'category': {
+                                'type': 'keyword'
                             },
-                            "detail": {
-                                "type": "text",
-                                "index": "true"
+                            'detail': {
+                                'type': 'text',
+                                'index': 'true'
                             },
-                            "level_name": {
-                                "type": "keyword"
+                            'level_name': {
+                                'type': 'keyword'
                             },
-                            "level": {
-                                "type": "integer"
+                            'level': {
+                                'type': 'integer'
                             }
                         }
                     },
-                    "INTERNAL_ACTION": {
-                        "type": "object",
-                        "properties": {
-                            "category": {
-                                "type": "keyword"
+                    'INTERNAL_ACTION': {
+                        'type': 'object',
+                        'properties': {
+                            'category': {
+                                'type': 'keyword'
                             },
-                            "detail": {
-                                "type": "text",
-                                "index": "true"
+                            'detail': {
+                                'type': 'text',
+                                'index': 'true'
                             },
-                            "level_name": {
-                                "type": "keyword"
+                            'level_name': {
+                                'type': 'keyword'
                             },
-                            "level": {
-                                "type": "integer"
+                            'level': {
+                                'type': 'integer'
                             }
                         }
                     }
