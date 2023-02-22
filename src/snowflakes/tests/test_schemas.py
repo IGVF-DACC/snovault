@@ -87,6 +87,46 @@ def test_schemas_type_hierarchy_view(testapp):
     assert actual == expected
 
 
+def test_schemas_collection_titles_view(testapp):
+    actual = testapp.get('/collection-titles/').json
+    expected = {
+        "awards": "Awards (Grants)",
+        "Award": "Awards (Grants)",
+        "award": "Awards (Grants)",
+        "labs": "Labs",
+        "Lab": "Labs",
+        "lab": "Labs",
+        "access-keys": "Access keys",
+        "AccessKey": "Access keys",
+        "access_key": "Access keys",
+        "images": "Image",
+        "Image": "Image",
+        "image": "Image",
+        "pages": "Pages",
+        "Page": "Pages",
+        "page": "Pages",
+        "snowballs": "Snowball style snowset",
+        "Snowball": "Snowball style snowset",
+        "snowball": "Snowball style snowset",
+        "snowflakes": "Snowflakes",
+        "Snowflake": "Snowflakes",
+        "snowflake": "Snowflakes",
+        "snowforts": "Snowfort style snowset",
+        "Snowfort": "Snowfort style snowset",
+        "snowfort": "Snowfort style snowset",
+        "snowsets": "Snowsets",
+        "Snowset": "Snowsets",
+        "users": "Snowflake  Users",
+        "User": "Snowflake  Users",
+        "user": "Snowflake  Users",
+        "testing-downloads": "Test download collection",
+        "TestingDownload": "Test download collection",
+        "testing_download": "Test download collection",
+        "@type": ["CollectionTitles"]
+    }
+    assert actual == expected
+
+
 def test_etag_if_match_tid(testapp, award):
     res = testapp.get(award['@id'] + '?frame=edit', status=200)
     etag = res.etag
