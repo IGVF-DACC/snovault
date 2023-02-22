@@ -10,6 +10,8 @@ from .resources import Item
 
 def includeme(config):
     config.scan(__name__)
+    config.add_route('opensearch-mapping-hashes', '/opensearch-mapping-hashes{slash:/?}')
+
 
 
 @view_config(context=Item, name='index-data', permission='index', request_method='GET')
@@ -88,3 +90,8 @@ def item_index_data_external(context, request):
         f'/{uuid}/@@index-data',
         as_user='INDEXER',
     )
+
+
+@view_config(route_name='opensearch-mapping-hashes', request_method='GET', permission='search')
+def opensearch_mapping_hashes(context, request):
+    return request.registry['MAPPING_HASHES']

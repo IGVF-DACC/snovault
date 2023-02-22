@@ -345,3 +345,32 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
             }
         }
     }
+
+
+def test_mapping_register_opensesarch_mapping_hashes_view(testapp):
+    actual = testapp.get('/opensearch-mapping-hashes').json
+    actual_keys = sorted(actual.keys())
+    expected_keys = [
+        'access_key',
+        'award',
+        'default',
+        'image',
+        'lab',
+        'page',
+        'snowball',
+        'snowflake',
+        'snowfort',
+        'testing_bad_accession',
+        'testing_custom_embed_source',
+        'testing_custom_embed_target',
+        'testing_dependencies',
+        'testing_download',
+        'testing_link_source',
+        'testing_link_target',
+        'testing_post_put_patch',
+        'testing_search_schema',
+        'testing_search_schema_special_facets',
+        'testing_server_default',
+        'user'
+    ]
+    assert actual_keys == expected_keys
