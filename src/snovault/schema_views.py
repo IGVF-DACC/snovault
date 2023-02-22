@@ -14,6 +14,7 @@ def includeme(config):
     config.add_route('schemap', '/profiles/{type_name}{slash:/?}')
     config.add_route('schemas_map', '/profiles-map/')
     config.add_route('schemas_titles', '/profiles-titles/')
+    config.add_route('collection_titles', '/collection-titles/')
     config.scan(__name__)
 
 
@@ -97,4 +98,25 @@ def schemas_titles(context, request):  # pylint: disable=unused-argument
         if 'title' in type_info.schema
     }
     profiles_titles['@type'] = ['JSONSchemas']
+
     return profiles_titles
+
+
+@view_config(
+    route_name='collection_titles',
+    request_method='GET',
+    decorator=etag_app_version_effective_principals
+)
+def collection_titles(context, request):
+    # Pull the properties out of Collection object.
+    collections = {
+        k: v.__json__(request)
+        for k, v in request.registry[COLLECTIONS].items()
+    }
+    collection_titles = {
+        k: v['title']
+        for k, v in collections.items()
+        if v.get('title')
+    }
+    collection_titles['@type'] = ['CollectionTitles']
+    return collection_titles
