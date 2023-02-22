@@ -59,11 +59,18 @@ def item_index_data(context, request):
 
     audit = request.embed(path, '@@audit')['audit']
 
+    item_type = context.type_info.item_type
+
+    mapping_hash = request.registry['MAPPING_HASHES'][item_type]
+
+    index_name = f'{item_type}_{mapping_hash}'
+
     document = {
         'audit': audit,
         'embedded': embedded,
         'embedded_uuids': sorted(request._embedded_uuids),
-        'item_type': context.type_info.item_type,
+        'item_type': item_type,
+        'index_name': index_name,
         'linked_uuids': sorted(request._linked_uuids),
         'links': links,
         'object': object,

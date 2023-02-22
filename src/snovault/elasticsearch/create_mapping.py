@@ -310,6 +310,9 @@ def es_mapping(mapping):
                 'type': 'keyword',
                 'copy_to': '_all',
             },
+            'index_name': {
+                'type': 'keyword',
+            },
             'embedded': mapping,
             'object': {
                 'type': 'object',
@@ -466,6 +469,18 @@ def generate_indices_and_mappings(app, collections=None):
     return (indices, mappings)
 
 
+def create_and_set_index_mapping(es, index, index_settings, mapping):
+    create_elasticsearch_index(
+        es,
+        index,
+        index_settings,
+    )
+    set_index_mapping(
+        es,
+        index,
+        mapping,
+    )
+
 def run(app, collections=None, dry_run=False):
     indices, mappings = generate_indices_and_mappings(
         app,
@@ -483,15 +498,11 @@ def run(app, collections=None, dry_run=False):
     print('CREATE MAPPING RUNNING')
     es = app.registry[ELASTIC_SEARCH]
     for index, mapping in mappings.items():
-        create_elasticsearch_index(
-            es,
-            index,
-            index_settings(),
-        )
-        set_index_mapping(
-            es,
-            index,
-            mapping,
+        create_and_set_index_mapping(
+            es=es,
+            index=index,
+            index_settings=index_settings(),
+            mapping=mapping,
         )
     create_snovault_index_alias(
         es,

@@ -1,0 +1,139 @@
+from pyramid.paster import get_app
+
+from webtest import TestApp
+
+from .create_mapping import generate_indices_and_mappings
+from .create_mapping import index_settings as get_index_settings
+from .create_mapping import create_and_set_index_mapping
+
+from .interfaces import ELASTIC_SEARCH
+from .interfaces import RESOURCES_INDEX as ALL_RESOURCES_ALIAS
+
+
+def reindex_by_collection(app, collection):
+    environ = {
+        'HTTP_ACCEPT': 'application/json',
+        'REMOTE_USER': 'INDEXER',
+    }
+    testapp = TestApp(
+        app,
+        environ
+    )
+    testapp.post_json(
+        f'/_reindex_by_collection?collection={collection}',
+        {},
+    )
+
+
+def get_aliases(type_alias, all_resources_alias=ALL_RESOURCES_ALIAS):
+    return {
+        type_alias: {},
+        all_resources_alias: {},
+    }
+
+
+def create_latest_indices_and_reindex_collection_if_not_exists(app, opensearch_client, type_alias_to_current_index_name, mappings):
+    for type_alias, current_index_name in type_alias_to_current_index_name.items():
+        if not opensearch_client.indices.exists(current_index_name):
+            print(f'Creating index {current_index_name} for type {type_alias}')
+            index_settings = get_index_settings()
+            index_settings['aliases'] = get_aliases(type_alias)
+            create_and_set_index_mapping(
+                es=opensearch_client,
+                index=current_index_name,
+                index_settings=index_settings,
+                mapping=mappings[type_alias],
+            )
+            print('Reindexing', type_alias)
+            reindex_by_collection(
+                app,
+                type_alias
+            )
+
+
+def get_current_index_names(type_alias_to_current_index_name):
+    return [
+        current_index_name
+        for type_alias, current_index_name in type_alias_to_current_index_name.items()
+    ]
+
+
+def delete_old_indices_if_empty(opensearch_client, type_alias_to_current_index_name, all_resources_alias=ALL_RESOURCES_ALIAS):
+    current_index_names = get_current_index_names(type_alias_to_current_index_name)
+    all_existing_resources_indices = list(opensearch_client.indices.get_alias(all_resources_alias).keys())
+    for existing_index in all_existing_resources_indices:
+        if existing_index in current_index_names:
+            print(f'Not deleting current index {existing_index}')
+            continue
+        documents_in_index = opensearch_client.count(index=existing_index)['count']
+        if documents_in_index != 0:
+            print(f'{existing_index} is not latest but still has documents, skipping delete')
+            continue
+        print(f'Deleting {existing_index}')
+        print(opensearch_client.indices.delete(index=existing_index, ignore=[400, 404]))
+
+
+def update(app, opensearch_client, type_alias_to_current_index_name, mappings):
+    create_latest_indices_and_reindex_collection_if_not_exists(
+        app,
+        opensearch_client,
+        type_alias_to_current_index_name,
+        mappings,
+    )
+    delete_old_indices_if_empty(
+        opensearch_client,
+        type_alias_to_current_index_name
+    )
+
+
+def make_type_alias_to_current_index_name(app):
+    mapping_hashes = app.registery['MAPPING_HASHES']
+    return {
+        k: f'{k}_{v}'
+        for k, v in mapping_hashes.items()
+    }
+
+
+def get_mappings(app):
+    indices, mappings = generate_indices_and_mappings(app)
+    return mappings
+
+
+def manage_mappings(app):
+    opensearch_client = app.registry[ELASTIC_SEARCH]
+    type_alias_to_current_index_name = make_type_alias_to_current_index_name(
+        app
+    )
+    mappings = get_mappings(app)
+    opensearch_client = app.registry[ELASTIC_SEARCH]
+    update(
+        app,
+        opensearch_client,
+        type_alias_to_current_index_name,
+        mappings,
+    )
+
+
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(
+        description='Manage Opensearch mappings',
+    )
+    parser.add_argument(
+        '--app-name',
+        help='Pyramid app name in configfile'
+    )
+    parser.add_argument(
+        'config_uri',
+        help='path to configfile'
+    )
+    args = parser.parse_args()
+    app = get_app(
+        args.config_uri,
+        args.app_name
+    )
+    manage_mappings(app)
+
+
+if __name__ == '__main__':
+    main()

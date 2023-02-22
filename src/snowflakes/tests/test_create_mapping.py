@@ -129,6 +129,9 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
                 'type': 'keyword',
                 'copy_to': '_all'
             },
+            'index_name': {
+                'type': 'keyword',
+            },
             'embedded': {
                 'type': 'object',
                 'properties': {
