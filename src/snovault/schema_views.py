@@ -98,7 +98,6 @@ def schemas_titles(context, request):  # pylint: disable=unused-argument
         if 'title' in type_info.schema
     }
     profiles_titles['@type'] = ['JSONSchemas']
-
     return profiles_titles
 
 
