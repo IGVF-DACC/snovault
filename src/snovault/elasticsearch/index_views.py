@@ -13,6 +13,7 @@ from typing import Dict
 
 def includeme(config):
     config.add_route('_reindex', '/_reindex')
+    config.add_route('_reindex_by_collection', '/_reindex_by_collection')
     config.add_route('indexer_info', '/indexer-info')
     config.scan(__name__)
 
@@ -72,27 +73,32 @@ def make_outbound_message(uuid: str, xid: str) -> OutboundMessage:
     return outbound_message
 
 
-def put_uuids_on_invalidaiton_queue(request):
+def _put_uuids_on_invalidation_queue(request, uuids):
     xmin = get_current_xmin(request)
     invalidation_queue = request.registry['INVALIDATION_QUEUE']
     outbound_messages = [
         make_outbound_message(uuid, xmin)
-        for uuid in get_all_uuids(request)
+        for uuid in uuids
     ]
     invalidation_queue.send_messages(
         outbound_messages
     )
 
 
+def put_uuids_on_invalidaiton_queue(request):
+    _put_uuids_on_invalidation_queue(
+        request=request,
+        uuids=get_all_uuids(request)
+    )
+
+
 def put_collection_uuids_on_invalidaiton_queue(request, collection):
-    xmin = get_current_xmin(request)
-    invalidation_queue = request.registry['INVALIDATION_QUEUE']
-    outbound_messages = [
-        make_outbound_message(uuid, xmin)
-        for uuid in get_all_uuids_in_collection(request, collection)
-    ]
-    invalidation_queue.send_messages(
-        outbound_messages
+    _put_uuids_on_invalidation_queue(
+        request=request,
+        uuids=get_all_uuids_in_collection(
+            request,
+            collection,
+        )
     )
 
 

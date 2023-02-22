@@ -13,7 +13,6 @@ def includeme(config):
     config.add_route('opensearch-mapping-hashes', '/opensearch-mapping-hashes{slash:/?}')
 
 
-
 @view_config(context=Item, name='index-data', permission='index', request_method='GET')
 def item_index_data(context, request):
     uuid = str(context.uuid)

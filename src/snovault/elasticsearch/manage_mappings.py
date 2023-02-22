@@ -49,6 +49,8 @@ def create_latest_indices_and_reindex_collection_if_not_exists(app, opensearch_c
                 app,
                 type_alias
             )
+        else:
+            print(f'Index {current_index_name} for {type_alias} already exists')
 
 
 def get_current_index_names(type_alias_to_current_index_name):
@@ -87,7 +89,7 @@ def update(app, opensearch_client, type_alias_to_current_index_name, mappings):
 
 
 def make_type_alias_to_current_index_name(app):
-    mapping_hashes = app.registery['MAPPING_HASHES']
+    mapping_hashes = app.registry['MAPPING_HASHES']
     return {
         k: f'{k}_{v}'
         for k, v in mapping_hashes.items()

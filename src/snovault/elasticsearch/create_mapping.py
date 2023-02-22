@@ -481,6 +481,7 @@ def create_and_set_index_mapping(es, index, index_settings, mapping):
         mapping,
     )
 
+
 def run(app, collections=None, dry_run=False):
     indices, mappings = generate_indices_and_mappings(
         app,
