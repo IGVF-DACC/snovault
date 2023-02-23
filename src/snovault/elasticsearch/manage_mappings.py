@@ -2,6 +2,8 @@ from pyramid.paster import get_app
 
 from webtest import TestApp
 
+from opensearchpy.exceptions import NotFoundError
+
 from .create_mapping import generate_indices_and_mappings
 from .create_mapping import index_settings as get_index_settings
 from .create_mapping import create_and_set_index_mapping
@@ -61,6 +63,32 @@ def reindex_collections(app, collections):
         )
 
 
+def clean_up_auto_created_indices(opensearch_client, type_alias_to_current_index_name, all_resources_alias=ALL_RESOURCES_ALIAS):
+    # We can't turn off auto_create_index at cluster level so we'll clean up manually
+    # if any of our workers start writing to an index that doesn't exist yet.
+    current_index_names = get_current_index_names(
+        type_alias_to_current_index_name
+    )
+    try:
+        all_existing_resources_indices = list(
+            opensearch_client.indices.get_alias(
+                all_resources_alias
+            ).keys()
+        )
+    except NotFoundError as e:
+        print(e)
+        # Give up if resources alias doesn't exist yet.
+        return
+    for current_index_name in current_index_names:
+        if current_index_name in all_existing_resources_indices:
+            # It's aliased so we created it.
+            continue
+        if opensearch_client.indices.exists(current_index_name):
+            # It exists but we didn't create it.
+            print('Deleting unaliased (autocreated?) index', current_index_name)
+            print(opensearch_client.indices.delete(current_index_name))
+
+
 def create_latest_indices_and_maybe_reindex(app, opensearch_client, type_alias_to_current_index_name, mappings):
     collections_to_reindex = []
     for type_alias, current_index_name in type_alias_to_current_index_name.items():
@@ -108,6 +136,10 @@ def delete_old_indices_if_empty(opensearch_client, type_alias_to_current_index_n
 
 
 def update(app, opensearch_client, type_alias_to_current_index_name, mappings):
+    clean_up_auto_created_indices(
+        opensearch_client=opensearch_client,
+        type_alias_to_current_index_name=type_alias_to_current_index_name,
+    )
     create_latest_indices_and_maybe_reindex(
         app=app,
         opensearch_client=opensearch_client,
