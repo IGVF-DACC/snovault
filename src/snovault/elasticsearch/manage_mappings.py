@@ -34,14 +34,6 @@ def get_aliases(type_alias, all_resources_alias=ALL_RESOURCES_ALIAS):
     }
 
 
-def should_reindex_collection(opensearch_client, type_alias):
-    # Don't reindex if this is initial creation.
-    try:
-        return len(opensearch_client.indices.get_alias(type_alias)) > 0
-    except Exception:
-        return False
-
-
 def create_index(opensearch_client, type_alias, current_index_name, mappings):
     print(f'Creating index {current_index_name} for type {type_alias}')
     index_settings = get_index_settings()
@@ -89,19 +81,17 @@ def clean_up_auto_created_indices(opensearch_client, type_alias_to_current_index
             print(opensearch_client.indices.delete(current_index_name))
 
 
-def create_latest_indices_and_maybe_reindex(app, opensearch_client, type_alias_to_current_index_name, mappings):
+def create_latest_indices_and_reindex(app, opensearch_client, type_alias_to_current_index_name, mappings):
     collections_to_reindex = []
     for type_alias, current_index_name in type_alias_to_current_index_name.items():
         if not opensearch_client.indices.exists(current_index_name):
-            # Check before creating new index for type.
-            if should_reindex_collection(opensearch_client, type_alias):
-                collections_to_reindex.append(type_alias)
             create_index(
                 opensearch_client=opensearch_client,
                 type_alias=type_alias,
                 current_index_name=current_index_name,
                 mappings=mappings,
             )
+            collections_to_reindex.append(type_alias)
         else:
             print(f'Index {current_index_name} for {type_alias} already exists')
     reindex_collections(app, collections_to_reindex)
@@ -140,7 +130,7 @@ def update(app, opensearch_client, type_alias_to_current_index_name, mappings):
         opensearch_client=opensearch_client,
         type_alias_to_current_index_name=type_alias_to_current_index_name,
     )
-    create_latest_indices_and_maybe_reindex(
+    create_latest_indices_and_reindex(
         app=app,
         opensearch_client=opensearch_client,
         type_alias_to_current_index_name=type_alias_to_current_index_name,
