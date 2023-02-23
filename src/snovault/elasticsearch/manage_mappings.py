@@ -116,7 +116,7 @@ def update(app, opensearch_client, type_alias_to_current_index_name, mappings):
     )
     delete_old_indices_if_empty(
         opensearch_client=opensearch_client,
-        type_alias_to_current_index_name=type_alias_to_current_index_name
+        type_alias_to_current_index_name=type_alias_to_current_index_name,
     )
 
 
