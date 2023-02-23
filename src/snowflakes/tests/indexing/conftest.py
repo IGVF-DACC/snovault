@@ -29,10 +29,9 @@ def app_settings(wsgi_server_host_port, postgresql_server, elasticsearch_server)
 @pytest.yield_fixture(scope='session')
 def app(app_settings):
     from snowflakes import main
-    from snovault.elasticsearch import create_mapping
+    from snovault.elasticsearch.manage_mappings import manage_mappings
     app = main({}, **app_settings)
-
-    create_mapping.run(app)
+    manage_mappings(app)
     yield app
 
     from snovault import DBSESSION
