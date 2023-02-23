@@ -32,25 +32,51 @@ def get_aliases(type_alias, all_resources_alias=ALL_RESOURCES_ALIAS):
     }
 
 
-def create_latest_indices_and_reindex_collection_if_not_exists(app, opensearch_client, type_alias_to_current_index_name, mappings):
+def should_reindex_collection(opensearch_client, type_alias):
+    # Don't reindex if this is initial creation.
+    try:
+        return len(opensearch_client.indices.get_alias(type_alias)) > 0
+    except Exception:
+        return False
+
+
+def create_index(opensearch_client, type_alias, current_index_name, mappings):
+    print(f'Creating index {current_index_name} for type {type_alias}')
+    index_settings = get_index_settings()
+    index_settings['aliases'] = get_aliases(type_alias)
+    create_and_set_index_mapping(
+        es=opensearch_client,
+        index=current_index_name,
+        index_settings=index_settings,
+        mapping=mappings[type_alias],
+    )
+
+
+def reindex_collections(app, collections):
+    for collection in collections:
+        print('Reindexing', collection)
+        reindex_by_collection(
+            app,
+            collection,
+        )
+
+
+def create_latest_indices_and_maybe_reindex(app, opensearch_client, type_alias_to_current_index_name, mappings):
+    collections_to_reindex = []
     for type_alias, current_index_name in type_alias_to_current_index_name.items():
         if not opensearch_client.indices.exists(current_index_name):
-            print(f'Creating index {current_index_name} for type {type_alias}')
-            index_settings = get_index_settings()
-            index_settings['aliases'] = get_aliases(type_alias)
-            create_and_set_index_mapping(
-                es=opensearch_client,
-                index=current_index_name,
-                index_settings=index_settings,
-                mapping=mappings[type_alias],
-            )
-            print('Reindexing', type_alias)
-            reindex_by_collection(
-                app,
-                type_alias
+            # Check before creating new index for type.
+            if should_reindex_collection(opensearch_client, type_alias):
+                collections_to_reindex.append(type_alias)
+            create_index(
+                opensearch_client=opensearch_client,
+                type_alias=type_alias,
+                current_index_name=current_index_name,
+                mappings=mappings,
             )
         else:
             print(f'Index {current_index_name} for {type_alias} already exists')
+    reindex_collections(app, collections_to_reindex)
 
 
 def get_current_index_names(type_alias_to_current_index_name):
@@ -61,8 +87,14 @@ def get_current_index_names(type_alias_to_current_index_name):
 
 
 def delete_old_indices_if_empty(opensearch_client, type_alias_to_current_index_name, all_resources_alias=ALL_RESOURCES_ALIAS):
-    current_index_names = get_current_index_names(type_alias_to_current_index_name)
-    all_existing_resources_indices = list(opensearch_client.indices.get_alias(all_resources_alias).keys())
+    current_index_names = get_current_index_names(
+        type_alias_to_current_index_name
+    )
+    all_existing_resources_indices = list(
+        opensearch_client.indices.get_alias(
+            all_resources_alias
+        ).keys()
+    )
     for existing_index in all_existing_resources_indices:
         if existing_index in current_index_names:
             print(f'Not deleting current index {existing_index}')
@@ -76,15 +108,15 @@ def delete_old_indices_if_empty(opensearch_client, type_alias_to_current_index_n
 
 
 def update(app, opensearch_client, type_alias_to_current_index_name, mappings):
-    create_latest_indices_and_reindex_collection_if_not_exists(
-        app,
-        opensearch_client,
-        type_alias_to_current_index_name,
-        mappings,
+    create_latest_indices_and_maybe_reindex(
+        app=app,
+        opensearch_client=opensearch_client,
+        type_alias_to_current_index_name=type_alias_to_current_index_name,
+        mappings=mappings,
     )
     delete_old_indices_if_empty(
-        opensearch_client,
-        type_alias_to_current_index_name
+        opensearch_client=opensearch_client,
+        type_alias_to_current_index_name=type_alias_to_current_index_name
     )
 
 
