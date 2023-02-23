@@ -13,6 +13,10 @@ def external_tx():
     pass
 
 
+def wait_for_indexing():
+    time.sleep(45)
+
+
 @pytest.fixture(scope='session')
 def app_settings(wsgi_server_host_port, postgresql_server, elasticsearch_server):
     from snovault.tests.testappfixtures import _app_settings
@@ -32,6 +36,7 @@ def app(app_settings):
     from snovault.elasticsearch.manage_mappings import manage_mappings
     app = main({}, **app_settings)
     manage_mappings(app)
+
     yield app
 
     from snovault import DBSESSION
@@ -55,10 +60,7 @@ def workbook(app):
     inserts = resource_filename('snowflakes', 'tests/data/inserts/')
     docsdir = [resource_filename('snowflakes', 'tests/data/documents/')]
     load_all(testapp, inserts, docsdir)
-
-    print('Waiting for indexing')
-    time.sleep(30)
-
+    wait_for_indexing()
     yield
     # XXX cleanup
 
