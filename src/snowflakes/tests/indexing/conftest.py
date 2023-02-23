@@ -13,8 +13,19 @@ def external_tx():
     pass
 
 
-def wait_for_indexing():
-    time.sleep(45)
+def wait_for_indexing(testapp):
+    double_check_number = 3
+    while True:
+        print('Waiting for indexing', double_check_number)
+        is_indexing = bool(testapp.get('/indexer-info').json['is_indexing'])
+        if is_indexing:
+            double_check_number = 3
+        else:
+            double_check_number -= 1
+        if double_check_number <= 0:
+            break
+        time.sleep(10)
+
 
 
 @pytest.fixture(scope='session')
@@ -32,10 +43,17 @@ def app_settings(wsgi_server_host_port, postgresql_server, elasticsearch_server)
 
 @pytest.yield_fixture(scope='session')
 def app(app_settings):
+    from webtest import TestApp
     from snowflakes import main
     from snovault.elasticsearch.manage_mappings import manage_mappings
     app = main({}, **app_settings)
     manage_mappings(app)
+    environ = {
+        'HTTP_ACCEPT': 'application/json',
+        'REMOTE_USER': 'TEST',
+    }
+    testapp = TestApp(app, environ)
+    wait_for_indexing(testapp)
 
     yield app
 
@@ -60,7 +78,7 @@ def workbook(app):
     inserts = resource_filename('snowflakes', 'tests/data/inserts/')
     docsdir = [resource_filename('snowflakes', 'tests/data/documents/')]
     load_all(testapp, inserts, docsdir)
-    wait_for_indexing()
+    wait_for_indexing(testapp)
     yield
     # XXX cleanup
 
