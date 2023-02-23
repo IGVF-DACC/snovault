@@ -356,7 +356,6 @@ def test_mapping_register_opensesarch_mapping_hashes_view(testapp):
     expected_keys = [
         'access_key',
         'award',
-        'default',
         'image',
         'lab',
         'page',
