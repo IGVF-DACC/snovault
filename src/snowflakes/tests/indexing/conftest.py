@@ -27,7 +27,6 @@ def wait_for_indexing(testapp):
         time.sleep(10)
 
 
-
 @pytest.fixture(scope='session')
 def app_settings(wsgi_server_host_port, postgresql_server, elasticsearch_server):
     from snovault.tests.testappfixtures import _app_settings
