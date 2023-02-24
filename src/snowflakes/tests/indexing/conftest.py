@@ -63,14 +63,13 @@ def app(app_settings):
 def workbook(app):
     from snovault.elasticsearch.manage_mappings import manage_mappings
     from webtest import TestApp
+    from ...loadxl import load_all
+    from pkg_resources import resource_filename
     environ = {
         'HTTP_ACCEPT': 'application/json',
         'REMOTE_USER': 'TEST',
     }
     testapp = TestApp(app, environ)
-
-    from ...loadxl import load_all
-    from pkg_resources import resource_filename
     inserts = resource_filename('snowflakes', 'tests/data/inserts/')
     docsdir = [resource_filename('snowflakes', 'tests/data/documents/')]
     manage_mappings(app)
