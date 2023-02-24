@@ -16,7 +16,6 @@ def test_indexing_simple_snowflakes(testapp, workbook, poll_until_indexing_is_do
 
 
 def test_indexing_updated_name_invalidates_dependents(testapp, dummy_request, workbook, poll_until_indexing_is_done):
-    poll_until_indexing_is_done(testapp)
     response = testapp.get('/search/?type=User&lab.name=j-michael-cherry')
     assert len(response.json['@graph']) == 17
     testapp.patch_json(

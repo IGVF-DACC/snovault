@@ -48,9 +48,7 @@ def app_settings(wsgi_server_host_port, postgresql_server, elasticsearch_server)
 @pytest.yield_fixture(scope='session')
 def app(app_settings):
     from snowflakes import main
-    from snovault.elasticsearch.manage_mappings import manage_mappings
     app = main({}, **app_settings)
-    manage_mappings(app)
 
     yield app
 
@@ -63,6 +61,7 @@ def app(app_settings):
 @pytest.mark.fixture_cost(500)
 @pytest.yield_fixture(scope='session')
 def workbook(app):
+    from snovault.elasticsearch.manage_mappings import manage_mappings
     from webtest import TestApp
     environ = {
         'HTTP_ACCEPT': 'application/json',
@@ -74,6 +73,7 @@ def workbook(app):
     from pkg_resources import resource_filename
     inserts = resource_filename('snowflakes', 'tests/data/inserts/')
     docsdir = [resource_filename('snowflakes', 'tests/data/documents/')]
+    manage_mappings(app)
     load_all(testapp, inserts, docsdir)
     wait_for_indexing(testapp)
     yield
