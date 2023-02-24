@@ -47,17 +47,10 @@ def app_settings(wsgi_server_host_port, postgresql_server, elasticsearch_server)
 
 @pytest.yield_fixture(scope='session')
 def app(app_settings):
-    from webtest import TestApp
     from snowflakes import main
     from snovault.elasticsearch.manage_mappings import manage_mappings
     app = main({}, **app_settings)
     manage_mappings(app)
-    environ = {
-        'HTTP_ACCEPT': 'application/json',
-        'REMOTE_USER': 'TEST',
-    }
-    testapp = TestApp(app, environ)
-    wait_for_indexing(testapp)
 
     yield app
 
