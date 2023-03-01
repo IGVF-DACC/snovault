@@ -1,4 +1,4 @@
-*Automatically generated. Do not edit this folder manually.*
+**Automatically generated. Do not edit this folder manually.**
 
 Anytime you change something that affects the Opensearch mapping for a type (e.g. JSON schemas, calculated properties, embedded fields), you must regenerate the mappings and commit the latest changes to Github.
 
