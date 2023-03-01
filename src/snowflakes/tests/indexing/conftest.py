@@ -72,7 +72,11 @@ def workbook(app):
     testapp = TestApp(app, environ)
     inserts = resource_filename('snowflakes', 'tests/data/inserts/')
     docsdir = [resource_filename('snowflakes', 'tests/data/documents/')]
-    manage_mappings(app)
+    manage_mappings(
+        app=app,
+        relative_mapping_directory='src/snowflakes/mappings',
+        should_reindex='never',
+    )
     load_all(testapp, inserts, docsdir)
     wait_for_indexing(testapp)
     yield

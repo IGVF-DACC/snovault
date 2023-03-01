@@ -142,7 +142,7 @@ def main(global_config, **local_config):
     # config.include('.audit)
     # config.include('.upgrade')
 
-    config.include('snovault.elasticsearch.mappings.register')
+    config.include('snowflakes.mappings.register')
 
     app = config.make_wsgi_app()
 

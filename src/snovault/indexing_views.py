@@ -10,7 +10,7 @@ from .resources import Item
 
 def includeme(config):
     config.scan(__name__)
-    config.add_route('opensearch-mapping-hashes', '/opensearch-mapping-hashes{slash:/?}')
+    config.add_route('opensearch-item-type-to-index-name', '/opensearch-item-type-to-index-name{slash:/?}')
 
 
 @view_config(context=Item, name='index-data', permission='index', request_method='GET')
@@ -60,9 +60,9 @@ def item_index_data(context, request):
 
     item_type = context.type_info.item_type
 
-    mapping_hash = request.registry['MAPPING_HASHES'][item_type]
+    item_type_to_index_name = request.registry['OPENSEARCH_ITEM_TYPE_TO_INDEX_NAME']
 
-    index_name = f'{item_type}_{mapping_hash}'
+    index_name = item_type_to_index_name[item_type]
 
     document = {
         'audit': audit,
@@ -98,6 +98,6 @@ def item_index_data_external(context, request):
     )
 
 
-@view_config(route_name='opensearch-mapping-hashes', request_method='GET', permission='search')
+@view_config(route_name='opensearch-item-type-to-index-name', request_method='GET', permission='search')
 def opensearch_mapping_hashes(context, request):
-    return request.registry['MAPPING_HASHES']
+    return request.registry['OPENSEARCH_ITEM_TYPE_TO_INDEX_NAME']

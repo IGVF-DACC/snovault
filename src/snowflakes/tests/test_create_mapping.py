@@ -350,8 +350,8 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
     }
 
 
-def test_mapping_register_opensesarch_mapping_hashes_view(testapp):
-    actual = testapp.get('/opensearch-mapping-hashes').json
+def test_mapping_register_opensesarch_item_type_to_index_name_view(testapp):
+    actual = testapp.get('/opensearch-item-type-to-index-name').json
     actual_keys = sorted(actual.keys())
     expected_keys = [
         'access_key',

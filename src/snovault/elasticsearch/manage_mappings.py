@@ -1,3 +1,9 @@
+import json
+
+import os
+
+from pathlib import Path
+
 from pyramid.paster import get_app
 
 from pyramid.router import Router
@@ -145,9 +151,11 @@ def delete_old_indices_if_empty(props: ManageMappingsProps):
         props.type_alias_to_current_index_name
     )
     all_existing_resources_indices = list(
-        props.opensearch_client.indices.get_alias(
-            props.all_resources_alias
-        ).keys()
+        sorted(
+            props.opensearch_client.indices.get_alias(
+                props.all_resources_alias
+            ).keys()
+        )
     )
     for existing_index in all_existing_resources_indices:
         if existing_index in current_index_names:
@@ -167,25 +175,34 @@ def update(props: ManageMappingsProps):
     delete_old_indices_if_empty(props)
 
 
-def make_type_alias_to_current_index_name(app):
-    mapping_hashes = app.registry['MAPPING_HASHES']
-    return {
-        k: f'{k}_{v}'
-        for k, v in mapping_hashes.items()
-    }
+def get_type_alias_to_current_index_name(app):
+    item_type_to_index_name = app.registry['OPENSEARCH_ITEM_TYPE_TO_INDEX_NAME']
+    return item_type_to_index_name
 
 
-def get_mappings(app):
-    indices, mappings = generate_indices_and_mappings(app)
+def get_mappings(relative_mapping_directory, type_alias_to_current_index_name):
+    current_directory = os.getcwd()
+    mapping_directory = Path(current_directory, relative_mapping_directory)
+    mappings = {}
+    for index_type, index_name in type_alias_to_current_index_name.items():
+        print('Reading mapping for', index_type)
+        filename = f'{index_type}.json'
+        with open(Path(mapping_directory, filename), 'r') as f:
+            mappings[index_type] = json.load(f)['mapping']
     return mappings
 
 
-def manage_mappings(app, should_reindex='never'):
+def manage_mappings(app, relative_mapping_directory, should_reindex='never'):
+    type_alias_to_current_index_name = get_type_alias_to_current_index_name(app)
+    mappings = get_mappings(
+        relative_mapping_directory=relative_mapping_directory,
+        type_alias_to_current_index_name=type_alias_to_current_index_name,
+    )
     props = ManageMappingsProps(
         app=app,
         opensearch_client=app.registry[ELASTIC_SEARCH],
-        type_alias_to_current_index_name=make_type_alias_to_current_index_name(app),
-        mappings=get_mappings(app),
+        type_alias_to_current_index_name=type_alias_to_current_index_name,
+        mappings=mappings,
         all_resources_alias=ALL_RESOURCES_ALIAS,
         should_reindex=should_reindex
     )
@@ -215,12 +232,20 @@ def main():
         ],
         default='always',
     )
+    parser.add_argument(
+        '--relative-mapping-directory',
+        help='Directory to read mappings'
+    )
     args = parser.parse_args()
     app = get_app(
         args.config_uri,
         args.app_name
     )
-    manage_mappings(app, args.should_reindex)
+    manage_mappings(
+        app=app,
+        relative_mapping_directory=args.relative_mapping_directory,
+        should_reindex=args.should_reindex
+    )
 
 
 if __name__ == '__main__':
