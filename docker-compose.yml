@@ -63,6 +63,8 @@ services:
     command: load-development
     depends_on:
       - postgres
+      - opensearch
+      - localstack
 
   pyramid:
     build:
