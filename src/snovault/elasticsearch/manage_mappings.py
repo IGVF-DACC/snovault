@@ -36,6 +36,7 @@ class ManageMappingsProps:
     mappings: Dict[str, Any]
     all_resources_alias: str
     should_reindex: Literal['always', 'never', 'after-initial']
+    summary: Dict[str, Any]
 
 
 def reindex_by_collection(app, collection):
@@ -73,14 +74,20 @@ def create_index(props: ManageMappingsProps, type_alias, current_index_name):
         index_settings=index_settings,
         mapping=props.mappings[type_alias],
     )
+    props.summary['created'].append(
+        current_index_name
+    )
 
 
-def reindex_collections(app, collections):
+def reindex_collections(props, collections):
     for collection in collections:
         print('Reindexing', collection)
         reindex_by_collection(
-            app,
+            props.app,
             collection,
+        )
+        props.summary['reindexed'].append(
+            collection
         )
 
 
@@ -108,6 +115,9 @@ def clean_up_auto_created_indices(props: ManageMappingsProps):
             # It exists but we didn't create it.
             print('Deleting unaliased (autocreated?) index', current_index_name)
             print(props.opensearch_client.indices.delete(current_index_name))
+            props.summary['cleaned_up'].append(
+                current_index_name
+            )
 
 
 def should_reindex_collection(props: ManageMappingsProps, type_alias):
@@ -136,7 +146,7 @@ def create_latest_indices_and_reindex(props: ManageMappingsProps):
             )
         else:
             print(f'Index {current_index_name} for {type_alias} already exists')
-    reindex_collections(props.app, collections_to_reindex)
+    reindex_collections(props, collections_to_reindex)
 
 
 def get_current_index_names(type_alias_to_current_index_name):
@@ -167,6 +177,7 @@ def delete_old_indices_if_empty(props: ManageMappingsProps):
             continue
         print(f'Deleting {existing_index}')
         print(props.opensearch_client.indices.delete(index=existing_index, ignore=[400, 404]))
+        props.summary['deleted'].append(existing_index)
 
 
 def update(props: ManageMappingsProps):
@@ -204,12 +215,19 @@ def manage_mappings(app, relative_mapping_directory, should_reindex='never'):
         type_alias_to_current_index_name=type_alias_to_current_index_name,
         mappings=mappings,
         all_resources_alias=ALL_RESOURCES_ALIAS,
-        should_reindex=should_reindex
+        should_reindex=should_reindex,
+        summary={
+            'created': [],
+            'deleted': [],
+            'reindexed': [],
+            'cleaned_up': [],
+        }
     )
     update(props)
+    return props.summary
 
 
-def main():
+def get_args():
     import argparse
     parser = argparse.ArgumentParser(
         description='Manage Opensearch mappings',
@@ -236,16 +254,21 @@ def main():
         '--relative-mapping-directory',
         help='Directory to read mappings'
     )
-    args = parser.parse_args()
+    return parser.parse_args()
+
+
+def main():
+    args = get_args()
     app = get_app(
         args.config_uri,
         args.app_name
     )
-    manage_mappings(
+    summary = manage_mappings(
         app=app,
         relative_mapping_directory=args.relative_mapping_directory,
         should_reindex=args.should_reindex
     )
+    print(summary)
 
 
 if __name__ == '__main__':
