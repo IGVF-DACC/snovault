@@ -85,7 +85,7 @@ def _put_uuids_on_invalidation_queue(request, uuids):
     )
 
 
-def put_uuids_on_invalidaiton_queue(request):
+def put_uuids_on_invalidation_queue(request):
     _put_uuids_on_invalidation_queue(
         request=request,
         uuids=get_all_uuids(request)
@@ -108,7 +108,7 @@ def put_collection_uuids_on_invalidaiton_queue(request, collection):
     permission='index'
 )
 def reindex_view(request):
-    put_uuids_on_invalidaiton_queue(request)
+    put_uuids_on_invalidation_queue(request)
 
 
 @view_config(
