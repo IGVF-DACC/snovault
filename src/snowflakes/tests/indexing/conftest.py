@@ -13,6 +13,25 @@ def external_tx():
     pass
 
 
+def wait_for_indexing(testapp):
+    double_check_number = 3
+    while True:
+        print('Waiting for indexing', double_check_number)
+        is_indexing = bool(testapp.get('/indexer-info').json['is_indexing'])
+        if is_indexing:
+            double_check_number = 3
+        else:
+            double_check_number -= 1
+        if double_check_number <= 0:
+            break
+        time.sleep(10)
+
+
+@pytest.fixture
+def poll_until_indexing_is_done():
+    return wait_for_indexing
+
+
 @pytest.fixture(scope='session')
 def app_settings(wsgi_server_host_port, postgresql_server, elasticsearch_server):
     from snovault.tests.testappfixtures import _app_settings
@@ -29,10 +48,8 @@ def app_settings(wsgi_server_host_port, postgresql_server, elasticsearch_server)
 @pytest.yield_fixture(scope='session')
 def app(app_settings):
     from snowflakes import main
-    from snovault.elasticsearch import create_mapping
     app = main({}, **app_settings)
 
-    create_mapping.run(app)
     yield app
 
     from snovault import DBSESSION
@@ -44,22 +61,24 @@ def app(app_settings):
 @pytest.mark.fixture_cost(500)
 @pytest.yield_fixture(scope='session')
 def workbook(app):
+    from snovault.elasticsearch.manage_mappings import manage_mappings
     from webtest import TestApp
+    from ...loadxl import load_all
+    from pkg_resources import resource_filename
     environ = {
         'HTTP_ACCEPT': 'application/json',
         'REMOTE_USER': 'TEST',
     }
     testapp = TestApp(app, environ)
-
-    from ...loadxl import load_all
-    from pkg_resources import resource_filename
     inserts = resource_filename('snowflakes', 'tests/data/inserts/')
     docsdir = [resource_filename('snowflakes', 'tests/data/documents/')]
+    manage_mappings(
+        app=app,
+        relative_mapping_directory='src/snowflakes/mappings',
+        should_reindex='never',
+    )
     load_all(testapp, inserts, docsdir)
-
-    print('Waiting for indexing')
-    time.sleep(30)
-
+    wait_for_indexing(testapp)
     yield
     # XXX cleanup
 

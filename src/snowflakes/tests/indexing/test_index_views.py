@@ -3,7 +3,8 @@ import pytest
 pytestmark = [pytest.mark.indexing]
 
 
-def test_index_views_indexer_info_view(testapp, workbook):
+def test_index_views_indexer_info_view(testapp, workbook, poll_until_indexing_is_done):
+    poll_until_indexing_is_done(testapp)
     response = testapp.get('/indexer-info')
     assert response.json == {
         'transaction_queue': {

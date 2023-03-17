@@ -1,11 +1,3 @@
-"""\
-Example.
-
-To load the initial data:
-
-    %(prog)s production.ini
-
-"""
 from pyramid.paster import get_app
 from functools import reduce
 from snovault import (
@@ -50,14 +42,6 @@ KEYWORD_FIELDS = ['schema_version', 'uuid', 'accession', 'alternate_accessions',
                   'aliases', 'status', 'date_created', 'submitted_by',
                   'internal_status', 'target', 'biosample_type']
 TEXT_FIELDS = ['pipeline_error_detail', 'description', 'notes']
-
-
-def sorted_pairs_hook(pairs):
-    return collections.OrderedDict(sorted(pairs))
-
-
-def sorted_dict(d):
-    return json.loads(json.dumps(d), object_pairs_hook=sorted_pairs_hook)
 
 
 def schema_mapping(name, schema):
@@ -326,6 +310,9 @@ def es_mapping(mapping):
                 'type': 'keyword',
                 'copy_to': '_all',
             },
+            'index_name': {
+                'type': 'keyword',
+            },
             'embedded': mapping,
             'object': {
                 'type': 'object',
@@ -461,38 +448,67 @@ def create_snovault_index_alias(es, indices):
     es.indices.put_alias(index=','.join(indices), name=RESOURCES_INDEX, request_timeout=300)
 
 
-def run(app, collections=None, dry_run=False):
-    index = app.registry.settings['snovault.elasticsearch.index']
-    registry = app.registry
-    if not dry_run:
-        es = app.registry[ELASTIC_SEARCH]
-        print('CREATE MAPPING RUNNING')
-
+def generate_indices_and_mappings(app, collections=None):
     if not collections:
-        collections = ['meta'] + list(registry[COLLECTIONS].by_item_type.keys())
-
+        collections = ['meta'] + list(app.registry[COLLECTIONS].by_item_type.keys())
     indices = []
+    mappings = {}
     for collection_name in collections:
         if collection_name == 'meta':
-            doc_type = 'meta'
+            index = app.registry.settings['snovault.elasticsearch.index']
             mapping = META_MAPPING
         else:
-            index = doc_type = collection_name
-            collection = registry[COLLECTIONS].by_item_type[collection_name]
-            mapping = es_mapping(type_mapping(registry[TYPES], collection.type_info.item_type))
-
+            index = collection_name
+            collection = app.registry[COLLECTIONS].by_item_type[collection_name]
+            mapping = es_mapping(type_mapping(app.registry[TYPES], collection.type_info.item_type))
         if mapping is None:
             continue  # Testing collections
-        if dry_run:
-            print(json.dumps(sorted_dict({index: {doc_type: mapping}}), indent=4))
-            continue
-        create_elasticsearch_index(es, index, index_settings())
-        set_index_mapping(es, index, mapping)
+        mappings[index] = mapping
         if collection_name != 'meta':
             indices.append(index)
+    return (indices, mappings)
 
-    if not dry_run:
-        create_snovault_index_alias(es, indices)
+
+def create_and_set_index_mapping(es, index, index_settings, mapping):
+    create_elasticsearch_index(
+        es,
+        index,
+        index_settings,
+    )
+    set_index_mapping(
+        es,
+        index,
+        mapping,
+    )
+
+
+def run(app, collections=None, dry_run=False):
+    indices, mappings = generate_indices_and_mappings(
+        app,
+        collections,
+    )
+    if dry_run:
+        print(
+            json.dumps(
+                mappings,
+                indent=4,
+                sort_keys=True,
+            )
+        )
+        return
+    print('CREATE MAPPING RUNNING')
+    es = app.registry[ELASTIC_SEARCH]
+    for index, mapping in mappings.items():
+        create_and_set_index_mapping(
+            es=es,
+            index=index,
+            index_settings=index_settings(),
+            mapping=mapping,
+        )
+    create_snovault_index_alias(
+        es,
+        indices,
+    )
 
 
 def main():

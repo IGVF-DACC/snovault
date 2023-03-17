@@ -1,5 +1,7 @@
 from pyramid.view import view_config
 
+from pyramid.httpexceptions import HTTPBadRequest
+
 from snovault.interfaces import COLLECTIONS
 from snovault.interfaces import DBSESSION
 
@@ -11,6 +13,7 @@ from typing import Dict
 
 def includeme(config):
     config.add_route('_reindex', '/_reindex')
+    config.add_route('_reindex_by_collection', '/_reindex_by_collection')
     config.add_route('indexer_info', '/indexer-info')
     config.scan(__name__)
 
@@ -34,6 +37,10 @@ def get_all_uuids(request, types=None):
         collection = collections.by_item_type[collection_name]
         for uuid in collection:
             yield str(uuid)
+
+
+def get_all_uuids_in_collection(request, collection):
+    return get_all_uuids(request, types=[collection])
 
 
 def get_current_xmin(request):
@@ -66,15 +73,32 @@ def make_outbound_message(uuid: str, xid: str) -> OutboundMessage:
     return outbound_message
 
 
-def put_uuids_on_invalidaiton_queue(request):
+def _put_uuids_on_invalidation_queue(request, uuids):
     xmin = get_current_xmin(request)
     invalidation_queue = request.registry['INVALIDATION_QUEUE']
     outbound_messages = [
         make_outbound_message(uuid, xmin)
-        for uuid in get_all_uuids(request)
+        for uuid in uuids
     ]
     invalidation_queue.send_messages(
         outbound_messages
+    )
+
+
+def put_uuids_on_invalidation_queue(request):
+    _put_uuids_on_invalidation_queue(
+        request=request,
+        uuids=get_all_uuids(request)
+    )
+
+
+def put_collection_uuids_on_invalidation_queue(request, collection):
+    _put_uuids_on_invalidation_queue(
+        request=request,
+        uuids=get_all_uuids_in_collection(
+            request,
+            collection,
+        )
     )
 
 
@@ -84,7 +108,24 @@ def put_uuids_on_invalidaiton_queue(request):
     permission='index'
 )
 def reindex_view(request):
-    put_uuids_on_invalidaiton_queue(request)
+    put_uuids_on_invalidation_queue(request)
+
+
+@view_config(
+    route_name='_reindex_by_collection',
+    request_method='POST',
+    permission='index'
+)
+def reindex_by_collection_view(request):
+    requested_collection = request.params.get('collection')
+    actual_collections = list(
+        request.registry[COLLECTIONS].by_item_type.keys()
+    )
+    if requested_collection not in actual_collections:
+        raise HTTPBadRequest(
+            detail=f'{requested_collection} invalid collection name'
+        )
+    put_collection_uuids_on_invalidation_queue(request, requested_collection)
 
 
 def get_approximate_numbers_from_queue(info: Dict[str, Any]):

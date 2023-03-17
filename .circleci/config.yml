@@ -10,6 +10,10 @@ workflows:
       - snovault-pytest-indexer:
           requires:
             - lint
+      - snovault-check-opensearch-mappings:
+          requires:
+            - lint
+
 
 jobs:
   lint:
@@ -64,3 +68,26 @@ jobs:
           name: Run tests
           command: |
               docker-compose -f docker-compose.test-indexer.yml up --exit-code-from indexer-tests
+
+  snovault-check-opensearch-mappings:
+    machine:
+      image: ubuntu-2004:202111-02
+      docker_layer_caching: true
+    resource_class: medium
+    working_directory: ~/snovault
+    steps:
+      - checkout
+      - run:
+          name: Build Docker images
+          command: |
+              docker-compose -f docker-compose.yml build
+      - run:
+          name: Set folder permissions for mounted volume
+          command: |
+              sudo useradd -u 1444 snovault
+              sudo usermod -a -G snovault circleci
+              sudo chown -R circleci:snovault ./
+      - run:
+          name: Check Opensearch mappings for diff
+          command: |
+              docker-compose run pyramid /scripts/pyramid/diff-opensearch-mappings.sh

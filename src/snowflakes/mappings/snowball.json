@@ -1,0 +1,593 @@
+{
+    "hash": "ba7d2ba70d29021a7e700e50ff46d59f",
+    "index_name": "snowball_ba7d2ba7",
+    "item_type": "snowball",
+    "mapping": {
+        "dynamic_templates": [
+            {
+                "template_principals_allowed": {
+                    "mapping": {
+                        "type": "keyword"
+                    },
+                    "match_mapping_type": "string",
+                    "path_match": "principals_allowed.*"
+                }
+            },
+            {
+                "template_unique_keys": {
+                    "mapping": {
+                        "copy_to": "_all",
+                        "type": "keyword"
+                    },
+                    "match_mapping_type": "string",
+                    "path_match": "unique_keys.*"
+                }
+            },
+            {
+                "template_links": {
+                    "mapping": {
+                        "type": "keyword"
+                    },
+                    "match_mapping_type": "string",
+                    "path_match": "links.*"
+                }
+            },
+            {
+                "strings": {
+                    "mapping": {
+                        "type": "keyword"
+                    },
+                    "match_mapping_type": "string"
+                }
+            },
+            {
+                "integers": {
+                    "mapping": {
+                        "fields": {
+                            "raw": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "long"
+                    },
+                    "match_mapping_type": "long"
+                }
+            }
+        ],
+        "properties": {
+            "_all": {
+                "analyzer": "snovault_index_analyzer",
+                "search_analyzer": "snovault_search_analyzer",
+                "store": false,
+                "type": "text"
+            },
+            "audit": {
+                "properties": {
+                    "ERROR": {
+                        "properties": {
+                            "category": {
+                                "type": "keyword"
+                            },
+                            "detail": {
+                                "index": "true",
+                                "type": "text"
+                            },
+                            "level": {
+                                "type": "integer"
+                            },
+                            "level_name": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "INTERNAL_ACTION": {
+                        "properties": {
+                            "category": {
+                                "type": "keyword"
+                            },
+                            "detail": {
+                                "index": "true",
+                                "type": "text"
+                            },
+                            "level": {
+                                "type": "integer"
+                            },
+                            "level_name": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "NOT_COMPLIANT": {
+                        "properties": {
+                            "category": {
+                                "type": "keyword"
+                            },
+                            "detail": {
+                                "index": "true",
+                                "type": "text"
+                            },
+                            "level": {
+                                "type": "integer"
+                            },
+                            "level_name": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "WARNING": {
+                        "properties": {
+                            "category": {
+                                "type": "keyword"
+                            },
+                            "detail": {
+                                "index": "true",
+                                "type": "text"
+                            },
+                            "level": {
+                                "type": "integer"
+                            },
+                            "level_name": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            },
+            "embedded": {
+                "properties": {
+                    "@id": {
+                        "type": "keyword"
+                    },
+                    "@type": {
+                        "type": "keyword"
+                    },
+                    "accession": {
+                        "copy_to": "_all",
+                        "type": "keyword"
+                    },
+                    "alternate_accessions": {
+                        "type": "keyword"
+                    },
+                    "another_test_calculated": {
+                        "type": "keyword"
+                    },
+                    "award": {
+                        "properties": {
+                            "@id": {
+                                "type": "keyword"
+                            },
+                            "@type": {
+                                "type": "keyword"
+                            },
+                            "description": {
+                                "type": "text"
+                            },
+                            "end_date": {
+                                "type": "keyword"
+                            },
+                            "name": {
+                                "type": "keyword"
+                            },
+                            "pi": {
+                                "type": "keyword"
+                            },
+                            "project": {
+                                "copy_to": "_all",
+                                "type": "keyword"
+                            },
+                            "rfa": {
+                                "type": "keyword"
+                            },
+                            "schema_version": {
+                                "type": "keyword"
+                            },
+                            "start_date": {
+                                "type": "keyword"
+                            },
+                            "status": {
+                                "type": "keyword"
+                            },
+                            "title": {
+                                "copy_to": "_all",
+                                "type": "keyword"
+                            },
+                            "url": {
+                                "type": "keyword"
+                            },
+                            "uuid": {
+                                "type": "keyword"
+                            },
+                            "viewing_group": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "conditional_test_calculated": {
+                        "type": "keyword"
+                    },
+                    "date_created": {
+                        "type": "keyword"
+                    },
+                    "date_released": {
+                        "type": "keyword"
+                    },
+                    "description": {
+                        "type": "text"
+                    },
+                    "lab": {
+                        "properties": {
+                            "@id": {
+                                "type": "keyword"
+                            },
+                            "@type": {
+                                "type": "keyword"
+                            },
+                            "address1": {
+                                "type": "keyword"
+                            },
+                            "address2": {
+                                "type": "keyword"
+                            },
+                            "awards": {
+                                "type": "keyword"
+                            },
+                            "city": {
+                                "type": "keyword"
+                            },
+                            "country": {
+                                "type": "keyword"
+                            },
+                            "fax": {
+                                "type": "keyword"
+                            },
+                            "institute_label": {
+                                "copy_to": "_all",
+                                "type": "keyword"
+                            },
+                            "institute_name": {
+                                "copy_to": "_all",
+                                "type": "keyword"
+                            },
+                            "name": {
+                                "type": "keyword"
+                            },
+                            "phone1": {
+                                "type": "keyword"
+                            },
+                            "phone2": {
+                                "type": "keyword"
+                            },
+                            "pi": {
+                                "type": "keyword"
+                            },
+                            "postal_code": {
+                                "type": "keyword"
+                            },
+                            "schema_version": {
+                                "type": "keyword"
+                            },
+                            "state": {
+                                "type": "keyword"
+                            },
+                            "status": {
+                                "type": "keyword"
+                            },
+                            "title": {
+                                "copy_to": "_all",
+                                "type": "keyword"
+                            },
+                            "url": {
+                                "type": "keyword"
+                            },
+                            "uuid": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "method": {
+                        "copy_to": "_all",
+                        "type": "keyword"
+                    },
+                    "month_released": {
+                        "type": "keyword"
+                    },
+                    "schema_version": {
+                        "type": "keyword"
+                    },
+                    "snowflakes": {
+                        "properties": {
+                            "@id": {
+                                "type": "keyword"
+                            },
+                            "@type": {
+                                "type": "keyword"
+                            },
+                            "accession": {
+                                "type": "keyword"
+                            },
+                            "award": {
+                                "type": "keyword"
+                            },
+                            "date_created": {
+                                "type": "keyword"
+                            },
+                            "external_accession": {
+                                "type": "keyword"
+                            },
+                            "lab": {
+                                "properties": {
+                                    "@id": {
+                                        "type": "keyword"
+                                    },
+                                    "@type": {
+                                        "type": "keyword"
+                                    },
+                                    "address1": {
+                                        "type": "keyword"
+                                    },
+                                    "address2": {
+                                        "type": "keyword"
+                                    },
+                                    "awards": {
+                                        "type": "keyword"
+                                    },
+                                    "city": {
+                                        "type": "keyword"
+                                    },
+                                    "country": {
+                                        "type": "keyword"
+                                    },
+                                    "fax": {
+                                        "type": "keyword"
+                                    },
+                                    "institute_label": {
+                                        "type": "keyword"
+                                    },
+                                    "institute_name": {
+                                        "type": "keyword"
+                                    },
+                                    "name": {
+                                        "type": "keyword"
+                                    },
+                                    "phone1": {
+                                        "type": "keyword"
+                                    },
+                                    "phone2": {
+                                        "type": "keyword"
+                                    },
+                                    "pi": {
+                                        "type": "keyword"
+                                    },
+                                    "postal_code": {
+                                        "type": "keyword"
+                                    },
+                                    "schema_version": {
+                                        "type": "keyword"
+                                    },
+                                    "state": {
+                                        "type": "keyword"
+                                    },
+                                    "status": {
+                                        "type": "keyword"
+                                    },
+                                    "title": {
+                                        "type": "keyword"
+                                    },
+                                    "url": {
+                                        "type": "keyword"
+                                    },
+                                    "uuid": {
+                                        "type": "keyword"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "schema_version": {
+                                "type": "keyword"
+                            },
+                            "snowset": {
+                                "type": "keyword"
+                            },
+                            "status": {
+                                "type": "keyword"
+                            },
+                            "submitted_by": {
+                                "properties": {
+                                    "@id": {
+                                        "type": "keyword"
+                                    },
+                                    "@type": {
+                                        "type": "keyword"
+                                    },
+                                    "email": {
+                                        "type": "keyword"
+                                    },
+                                    "fax": {
+                                        "type": "keyword"
+                                    },
+                                    "first_name": {
+                                        "type": "keyword"
+                                    },
+                                    "google": {
+                                        "type": "keyword"
+                                    },
+                                    "groups": {
+                                        "type": "keyword"
+                                    },
+                                    "job_title": {
+                                        "type": "keyword"
+                                    },
+                                    "lab": {
+                                        "type": "keyword"
+                                    },
+                                    "last_name": {
+                                        "type": "keyword"
+                                    },
+                                    "phone1": {
+                                        "type": "keyword"
+                                    },
+                                    "phone2": {
+                                        "type": "keyword"
+                                    },
+                                    "schema_version": {
+                                        "type": "keyword"
+                                    },
+                                    "skype": {
+                                        "type": "keyword"
+                                    },
+                                    "status": {
+                                        "type": "keyword"
+                                    },
+                                    "submits_for": {
+                                        "type": "keyword"
+                                    },
+                                    "timezone": {
+                                        "type": "keyword"
+                                    },
+                                    "title": {
+                                        "type": "keyword"
+                                    },
+                                    "uuid": {
+                                        "type": "keyword"
+                                    },
+                                    "viewing_groups": {
+                                        "type": "keyword"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "type": {
+                                "copy_to": "_all",
+                                "type": "keyword"
+                            },
+                            "uuid": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "status": {
+                        "type": "keyword"
+                    },
+                    "submitted_by": {
+                        "properties": {
+                            "@id": {
+                                "type": "keyword"
+                            },
+                            "@type": {
+                                "type": "keyword"
+                            },
+                            "email": {
+                                "copy_to": "_all",
+                                "type": "keyword"
+                            },
+                            "fax": {
+                                "type": "keyword"
+                            },
+                            "first_name": {
+                                "copy_to": "_all",
+                                "type": "keyword"
+                            },
+                            "google": {
+                                "type": "keyword"
+                            },
+                            "groups": {
+                                "type": "keyword"
+                            },
+                            "job_title": {
+                                "type": "keyword"
+                            },
+                            "lab": {
+                                "type": "keyword"
+                            },
+                            "last_name": {
+                                "copy_to": "_all",
+                                "type": "keyword"
+                            },
+                            "phone1": {
+                                "type": "keyword"
+                            },
+                            "phone2": {
+                                "type": "keyword"
+                            },
+                            "schema_version": {
+                                "type": "keyword"
+                            },
+                            "skype": {
+                                "type": "keyword"
+                            },
+                            "status": {
+                                "type": "keyword"
+                            },
+                            "submits_for": {
+                                "type": "keyword"
+                            },
+                            "timezone": {
+                                "type": "keyword"
+                            },
+                            "title": {
+                                "type": "keyword"
+                            },
+                            "uuid": {
+                                "type": "keyword"
+                            },
+                            "viewing_groups": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "test_calculated": {
+                        "type": "keyword"
+                    },
+                    "uuid": {
+                        "type": "keyword"
+                    }
+                },
+                "type": "object"
+            },
+            "embedded_uuids": {
+                "type": "keyword"
+            },
+            "index_name": {
+                "type": "keyword"
+            },
+            "item_type": {
+                "copy_to": "_all",
+                "type": "keyword"
+            },
+            "linked_uuids": {
+                "type": "keyword"
+            },
+            "object": {
+                "enabled": false,
+                "type": "object"
+            },
+            "paths": {
+                "type": "keyword"
+            },
+            "properties": {
+                "enabled": false,
+                "type": "object"
+            },
+            "propsheets": {
+                "enabled": false,
+                "type": "object"
+            },
+            "tid": {
+                "type": "keyword"
+            },
+            "uuid": {
+                "copy_to": "_all",
+                "type": "keyword"
+            }
+        }
+    }
+}

@@ -1,4 +1,4 @@
-__version__ = '2.0.1'
+__version__ = '3.0.0'
 
 
 from pyramid.config import Configurator
@@ -141,6 +141,8 @@ def main(global_config, **local_config):
     # TODO we would need a generic upgrade audit PACKAGE (__init__)
     # config.include('.audit)
     # config.include('.upgrade')
+
+    config.include('snowflakes.mappings.register')
 
     app = config.make_wsgi_app()
 
