@@ -92,7 +92,7 @@ def put_uuids_on_invalidation_queue(request):
     )
 
 
-def put_collection_uuids_on_invalidaiton_queue(request, collection):
+def put_collection_uuids_on_invalidation_queue(request, collection):
     _put_uuids_on_invalidation_queue(
         request=request,
         uuids=get_all_uuids_in_collection(
@@ -125,7 +125,7 @@ def reindex_by_collection_view(request):
         raise HTTPBadRequest(
             detail=f'{requested_collection} invalid collection name'
         )
-    put_collection_uuids_on_invalidaiton_queue(request, requested_collection)
+    put_collection_uuids_on_invalidation_queue(request, requested_collection)
 
 
 def get_approximate_numbers_from_queue(info: Dict[str, Any]):
