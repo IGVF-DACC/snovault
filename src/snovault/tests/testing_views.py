@@ -218,7 +218,7 @@ class TestingSearchSchema(Item):
                 'title': 'Name'
             }
         },
-        'fuzzy_searchable_field': [
+        'fuzzy_searchable_fields': [
             'accession',
             'status',
             'label'
