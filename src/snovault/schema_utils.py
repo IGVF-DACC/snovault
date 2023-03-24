@@ -430,10 +430,16 @@ def combine_schemas(a, b):
                 combined[name][k] = b[name][k]
         elif name == 'items':
             combined[name] = combine_schemas(a[name], b[name])
-        elif name in ('boost_values', 'columns'):
+        elif name == 'columns':
             combined[name] = {}
             combined[name].update(a[name])
             combined[name].update(b[name])
+        elif name == 'fuzzy_searchable_fields':
+            combined[name] = list(
+                sorted(
+                    set(a[name]).union(set(b[name]))
+                )
+            )
     for name in set(a.keys()).difference(b.keys(), ['facets']):
         combined[name] = a[name]
     for name in set(b.keys()).difference(a.keys(), ['facets']):

@@ -40,7 +40,7 @@
             "type": "string"
         }
     },
-    "boost_values": {
-        "caption": 1.0
-    }
+    "fuzzy_searchable_fields": [
+        "caption"
+    ]
 }

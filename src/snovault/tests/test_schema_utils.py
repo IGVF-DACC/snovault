@@ -845,19 +845,19 @@ def test_schema_utils_fill_in_schema_merge_refs():
             'status': {'title': 'Status'},
             'snowflakes.length': {'title': 'Number of snowflakes'}
         },
-        'boost_values': {
-            'accession': 1.0,
-            'method': 1.0,
-            'snowflakes.type': 1.0,
-            'award.title': 1.0,
-            'award.project': 1.0,
-            'submitted_by.email': 1.0,
-            'submitted_by.first_name': 1.0,
-            'submitted_by.last_name': 1.0,
-            'lab.institute_name': 1.0,
-            'lab.institute_label': 1.0,
-            'lab.title': 1.0
-        }
+        'fuzzy_searchable_fields': [
+            'accession',
+            'method',
+            'snowflakes.type',
+            'award.title',
+            'award.project',
+            'submitted_by.email',
+            'submitted_by.first_name',
+            'submitted_by.last_name',
+            'lab.institute_name',
+            'lab.institute_label',
+            'lab.title'
+        ]
     }
     assert resolved == expected
     schema['dependentSchemas']['$merge'] = ['snowflake.json#/dependentSchemas']

@@ -564,7 +564,7 @@
             ]
         }
     },
-    "boost_values": {
-        "title": 1.0
-    }
+    "fuzzy_searchable_fields": [
+        "title"
+    ]
 }
