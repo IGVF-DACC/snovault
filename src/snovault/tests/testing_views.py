@@ -218,11 +218,11 @@ class TestingSearchSchema(Item):
                 'title': 'Name'
             }
         },
-        'boost_values': {
-            'accession': 1.0,
-            'status': 1.0,
-            'label': 1.0
-        },
+        'fuzzy_searchable_fields': [
+            'accession',
+            'status',
+            'label'
+        ],
         'columns': {
             'accession': {
                 'title': 'Accession'
@@ -617,11 +617,11 @@ class TestingSearchSchemaSpecialFacets(Item):
                 'title': 'Name'
             }
         },
-        'boost_values': {
-            'accession': 1.0,
-            'status': 1.0,
-            'label': 1.0
-        },
+        'fuzzy_searchable_fields': [
+            'accession',
+            'status',
+            'label'
+        ],
         'columns': {
             'accession': {
                 'title': 'Accession'

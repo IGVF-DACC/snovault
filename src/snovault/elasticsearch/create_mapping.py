@@ -418,15 +418,18 @@ def type_mapping(types, item_type, embed=True):
 
             m = m['properties'][p]
 
-    boost_values = schema.get('boost_values', None)
-    if boost_values is None:
-        boost_values = {
-            prop_name: 1.0
+    fuzzy_searchable_fields = schema.get(
+        'fuzzy_searchable_fields',
+        None
+    )
+    if fuzzy_searchable_fields is None:
+        fuzzy_searchable_fields = [
+            prop_name
             for prop_name in ['@id', 'title']
             if prop_name in mapping['properties']
-        }
-    for name, boost in boost_values.items():
-        props = name.split('.')
+        ]
+    for fuzzy_searchable_field in fuzzy_searchable_fields:
+        props = fuzzy_searchable_field.split('.')
         last = props.pop()
         new_mapping = mapping['properties']
         for prop in props:
