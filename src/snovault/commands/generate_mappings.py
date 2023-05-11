@@ -99,6 +99,7 @@ def update_indices_hashes_with_calculated_properties(app, indices_hashes):
             index_hash.update(calculated_property.fn.__code__.co_name.encode('utf-8'))
             index_hash.update(calculated_property.fn.__code__.co_code)
             index_hash.update(str(calculated_property.fn.__code__.co_varnames).encode('utf-8'))
+            index_hash.update(str(calculated_property.fn.__code__.co_consts).encode('utf-8'))
             index_hash.update(str(calculated_property.fn.__defaults__).encode('utf-8'))
 
 
@@ -126,7 +127,6 @@ def update_indices_hashes_with_audits(app, indices_hashes):
             index_hash.update(checker.__code__.co_name.encode('utf-8'))
             index_hash.update(checker.__code__.co_code)
             index_hash.update(str(checker.__code__.co_varnames).encode('utf-8'))
-            index_hash.update(str(checker.__code__.co_consts).encode('utf-8'))
             index_hash.update(str(checker.__defaults__).encode('utf-8'))
 
 
