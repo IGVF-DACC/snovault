@@ -94,12 +94,11 @@ def update_indices_hashes_with_calculated_properties(app, indices_hashes):
         )
         index_hash = indices_hashes[index]
         for name, calculated_property in sorted(calculated_properties_for_item_type.items()):
-            # Hashes the name, bytecode, variable names, constants, and
+            # Hashes the name, bytecode, variable names, and
             # defaults of a calculated_property function.
             index_hash.update(calculated_property.fn.__code__.co_name.encode('utf-8'))
             index_hash.update(calculated_property.fn.__code__.co_code)
             index_hash.update(str(calculated_property.fn.__code__.co_varnames).encode('utf-8'))
-            index_hash.update(str(calculated_property.fn.__code__.co_consts).encode('utf-8'))
             index_hash.update(str(calculated_property.fn.__defaults__).encode('utf-8'))
 
 
@@ -118,11 +117,6 @@ def update_indices_hashes_with_audits(app, indices_hashes):
         )
         index_hash = indices_hashes[index]
         for order, checker, condition, frame in sorted(audits_for_item_types):
-            print(order, checker, condition, frame)
-            print(checker.__code__.co_name)
-            print(checker.__code__.co_varnames)
-            print(checker.__code__.co_code)
-            print(checker.__defaults__)
             index_hash.update(frame.encode('utf-8'))
             index_hash.update(checker.__code__.co_name.encode('utf-8'))
             index_hash.update(checker.__code__.co_code)
