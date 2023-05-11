@@ -142,7 +142,7 @@ def generate_and_write_mappings(app, relative_output_directory, raise_on_diff=Fa
     indices, mappings = generate_indices_and_mappings(app)
     indices_hashes = initialize_indices_hashes(app, indices)
     update_indices_hashes_with_calculated_properties(app, indices_hashes)
-    #update_indices_hashes_with_audits(app, indices_hashes)
+    update_indices_hashes_with_audits(app, indices_hashes)
     update_indices_hashes_with_mappings(app, indices_hashes, mappings)
     annotated_mappings = annotate_mappings(indices, mappings, indices_hashes)
     write_annotated_mappings(
