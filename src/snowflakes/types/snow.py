@@ -91,7 +91,6 @@ class Snowball(Snowset):
             'type': 'string',
         })
     def another_test_calculated(self):
-        print('change')
         return 'another_test_calculated_value'
 
     @calculated_property(
