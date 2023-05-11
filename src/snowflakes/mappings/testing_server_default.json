@@ -1,6 +1,6 @@
 {
-    "hash": "08c98039c6ebdbc2a98278430157db24",
-    "index_name": "testing_server_default_08c98039",
+    "hash": "2479be604e25979aba01643ffa50e125",
+    "index_name": "testing_server_default_2479be60",
     "item_type": "testing_server_default",
     "mapping": {
         "dynamic_templates": [
