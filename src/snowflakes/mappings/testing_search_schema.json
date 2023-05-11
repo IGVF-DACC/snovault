@@ -1,6 +1,6 @@
 {
-    "hash": "6892604e44b23f7c6ae7d669a410b3ee",
-    "index_name": "testing_search_schema_6892604e",
+    "hash": "e441021c302a49cf742dbdcaae314e81",
+    "index_name": "testing_search_schema_e441021c",
     "item_type": "testing_search_schema",
     "mapping": {
         "dynamic_templates": [
