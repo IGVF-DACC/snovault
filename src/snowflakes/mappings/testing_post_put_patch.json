@@ -1,6 +1,6 @@
 {
-    "hash": "fc02d5a8cc4c63046cff449665d2987d",
-    "index_name": "testing_post_put_patch_fc02d5a8",
+    "hash": "91544bf4a3510fccaa84340c8700bb40",
+    "index_name": "testing_post_put_patch_91544bf4",
     "item_type": "testing_post_put_patch",
     "mapping": {
         "dynamic_templates": [
