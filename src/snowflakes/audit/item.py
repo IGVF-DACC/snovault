@@ -190,3 +190,8 @@ def audit_item_status(value, system):
             detail = '{} {} has {} subobject {}'.format(
                 value['status'], value['@id'], linked_value['status'], linked_value['@id'])
             yield AuditFailure('mismatched status', detail, level='INTERNAL_ACTION')
+
+
+@audit_checker('Snowball', frame='object')
+def audit_snowball_thing(value, system):
+    print('abc')
