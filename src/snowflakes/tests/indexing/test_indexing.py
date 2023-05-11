@@ -40,27 +40,28 @@ def test_indexing_opensearch_mappings_exist(testapp, registry, dummy_request, wo
     from snovault.elasticsearch.interfaces import ELASTIC_SEARCH
     os = registry[ELASTIC_SEARCH]
     actual = list(sorted(os.indices.get('*').keys()))
+    print(actual)
     expected = list(sorted([
-        'access_key_fff7247f',
-        'award_1ab88e7d',
-        'image_7b272d6d',
-        'lab_296e03df',
-        'page_ee366aa5',
-        'snowball_ba7d2ba7',
-        'snowflake_a887ccf0',
-        'snowfort_78fe25eb',
-        'testing_bad_accession_1d729083',
-        'testing_custom_embed_source_7ac06bac',
-        'testing_custom_embed_target_ae393817',
-        'testing_dependencies_2da45dc8',
-        'testing_download_590050b4',
-        'testing_link_source_7ac06bac',
-        'testing_link_target_80d1f16e',
-        'testing_post_put_patch_17e8079a',
-        'testing_search_schema_56301551',
-        'testing_search_schema_special_facets_07a1ee06',
-        'testing_server_default_2479be60',
-        'user_de8eb911'
+        'access_key_82be1c13',
+        'award_0be0c601',
+        'image_8e6ce64b',
+        'lab_108fa712',
+        'page_26b8dd9c',
+        'snowball_f1f073f6',
+        'snowflake_c9d175a6',
+        'snowfort_ed04b837',
+        'testing_bad_accession_7f7f97b5',
+        'testing_custom_embed_source_9a7958f8',
+        'testing_custom_embed_target_dfbad0af',
+        'testing_dependencies_b31072f0',
+        'testing_download_597dc870',
+        'testing_link_source_d8e116cf',
+        'testing_link_target_ff03d99d',
+        'testing_post_put_patch_8c62839a',
+        'testing_search_schema_09fe333e',
+        'testing_search_schema_special_facets_7a3f7300',
+        'testing_server_default_b0b617ab',
+        'user_a15abba1'
     ]))
     assert actual == expected, actual
     actual = list(os.indices.get_alias('award').keys())
@@ -70,25 +71,25 @@ def test_indexing_opensearch_mappings_exist(testapp, registry, dummy_request, wo
     assert actual == expected, actual
     actual = list(sorted(os.indices.get_alias('snovault-resources').keys()))
     expected = list(sorted([
-        'access_key_fff7247f',
-        'award_1ab88e7d',
-        'image_7b272d6d',
-        'lab_296e03df',
-        'page_ee366aa5',
-        'snowball_ba7d2ba7',
-        'snowflake_a887ccf0',
-        'snowfort_78fe25eb',
-        'testing_bad_accession_1d729083',
-        'testing_custom_embed_source_7ac06bac',
-        'testing_custom_embed_target_ae393817',
-        'testing_dependencies_2da45dc8',
-        'testing_download_590050b4',
-        'testing_link_source_7ac06bac',
-        'testing_link_target_80d1f16e',
-        'testing_post_put_patch_17e8079a',
-        'testing_search_schema_56301551',
-        'testing_search_schema_special_facets_07a1ee06',
-        'testing_server_default_2479be60',
-        'user_de8eb911'
+        'access_key_82be1c13',
+        'award_0be0c601',
+        'image_8e6ce64b',
+        'lab_108fa712',
+        'page_26b8dd9c',
+        'snowball_f1f073f6',
+        'snowflake_c9d175a6',
+        'snowfort_ed04b837',
+        'testing_bad_accession_7f7f97b5',
+        'testing_custom_embed_source_9a7958f8',
+        'testing_custom_embed_target_dfbad0af',
+        'testing_dependencies_b31072f0',
+        'testing_download_597dc870',
+        'testing_link_source_d8e116cf',
+        'testing_link_target_ff03d99d',
+        'testing_post_put_patch_8c62839a',
+        'testing_search_schema_09fe333e',
+        'testing_search_schema_special_facets_7a3f7300',
+        'testing_server_default_b0b617ab',
+        'user_a15abba1'
     ]))
     assert actual == expected, actual
