@@ -23,12 +23,14 @@ from snosearch.fields import NotificationResponseField
 from snosearch.parsers import ParamsParser
 from snosearch.parsers import QueryString
 from snosearch.responses import FieldedResponse
+from snovault import storage
+from sqlalchemy import select
 from .calculated import calculate_properties
 from .calculated import calculate_select_properties
 from .calculated import calculate_filtered_properties
 from .calculated import _should_render_property
 from .etag import etag_tid
-from .interfaces import CONNECTION
+from .interfaces import CONNECTION, DBSESSION
 from .elasticsearch.interfaces import ELASTIC_SEARCH
 from .resources import (
     AbstractCollection,
@@ -356,12 +358,29 @@ def item_view_columns(context, request):
     return subset
 
 
-@view_config(context=Item, permission='view_raw', request_method='GET',
+@view_config(context=Item, permission='view', request_method='GET',
              name='raw')
 def item_view_raw(context, request):
     if asbool(request.params.get('upgrade', True)):
         return context.upgrade_properties()
     return context.properties
+
+@view_config(context=Item, permission='view', request_method='GET', name='history')
+def item_view_history(context, request):
+    db = request.registry[DBSESSION]
+    props = db.query(storage.PropertySheet).filter(storage.PropertySheet.rid == context.uuid).all()
+    history = []
+    for p in props:
+        history.append({
+            "timestamp": p.transaction.timestamp.isoformat(),
+            "userid": p.transaction.data["userid"],
+            "props": p.properties
+        })
+
+    return {
+        "rid": request.resource_path(context),
+        "history": history
+    }
 
 
 @view_config(context=Item, permission='edit', request_method='GET',
