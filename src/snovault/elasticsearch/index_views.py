@@ -179,7 +179,6 @@ def reindex_by_collection_view(request):
     return put_collection_uuids_on_invalidation_queue(request, requested_collection)
 
 
-
 @view_config(
     route_name='_invalidate_by_collection',
     request_method='POST',
