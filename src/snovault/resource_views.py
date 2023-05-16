@@ -376,9 +376,12 @@ def item_view_history(context, request):
             "userid": p.transaction.data["userid"],
             "props": p.properties
         })
+    history = sorted(history, key="timestamp")
+    latest = history[0]
 
     return {
         "rid": request.resource_path(context),
+        "latest": latest,
         "history": history
     }
 
