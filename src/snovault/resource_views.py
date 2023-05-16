@@ -376,7 +376,7 @@ def item_view_history(context, request):
             "userid": p.transaction.data["userid"],
             "props": p.properties
         })
-    history = sorted(history, key="timestamp")
+    history = sorted(history, key=lambda t: t["timestamp"])
     latest = history[0]
 
     return {
