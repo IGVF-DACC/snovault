@@ -377,7 +377,7 @@ def item_view_history(context, request):
             "props": p.properties
         })
     history = sorted(history, key=lambda t: t["timestamp"])
-    latest = history[0]
+    latest = history[-1]
 
     return {
         "rid": request.resource_path(context),
