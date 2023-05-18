@@ -368,15 +368,17 @@ def item_view_raw(context, request):
 
 @view_config(context=Item, permission='view_raw', request_method='GET', name='history')
 def item_view_history(context, request):
-    db = request.registry[DBSESSION]
-    props = db.query(storage.PropertySheet).filter(storage.PropertySheet.rid == context.uuid).all()
+    # db = request.registry[DBSESSION]
+    props = context.data.history
     history = []
     for p in props:
-        history.append({
-            'timestamp': p.transaction.timestamp.isoformat(),
-            'userid': p.transaction.data['userid'],
-            'props': p.properties
-        })
+        history.append(
+            {
+                'timestamp': p.transaction.timestamp.isoformat(),
+                'userid': p.transaction.data['userid'],
+                'props': p.properties
+            }
+        )
     history = sorted(history, key=lambda t: t['timestamp'])
     latest = history[-1]
 
