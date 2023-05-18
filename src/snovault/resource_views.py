@@ -358,14 +358,14 @@ def item_view_columns(context, request):
     return subset
 
 
-@view_config(context=Item, permission='view', request_method='GET',
+@view_config(context=Item, permission='view_raw', request_method='GET',
              name='raw')
 def item_view_raw(context, request):
     if asbool(request.params.get('upgrade', True)):
         return context.upgrade_properties()
     return context.properties
 
-@view_config(context=Item, permission='view', request_method='GET', name='history')
+@view_config(context=Item, permission='view_raw', request_method='GET', name='history')
 def item_view_history(context, request):
     db = request.registry[DBSESSION]
     props = db.query(storage.PropertySheet).filter(storage.PropertySheet.rid == context.uuid).all()
