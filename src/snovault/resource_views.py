@@ -366,10 +366,10 @@ def item_view_raw(context, request):
     return context.properties
 
 
-@view_config(context=Item, permission='view_raw', request_method='GET', name='history')
+@view_config(context=Item, permission='view', request_method='GET', name='history')
 def item_view_history(context, request):
-    # db = request.registry[DBSESSION]
-    props = context.data.history
+    props = context.model.data[''].history
+    
     history = []
     for p in props:
         history.append(
