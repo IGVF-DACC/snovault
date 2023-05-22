@@ -152,12 +152,14 @@ def test_views_object_with_select_calculated_properties(workbook, testapp):
     assert 'another_test_calculated' not in r.json
     assert 'conditional_test_calculated' in r.json
 
+
 def test_view_history_view(workbook, testapp):
     r = testapp.get('/snowballs/SNOSS000AEN/?frame=history')
     assert 'latest' in r.json
-    assert r.json['rid'] == "/snowballs/SNOSS000AEN/"
+    assert r.json['rid'] == '/snowballs/SNOSS000AEN/'
     assert 'history' in r.json
     assert len(r.json['history']) == 1
+
 
 @pytest.mark.slow
 @pytest.mark.parametrize(('item_type', 'length'), TYPE_LENGTH.items())
