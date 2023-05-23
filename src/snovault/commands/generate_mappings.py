@@ -8,6 +8,10 @@ from pathlib import Path
 
 from pyramid.paster import get_app
 
+from snovault import AUDITOR
+from snovault import COLLECTIONS
+from snovault import CALCULATED_PROPERTIES
+
 from snovault.elasticsearch.create_mapping import generate_indices_and_mappings
 
 
@@ -57,16 +61,11 @@ def write_annotated_mappings(annotated_mappings, relative_output_directory, rais
             f.write('\n')
 
 
-def annotate_mappings(indices, mappings):
+def annotate_mappings(indices, mappings, indices_hashes):
     annotated_mappings = []
     for index in indices:
         mapping = mappings[index]
-        mapping_hash = hashlib.md5(
-            json.dumps(
-                mapping,
-                sort_keys=True
-            ).encode('utf-8')
-        ).hexdigest()
+        mapping_hash = indices_hashes[index].hexdigest()
         annotated_mappings.append(
             {
                 'item_type': index,
@@ -78,9 +77,72 @@ def annotate_mappings(indices, mappings):
     return annotated_mappings
 
 
+def initialize_indices_hashes(app, indices):
+    return {
+        index: hashlib.md5()
+        for index in indices
+    }
+
+
+def update_indices_hashes_with_calculated_properties(app, indices_hashes):
+    collections = app.registry[COLLECTIONS]
+    calculated_properties = app.registry[CALCULATED_PROPERTIES]
+    for index in indices_hashes.keys():
+        collection = collections.by_item_type[index]
+        calculated_properties_for_item_type = calculated_properties.props_for(
+            collection.type_info.factory
+        )
+        index_hash = indices_hashes[index]
+        for name, calculated_property in sorted(calculated_properties_for_item_type.items()):
+            # Hashes the name, bytecode, variable names, and
+            # defaults of a calculated_property function.
+            index_hash.update(calculated_property.fn.__code__.co_name.encode('utf-8'))
+            index_hash.update(calculated_property.fn.__code__.co_code)
+            index_hash.update(str(calculated_property.fn.__code__.co_varnames).encode('utf-8'))
+            index_hash.update(str(calculated_property.fn.__defaults__).encode('utf-8'))
+
+
+def update_indices_hashes_with_audits(app, indices_hashes):
+    collections = app.registry[COLLECTIONS]
+    audits = app.registry[AUDITOR].type_checkers
+    for index in indices_hashes.keys():
+        collection = collections.by_item_type[index]
+        item_types = [collection.type_info.name] + collection.type_info.base_types
+        audits_for_item_types = set()
+        audits_for_item_types.update(
+            *(
+                audits.get(item_type, ())
+                for item_type in item_types
+            )
+        )
+        index_hash = indices_hashes[index]
+        for order, checker, condition, frame in sorted(audits_for_item_types):
+            index_hash.update(frame.encode('utf-8'))
+            index_hash.update(checker.__code__.co_name.encode('utf-8'))
+            index_hash.update(checker.__code__.co_code)
+            index_hash.update(str(checker.__code__.co_varnames).encode('utf-8'))
+            index_hash.update(str(checker.__defaults__).encode('utf-8'))
+
+
+def update_indices_hashes_with_mappings(app, indices_hashes, mappings):
+    for index in indices_hashes:
+        mapping = mappings[index]
+        index_hash = indices_hashes[index]
+        index_hash.update(
+            json.dumps(
+                mapping,
+                sort_keys=True
+            ).encode('utf-8')
+        )
+
+
 def generate_and_write_mappings(app, relative_output_directory, raise_on_diff=False):
     indices, mappings = generate_indices_and_mappings(app)
-    annotated_mappings = annotate_mappings(indices, mappings)
+    indices_hashes = initialize_indices_hashes(app, indices)
+    update_indices_hashes_with_calculated_properties(app, indices_hashes)
+    update_indices_hashes_with_audits(app, indices_hashes)
+    update_indices_hashes_with_mappings(app, indices_hashes, mappings)
+    annotated_mappings = annotate_mappings(indices, mappings, indices_hashes)
     write_annotated_mappings(
         annotated_mappings=annotated_mappings,
         relative_output_directory=relative_output_directory,

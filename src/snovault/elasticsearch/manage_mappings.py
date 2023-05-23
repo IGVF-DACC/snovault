@@ -48,10 +48,11 @@ def reindex_by_collection(app, collection):
         app,
         environ
     )
-    testapp.post_json(
-        f'/_reindex_by_collection?collection={collection}',
+    response = testapp.post_json(
+        f'/_invalidate_by_collection?collection={collection}',
         {},
     )
+    print(response.json)
 
 
 def get_aliases(props: ManageMappingsProps, type_alias):

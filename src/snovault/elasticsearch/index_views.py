@@ -14,6 +14,7 @@ from typing import Dict
 def includeme(config):
     config.add_route('_reindex', '/_reindex')
     config.add_route('_reindex_by_collection', '/_reindex_by_collection')
+    config.add_route('_invalidate_by_collection', '/_invalidate_by_collection')
     config.add_route('indexer_info', '/indexer-info')
     config.scan(__name__)
 
@@ -57,7 +58,7 @@ def make_unique_id(uuid: str, xid: str) -> str:
     return f'{uuid}-{xid}'
 
 
-def make_outbound_message(uuid: str, xid: str) -> OutboundMessage:
+def make_outbound_message_for_invalidation_queue(uuid: str, xid: str) -> OutboundMessage:
     body = {
         'metadata': {
             'xid': xid,
@@ -77,23 +78,73 @@ def _put_uuids_on_invalidation_queue(request, uuids):
     xmin = get_current_xmin(request)
     invalidation_queue = request.registry['INVALIDATION_QUEUE']
     outbound_messages = [
-        make_outbound_message(uuid, xmin)
+        make_outbound_message_for_invalidation_queue(uuid, xmin)
         for uuid in uuids
     ]
     invalidation_queue.send_messages(
         outbound_messages
     )
+    return {
+        'status': 'ok',
+        'message': f'put {len(outbound_messages)} messages on invalidation queue'
+    }
 
 
 def put_uuids_on_invalidation_queue(request):
-    _put_uuids_on_invalidation_queue(
+    return _put_uuids_on_invalidation_queue(
         request=request,
         uuids=get_all_uuids(request)
     )
 
 
 def put_collection_uuids_on_invalidation_queue(request, collection):
-    _put_uuids_on_invalidation_queue(
+    return _put_uuids_on_invalidation_queue(
+        request=request,
+        uuids=get_all_uuids_in_collection(
+            request,
+            collection,
+        )
+    )
+
+
+def make_outbound_message_for_transaction_queue(uuid: str, xid: str) -> OutboundMessage:
+    event = {
+        'metadata': {
+            'xid': xid,
+            'tid': 'user-initiated',
+        },
+        'data': {
+            'payload': {
+                'updated': [uuid],
+                'renamed': [],
+            }
+        }
+    }
+    outbound_message = OutboundMessage(
+        unique_id=make_unique_id(uuid, xid),
+        body=event,
+    )
+    return outbound_message
+
+
+def _put_uuids_on_transaction_queue(request, uuids):
+    xmin = get_current_xmin(request)
+    transaction_queue = request.registry['TRANSACTION_QUEUE']
+    outbound_messages = [
+        make_outbound_message_for_transaction_queue(uuid, xmin)
+        for uuid in uuids
+    ]
+    transaction_queue.send_messages(
+        outbound_messages
+    )
+    return {
+        'status': 'ok',
+        'message': f'put {len(outbound_messages)} messages on transaction queue'
+    }
+
+
+def put_collection_uuids_on_transaction_queue(request, collection):
+    return _put_uuids_on_transaction_queue(
         request=request,
         uuids=get_all_uuids_in_collection(
             request,
@@ -108,7 +159,7 @@ def put_collection_uuids_on_invalidation_queue(request, collection):
     permission='index'
 )
 def reindex_view(request):
-    put_uuids_on_invalidation_queue(request)
+    return put_uuids_on_invalidation_queue(request)
 
 
 @view_config(
@@ -125,7 +176,24 @@ def reindex_by_collection_view(request):
         raise HTTPBadRequest(
             detail=f'{requested_collection} invalid collection name'
         )
-    put_collection_uuids_on_invalidation_queue(request, requested_collection)
+    return put_collection_uuids_on_invalidation_queue(request, requested_collection)
+
+
+@view_config(
+    route_name='_invalidate_by_collection',
+    request_method='POST',
+    permission='index'
+)
+def invalidate_by_collection_view(request):
+    requested_collection = request.params.get('collection')
+    actual_collections = list(
+        request.registry[COLLECTIONS].by_item_type.keys()
+    )
+    if requested_collection not in actual_collections:
+        raise HTTPBadRequest(
+            detail=f'{requested_collection} invalid collection name'
+        )
+    return put_collection_uuids_on_transaction_queue(request, requested_collection)
 
 
 def get_approximate_numbers_from_queue(info: Dict[str, Any]):
