@@ -23,14 +23,12 @@ from snosearch.fields import NotificationResponseField
 from snosearch.parsers import ParamsParser
 from snosearch.parsers import QueryString
 from snosearch.responses import FieldedResponse
-from snovault import storage
-from sqlalchemy import select
 from .calculated import calculate_properties
 from .calculated import calculate_select_properties
 from .calculated import calculate_filtered_properties
 from .calculated import _should_render_property
 from .etag import etag_tid
-from .interfaces import CONNECTION, DBSESSION
+from .interfaces import CONNECTION
 from .elasticsearch.interfaces import ELASTIC_SEARCH
 from .resources import (
     AbstractCollection,
