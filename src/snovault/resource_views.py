@@ -28,7 +28,9 @@ from .calculated import calculate_select_properties
 from .calculated import calculate_filtered_properties
 from .calculated import _should_render_property
 from .etag import etag_tid
-from .interfaces import CONNECTION
+from snovault import storage
+from sqlalchemy import select
+from .interfaces import CONNECTION, DBSESSION
 from .elasticsearch.interfaces import ELASTIC_SEARCH
 from .resources import (
     AbstractCollection,
@@ -366,7 +368,8 @@ def item_view_raw(context, request):
 
 @view_config(context=Item, permission='view_raw', request_method='GET', name='history')
 def item_view_history(context, request):
-    props = context.model.data[''].history
+    db = request.registry[DBSESSION]
+    props = db.query(storage.PropertySheet).filter(storage.PropertySheet.rid == context.uuid).all()
 
     history = []
     for p in props:
