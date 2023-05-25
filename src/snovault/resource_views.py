@@ -23,6 +23,7 @@ from snosearch.fields import NotificationResponseField
 from snosearch.parsers import ParamsParser
 from snosearch.parsers import QueryString
 from snosearch.responses import FieldedResponse
+from snovault.storage import Resource
 from .calculated import calculate_properties
 from .calculated import calculate_select_properties
 from .calculated import calculate_filtered_properties
@@ -367,8 +368,8 @@ def item_view_raw(context, request):
 @view_config(context=Item, permission='view_raw', request_method='GET', name='history')
 def item_view_history(context, request):
     model = context.model
-    if request.datastore != 'datastore':
-        # Get model from database
+    if not isinstance(model, Resource):
+        # Get model from database if it's not a storage Resource
         model = request.registry[STORAGE].write.get_by_uuid(str(context.uuid))
 
     props = model.data[''].history
