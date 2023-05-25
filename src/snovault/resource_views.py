@@ -28,9 +28,7 @@ from .calculated import calculate_select_properties
 from .calculated import calculate_filtered_properties
 from .calculated import _should_render_property
 from .etag import etag_tid
-from snovault import storage
-from sqlalchemy import select
-from .interfaces import CONNECTION, DBSESSION, STORAGE
+from .interfaces import CONNECTION, STORAGE
 from .elasticsearch.interfaces import ELASTIC_SEARCH
 from .resources import (
     AbstractCollection,
