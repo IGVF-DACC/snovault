@@ -49,7 +49,7 @@ def datastore(request):
     if request.__parent__ is not None:
         return request.__parent__.datastore
     datastore = 'database'
-    if request.params.get('frame') in ['edit', 'history']:
+    if request.params.get('frame') == 'edit':
         return datastore
     if request.method in ('HEAD', 'GET'):
         datastore = request.params.get('datastore') or \

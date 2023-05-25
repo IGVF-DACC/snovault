@@ -30,7 +30,7 @@ from .calculated import _should_render_property
 from .etag import etag_tid
 from snovault import storage
 from sqlalchemy import select
-from .interfaces import CONNECTION, DBSESSION
+from .interfaces import CONNECTION, DBSESSION, STORAGE
 from .elasticsearch.interfaces import ELASTIC_SEARCH
 from .resources import (
     AbstractCollection,
@@ -368,8 +368,12 @@ def item_view_raw(context, request):
 
 @view_config(context=Item, permission='view_raw', request_method='GET', name='history')
 def item_view_history(context, request):
-    db = request.registry[DBSESSION]
-    props = db.query(storage.PropertySheet).filter(storage.PropertySheet.rid == context.uuid).all()
+    model = context.model
+    if request.datastore != 'datastore':
+        # Get model from database
+        model = request.registry[STORAGE].write.get_by_uuid(str(context.uuid))
+
+    props = model.data[''].history
 
     history = []
     for p in props:
