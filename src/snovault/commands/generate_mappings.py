@@ -100,6 +100,15 @@ def update_indices_hashes_with_calculated_properties(app, indices_hashes):
             index_hash.update(calculated_property.fn.__code__.co_code)
             index_hash.update(str(calculated_property.fn.__code__.co_varnames).encode('utf-8'))
             index_hash.update(str(calculated_property.fn.__defaults__).encode('utf-8'))
+            # Strings constants are stable enough to hash.
+            # Avoid hashing constants that are functions or generators.
+            index_hash.update(
+                ''.join(
+                    const
+                    for const in calculated_property.fn.__code__.co_consts
+                    if isinstance(const, str)
+                ).encode('utf-8')
+            )
 
 
 def update_indices_hashes_with_audits(app, indices_hashes):
@@ -122,6 +131,13 @@ def update_indices_hashes_with_audits(app, indices_hashes):
             index_hash.update(checker.__code__.co_code)
             index_hash.update(str(checker.__code__.co_varnames).encode('utf-8'))
             index_hash.update(str(checker.__defaults__).encode('utf-8'))
+            index_hash.update(
+                ''.join(
+                    const
+                    for const in checker.__code__.co_consts
+                    if isinstance(const, str)
+                ).encode('utf-8')
+            )
 
 
 def update_indices_hashes_with_mappings(app, indices_hashes, mappings):
