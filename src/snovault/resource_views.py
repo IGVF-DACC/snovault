@@ -23,12 +23,13 @@ from snosearch.fields import NotificationResponseField
 from snosearch.parsers import ParamsParser
 from snosearch.parsers import QueryString
 from snosearch.responses import FieldedResponse
+from snovault.storage import Resource
 from .calculated import calculate_properties
 from .calculated import calculate_select_properties
 from .calculated import calculate_filtered_properties
 from .calculated import _should_render_property
 from .etag import etag_tid
-from .interfaces import CONNECTION
+from .interfaces import CONNECTION, STORAGE
 from .elasticsearch.interfaces import ELASTIC_SEARCH
 from .resources import (
     AbstractCollection,
@@ -362,6 +363,34 @@ def item_view_raw(context, request):
     if asbool(request.params.get('upgrade', True)):
         return context.upgrade_properties()
     return context.properties
+
+
+@view_config(context=Item, permission='view_raw', request_method='GET', name='history')
+def item_view_history(context, request):
+    model = context.model
+    if not isinstance(model, Resource):
+        # Get model from database if it's not a storage Resource
+        model = request.registry[STORAGE].write.get_by_uuid(str(context.uuid))
+
+    props = model.data[''].history
+
+    history = []
+    for p in props:
+        history.append(
+            {
+                'timestamp': p.transaction.timestamp.isoformat(),
+                'userid': p.transaction.data['userid'],
+                'props': p.properties
+            }
+        )
+    history = sorted(history, key=lambda t: t['timestamp'])
+    latest = history[-1]
+
+    return {
+        'rid': request.resource_path(context),
+        'latest': latest,
+        'history': history
+    }
 
 
 @view_config(context=Item, permission='edit', request_method='GET',
