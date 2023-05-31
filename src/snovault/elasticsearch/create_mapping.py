@@ -157,7 +157,7 @@ def index_settings():
                         'language': 'possessive_english'
                     },
                     'delimiter': {
-                        'type': 'word_delimiter',
+                        'type': 'word_delimiter_graph',
                         'catenate_all': True,
                         'stem_english_possessive': True,
                         'split_on_numerics': False
