@@ -142,7 +142,7 @@ def index_settings():
                     'substring': {
                         'type': 'edge_ngram',
                         'min_gram': 1,
-                        'max_gram': 33
+                        'max_gram': 38
                     },
                     'english_stop': {
                         'type': 'stop',
@@ -159,7 +159,6 @@ def index_settings():
                     'delimiter': {
                         'type': 'word_delimiter',
                         'catenate_all': True,
-                        'preserve_original': True,
                         'stem_english_possessive': True,
                         'split_on_numerics': False
                     }
