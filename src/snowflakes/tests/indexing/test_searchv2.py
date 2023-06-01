@@ -162,7 +162,7 @@ def test_searchv2_view_values_invalid_advanced_query(workbook, testapp):
         '/search/?advancedQuery=[',
         status=400
     )
-    assert r.json['description'] == 'Invalid query: ([)'
+    assert r.json['description'] == 'Invalid query: ['
 
 
 def test_searchv2_view_values_reserved_characters_advanced_query(workbook, testapp):
