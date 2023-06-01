@@ -214,7 +214,7 @@ def index_settings():
                         'tokenizer': 'standard',
                         'filter': [
                             'lowercase',
-                             'asciifolding'
+                            'asciifolding'
                         ]
                     }
                 },
