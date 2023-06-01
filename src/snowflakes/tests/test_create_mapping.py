@@ -136,7 +136,7 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
                 'copy_to': '_exact'
             },
             'index_name': {
-                'type': 'keyword',
+                'type': 'keyword'
             },
             'embedded': {
                 'type': 'object',
@@ -247,7 +247,8 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
                         'type': 'keyword'
                     },
                     '@id': {
-                        'type': 'keyword'
+                        'type': 'keyword',
+                        'copy_to': '_exact'
                     },
                     '@type': {
                         'type': 'keyword'
