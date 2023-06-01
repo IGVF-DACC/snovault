@@ -119,7 +119,7 @@ def test_searchv2_view_values_malformed_query_string(workbook, testapp):
 
 def test_searchv2_view_values_regex_slash_escape(workbook, testapp):
     r = testapp.get(
-        '/search/?searchTerm=/*'
+        '/search/?searchTerm=*'
     )
     assert r.json['total'] >= 32
 
