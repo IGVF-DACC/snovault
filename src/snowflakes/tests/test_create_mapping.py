@@ -76,7 +76,7 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
                     'match_mapping_type': 'string',
                     'mapping': {
                         'type': 'keyword',
-                        'copy_to': '_all'
+                        'copy_to': '_exact'
                     }
                 }
             },
@@ -112,25 +112,31 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
             }
         ],
         'properties': {
-            '_all': {
+            '_fuzzy': {
                 'type': 'text',
                 'store': False,
                 'analyzer': 'snovault_index_analyzer',
                 'search_analyzer': 'snovault_search_analyzer'
             },
+            '_exact': {
+                'type': 'text',
+                'store': False,
+                'analyzer': 'snovault_exact_analyzer',
+                'search_analyzer': 'snovault_exact_analyzer'
+            },
             'uuid': {
                 'type': 'keyword',
-                'copy_to': '_all'
+                'copy_to': '_exact'
             },
             'tid': {
                 'type': 'keyword'
             },
             'item_type': {
                 'type': 'keyword',
-                'copy_to': '_all'
+                'copy_to': '_exact'
             },
             'index_name': {
-                'type': 'keyword',
+                'type': 'keyword'
             },
             'embedded': {
                 'type': 'object',
@@ -146,11 +152,11 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
                     },
                     'title': {
                         'type': 'keyword',
-                        'copy_to': '_all'
+                        'copy_to': '_fuzzy'
                     },
                     'name': {
                         'type': 'keyword',
-                        'copy_to': '_all'
+                        'copy_to': '_fuzzy'
                     },
                     'description': {
                         'type': 'text'
@@ -226,7 +232,7 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
                             },
                             'title': {
                                 'type': 'keyword',
-                                'copy_to': '_all'
+                                'copy_to': '_fuzzy'
                             }
                         }
                     },
@@ -235,13 +241,14 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
                     },
                     'project': {
                         'type': 'keyword',
-                        'copy_to': '_all'
+                        'copy_to': '_fuzzy'
                     },
                     'viewing_group': {
                         'type': 'keyword'
                     },
                     '@id': {
-                        'type': 'keyword'
+                        'type': 'keyword',
+                        'copy_to': '_exact'
                     },
                     '@type': {
                         'type': 'keyword'

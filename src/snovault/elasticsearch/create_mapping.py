@@ -142,7 +142,7 @@ def index_settings():
                     'substring': {
                         'type': 'edge_ngram',
                         'min_gram': 1,
-                        'max_gram': 33
+                        'max_gram': 38,
                     },
                     'english_stop': {
                         'type': 'stop',
@@ -157,9 +157,8 @@ def index_settings():
                         'language': 'possessive_english'
                     },
                     'delimiter': {
-                        'type': 'word_delimiter',
+                        'type': 'word_delimiter_graph',
                         'catenate_all': True,
-                        'preserve_original': True,
                         'stem_english_possessive': True,
                         'split_on_numerics': False
                     }
@@ -208,6 +207,21 @@ def index_settings():
                         'type': 'custom',
                         'tokenizer': 'snovault_path_tokenizer',
                         'filter': ['lowercase']
+                    },
+                    'snovault_exact_analyzer': {
+                        'type': 'custom',
+                        'char_filter': ['remove_dashes'],
+                        'tokenizer': 'standard',
+                        'filter': [
+                            'lowercase',
+                            'asciifolding'
+                        ]
+                    }
+                },
+                'char_filter': {
+                    'remove_dashes': {
+                        'type': 'mapping',
+                        'mappings': ['-=>']
                     }
                 },
                 'tokenizer': {
@@ -257,7 +271,7 @@ def es_mapping(mapping):
                     'match_mapping_type': 'string',
                     'mapping': {
                         'type': 'keyword',
-                        'copy_to': '_all',
+                        'copy_to': '_exact',
                     },
                 },
             },
@@ -293,22 +307,28 @@ def es_mapping(mapping):
             }
         ],
         'properties': {
-            '_all': {
+            '_fuzzy': {
                 'type': 'text',
                 'store': False,
                 'analyzer': 'snovault_index_analyzer',
                 'search_analyzer': 'snovault_search_analyzer'
             },
+            '_exact': {
+                'type': 'text',
+                'store': False,
+                'analyzer': 'snovault_exact_analyzer',
+                'search_analyzer': 'snovault_exact_analyzer'
+            },
             'uuid': {
                 'type': 'keyword',
-                'copy_to': '_all',
+                'copy_to': '_exact',
             },
             'tid': {
                 'type': 'keyword',
             },
             'item_type': {
                 'type': 'keyword',
-                'copy_to': '_all',
+                'copy_to': '_exact',
             },
             'index_name': {
                 'type': 'keyword',
@@ -425,7 +445,7 @@ def type_mapping(types, item_type, embed=True):
     if fuzzy_searchable_fields is None:
         fuzzy_searchable_fields = [
             prop_name
-            for prop_name in ['@id', 'title']
+            for prop_name in ['title']
             if prop_name in mapping['properties']
         ]
     for fuzzy_searchable_field in fuzzy_searchable_fields:
@@ -434,7 +454,24 @@ def type_mapping(types, item_type, embed=True):
         new_mapping = mapping['properties']
         for prop in props:
             new_mapping = new_mapping[prop]['properties']
-        new_mapping[last]['copy_to'] = '_all'
+        new_mapping[last]['copy_to'] = '_fuzzy'
+    exact_searchable_fields = schema.get(
+        'exact_searchable_fields',
+        None
+    )
+    if exact_searchable_fields is None:
+        exact_searchable_fields = [
+            prop_name
+            for prop_name in ['@id']
+            if prop_name in mapping['properties']
+        ]
+    for exact_searchable_field in exact_searchable_fields:
+        props = exact_searchable_field.split('.')
+        last = props.pop()
+        new_mapping = mapping['properties']
+        for prop in props:
+            new_mapping = new_mapping[prop]['properties']
+        new_mapping[last]['copy_to'] = '_exact'
     return mapping
 
 
