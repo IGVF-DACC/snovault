@@ -1,4 +1,4 @@
-FROM python:3.9.9-slim-buster
+FROM public.ecr.aws/docker/library/python:3.11.4-slim-bookworm
 
 ENV PYTHONDONTWRITEBYTECODE 1
 
@@ -42,7 +42,7 @@ COPY --chown=snovault:snovault src/snovault/__init__.py src/snovault/__init__.py
 
 USER snovault
 
-RUN python -m pip install --upgrade pip
+RUN python -m pip install --upgrade pip setuptools
 
 RUN pip install -e .[dev]
 
