@@ -18,7 +18,7 @@ workflows:
 jobs:
   lint:
     docker:
-      - image: cimg/python:3.9
+      - image: cimg/python:3.11
     working_directory: ~/snovault
     steps:
       - checkout
@@ -27,7 +27,7 @@ jobs:
 
   snovault-pytest:
     machine:
-      image: ubuntu-2004:202111-02
+      image: ubuntu-2004:2023.04.2
       docker_layer_caching: true
     resource_class: medium
     working_directory: ~/snovault
@@ -49,7 +49,7 @@ jobs:
 
   snovault-pytest-indexer:
     machine:
-      image: ubuntu-2004:202111-02
+      image: ubuntu-2004:2023.04.2
       docker_layer_caching: true
     resource_class: large
     working_directory: ~/snovault
@@ -71,7 +71,7 @@ jobs:
 
   snovault-check-opensearch-mappings:
     machine:
-      image: ubuntu-2004:202111-02
+      image: ubuntu-2004:2023.04.2
       docker_layer_caching: true
     resource_class: medium
     working_directory: ~/snovault
