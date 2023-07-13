@@ -24,7 +24,7 @@ def includeme(config):
 def parse_version(version):
     # With `from pkg_resources import parse_version` empty string now returns:
     # packaging.version.InvalidVersion: Invalid version: ''
-    if version is '':
+    if version == '':
         version = '0'
     return strict_parse_version(version)
 
