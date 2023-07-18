@@ -2,7 +2,7 @@ from snovault.interfaces import (
     TYPES,
     UPGRADER,
 )
-from pkg_resources import parse_version
+from pkg_resources import parse_version as strict_parse_version
 from pyramid.interfaces import (
     PHASE1_CONFIG,
 )
@@ -19,6 +19,14 @@ def includeme(config):
     config.add_directive(
         'set_default_upgrade_finalizer', set_default_upgrade_finalizer)
     config.add_request_method(upgrade, 'upgrade')
+
+
+def parse_version(version):
+    # With `from pkg_resources import parse_version` empty string now returns:
+    # packaging.version.InvalidVersion: Invalid version: ''
+    if version == '':
+        version = '0'
+    return strict_parse_version(version)
 
 
 class ConfigurationError(Exception):

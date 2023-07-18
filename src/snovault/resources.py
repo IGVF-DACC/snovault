@@ -1,6 +1,6 @@
 # See http://docs.pylonsproject.org/projects/pyramid/en/latest/narr/resources.html
 import logging
-from collections import Mapping
+from collections.abc import Mapping
 from itertools import chain
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPInternalServerError
