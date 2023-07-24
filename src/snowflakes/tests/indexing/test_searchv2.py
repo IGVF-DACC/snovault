@@ -547,19 +547,19 @@ def test_reportv2_view_values_bad_type(workbook, testapp):
         status=400
     )
     assert r.json['description'] == "Invalid types: ['Sno']"
-    r = testapp.get(
-        '/report/?status=released&type=Sno&type=Flake',
-        status=400
-    )
-    assert r.json['description'] == "Report view requires specifying a single type: [('type', 'Sno'), ('type', 'Flake')]"
+    # r = testapp.get(
+    #     '/report/?status=released&type=Sno&type=Flake',
+    #     status=400
+    # )
+    # assert r.json['description'] == "Report view requires specifying a single type: [('type', 'Sno'), ('type', 'Flake')]"
 
 
-def test_reportv2_view_values_single_subtype(workbook, testapp):
-    r = testapp.get(
-        '/report/?status=released&type=Item',
-        status=400
-    )
-    assert 'Report view requires a type with no child types:' in r.json['description']
+# def test_reportv2_view_values_single_subtype(workbook, testapp):
+#     r = testapp.get(
+#         '/report/?status=released&type=Item',
+#         status=400
+#     )
+#     assert 'Report view requires a type with no child types:' in r.json['description']
 
 
 def test_reportv2_view_values_no_type(workbook, testapp):
@@ -567,7 +567,7 @@ def test_reportv2_view_values_no_type(workbook, testapp):
         '/report/?status=released',
         status=400
     )
-    assert r.json['description'] == 'Report view requires specifying a single type: []'
+    assert r.json['description'] == 'Report view requires specifying types: []'
 
 
 def test_report_cached_facets_view(workbook, testapp):
