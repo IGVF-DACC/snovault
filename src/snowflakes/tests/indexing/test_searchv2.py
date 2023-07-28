@@ -546,7 +546,6 @@ def test_reportv2_view_values_bad_type(workbook, testapp):
         '/report/?status=released&type=Sno',
         status=400
     )
-    print(r.registry.keys())
     assert r.json['description'] == "Invalid types: ['Sno']"
 
 
