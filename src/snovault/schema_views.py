@@ -12,9 +12,9 @@ def includeme(config):
     config.add_route('schemas', '/profiles{slash:/?}')
     config.add_route('schema', '/profiles/{type_name}.json')
     config.add_route('schemap', '/profiles/{type_name}{slash:/?}')
-    config.add_route('schemas_map', '/profiles-map/')
-    config.add_route('schemas_titles', '/profiles-titles/')
-    config.add_route('collection_titles', '/collection-titles/')
+    config.add_route('schemas_map', '/profiles-map{slash:/?}')
+    config.add_route('schemas_titles', '/profiles-titles{slash:/?}')
+    config.add_route('collection_titles', '/collection-titles{slash:/?}')
     config.scan(__name__)
 
 
