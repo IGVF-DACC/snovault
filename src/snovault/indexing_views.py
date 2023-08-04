@@ -1,7 +1,9 @@
 from pyramid.security import (
-    Authenticated,
-    Everyone,
     principals_allowed_by_permission,
+)
+from pyramid.authorization import (
+    Authenticated,
+    Everyone
 )
 from pyramid.traversal import resource_path
 from pyramid.view import view_config
