@@ -15,7 +15,7 @@ def includeme(config):
     config.add_route('schemas_map', '/profiles-map{slash:/?}')
     config.add_route('schemas_titles', '/profiles-titles{slash:/?}')
     config.add_route('collection_titles', '/collection-titles{slash:/?}')
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 def _apply_permission(collection, request):

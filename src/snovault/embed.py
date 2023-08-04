@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 def includeme(config):
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
     config.add_renderer('null_renderer', NullRenderer)
     config.add_request_method(embed, 'embed')
     config.add_request_method(lambda request: set(), '_embedded_uuids', reify=True)

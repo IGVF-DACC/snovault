@@ -14,7 +14,7 @@ from snovault.elasticsearch.searches.configs import search_config
 
 
 def includeme(config):
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
     config.include('.testing_auditor')
 
 

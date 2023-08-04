@@ -32,7 +32,7 @@ from .validators import (
 
 
 def includeme(config):
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 def split_child_props(type_info, properties):

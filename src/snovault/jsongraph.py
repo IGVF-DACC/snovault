@@ -5,7 +5,7 @@ from pyramid.view import view_config
 
 
 def includeme(config):
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 def uuid_to_ref(obj, path):

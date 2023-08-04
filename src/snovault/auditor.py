@@ -23,7 +23,7 @@ logger.setLevel(logging.ERROR)
 def includeme(config):
     config.include('.calculated')
     config.include('.typeinfo')
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
     config.registry[AUDITOR] = Auditor()
     config.add_directive('add_audit_checker', add_audit_checker)
     config.add_request_method(audit, 'audit')

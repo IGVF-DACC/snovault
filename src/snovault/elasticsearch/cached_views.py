@@ -8,7 +8,7 @@ from .interfaces import ICachedItem
 
 
 def includeme(config):
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 @view_config(context=ICachedItem, request_method='GET', name='embedded')

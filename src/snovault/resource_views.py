@@ -40,7 +40,7 @@ from .util import expand_path
 
 
 def includeme(config):
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 def remove_item_keys(item, request):

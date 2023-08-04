@@ -12,7 +12,7 @@ from .base import (
 
 
 def includeme(config):
-    config.scan()
+    config.scan(categories=None)
 
 
 @collection(

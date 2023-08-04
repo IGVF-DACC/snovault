@@ -56,7 +56,7 @@ def includeme(config):
     config.add_route('logout', '/logout')
     config.add_route('impersonate-user', '/impersonate-user')
     config.add_route('session-properties', '/session-properties')
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 class NamespacedAuthenticationPolicy(object):

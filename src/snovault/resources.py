@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 def includeme(config):
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 class Resource(object):
