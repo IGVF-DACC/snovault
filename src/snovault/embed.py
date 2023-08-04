@@ -1,6 +1,6 @@
 from .util import quick_deepcopy
 from posixpath import join
-from pyramid.compat import (
+from snovault.compat import (
     native_,
     unquote_bytes_to_wsgi,
 )

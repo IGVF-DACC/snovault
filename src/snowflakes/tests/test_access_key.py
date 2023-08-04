@@ -3,7 +3,7 @@ import pytest
 
 def basic_auth(username, password):
     from base64 import b64encode
-    from pyramid.compat import ascii_native_
+    from snovault.compat import ascii_native_
     return 'Basic ' + ascii_native_(b64encode(('%s:%s' % (username, password)).encode('utf-8')))
 
 
