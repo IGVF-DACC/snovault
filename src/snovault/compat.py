@@ -1,3 +1,7 @@
+'''
+Extracted from https://github.com/Pylons/pyramid/blob/1.10-branch/src/pyramid/_compat.py
+'''
+
 from urllib.parse import unquote_to_bytes
 
 
@@ -25,3 +29,11 @@ def ascii_native_(s):
     if isinstance(s, text_type):
         s = s.encode('ascii')
     return str(s, 'ascii', 'strict')
+
+
+def bytes_(s, encoding='latin-1', errors='strict'):
+    """If ``s`` is an instance of ``text_type``, return
+    ``s.encode(encoding, errors)``, otherwise return ``s``"""
+    if isinstance(s, text_type):
+        return s.encode(encoding, errors)
+    return s
