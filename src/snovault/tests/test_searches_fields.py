@@ -4,7 +4,7 @@ import pytest
 @pytest.fixture()
 def dummy_parent(dummy_request):
     from pyramid.testing import DummyResource
-    from pyramid.security import Allow
+    from pyramid.authorization import Allow
     from snosearch.parsers import ParamsParser
     from snosearch.queries import AbstractQueryFactory
     from snovault.elasticsearch.interfaces import ELASTIC_SEARCH

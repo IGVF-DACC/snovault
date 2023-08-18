@@ -16,7 +16,7 @@ def includeme(config):
     config.add_route('_reindex_by_collection', '/_reindex_by_collection')
     config.add_route('_invalidate_by_collection', '/_invalidate_by_collection')
     config.add_route('indexer_info', '/indexer-info')
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 def get_all_uuids(request, types=None):

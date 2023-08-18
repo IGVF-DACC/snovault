@@ -4,7 +4,7 @@ from collections.abc import Mapping
 from itertools import chain
 from pyramid.decorator import reify
 from pyramid.httpexceptions import HTTPInternalServerError
-from pyramid.security import (
+from pyramid.authorization import (
     Allow,
     Everyone,
 )
@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 
 def includeme(config):
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 class Resource(object):

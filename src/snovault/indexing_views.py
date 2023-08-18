@@ -1,7 +1,9 @@
 from pyramid.security import (
-    Authenticated,
-    Everyone,
     principals_allowed_by_permission,
+)
+from pyramid.authorization import (
+    Authenticated,
+    Everyone
 )
 from pyramid.traversal import resource_path
 from pyramid.view import view_config
@@ -9,7 +11,7 @@ from .resources import Item
 
 
 def includeme(config):
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
     config.add_route('opensearch-item-type-to-index-name', '/opensearch-item-type-to-index-name{slash:/?}')
 
 

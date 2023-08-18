@@ -9,7 +9,7 @@ from snovault.upgrader import (
 
 
 def includeme(config):
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
     config.add_upgrade('testing_upgrader', '3')
 
 

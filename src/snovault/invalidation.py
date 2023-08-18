@@ -14,7 +14,7 @@ import transaction
 
 
 def includeme(config):
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
     config.add_request_method(lambda request: defaultdict(set), '_updated_uuid_paths', reify=True)
     config.add_request_method(lambda request: {}, '_initial_back_rev_links', reify=True)
 

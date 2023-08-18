@@ -50,7 +50,7 @@ def includeme(config):
     config.add_route('summary', '/summary{slash:/?}')
     config.add_route('audit', '/audit{slash:/?}')
     config.add_route('top_hits_raw', '/top_hits_raw{slash:/?}')
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 DEFAULT_ITEM_TYPES = [

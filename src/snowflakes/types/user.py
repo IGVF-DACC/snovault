@@ -4,7 +4,7 @@ from pyramid.httpexceptions import HTTPUnprocessableEntity
 from pyramid.view import (
     view_config,
 )
-from pyramid.security import (
+from pyramid.authorization import (
     Allow,
     Deny,
     Everyone,

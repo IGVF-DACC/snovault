@@ -36,7 +36,7 @@ DEGREE_FLIP_MAP = {
 
 
 def includeme(config):
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 class InternalRedirect(Response):

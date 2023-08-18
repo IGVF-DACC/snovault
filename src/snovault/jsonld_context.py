@@ -22,7 +22,7 @@ def includeme(config):
     config.add_route('jsonld_context', term_path)
     config.add_route('jsonld_context_no_slash', term_path.rstrip('/'))
     config.add_route('jsonld_term', term_path + '{term}')
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 @subscriber(ApplicationCreated)

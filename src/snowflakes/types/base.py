@@ -1,5 +1,5 @@
 from functools import lru_cache
-from pyramid.security import (
+from pyramid.authorization import (
     ALL_PERMISSIONS,
     Allow,
     Authenticated,

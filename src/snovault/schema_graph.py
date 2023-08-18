@@ -19,7 +19,7 @@ log = logging.getLogger(__name__)
 def includeme(config):
     config.add_route('graph_svg', '/profiles/graph.svg')
     config.add_route('graph_dot', '/profiles/graph.dot')
-    config.scan(__name__)
+    config.scan(__name__, categories=None)
 
 
 def node(type_name, props):
