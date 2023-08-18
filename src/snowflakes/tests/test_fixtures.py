@@ -1,7 +1,7 @@
 import pytest
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def minitestdata(app, conn):
     tx = conn.begin_nested()
 
@@ -24,7 +24,7 @@ def minitestdata(app, conn):
     tx.rollback()
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def minitestdata2(app, conn):
     tx = conn.begin_nested()
 

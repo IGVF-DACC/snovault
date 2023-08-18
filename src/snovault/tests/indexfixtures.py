@@ -19,7 +19,7 @@ def app_settings(wsgi_server_host_port, postgresql_server, elasticsearch_server)
     return settings
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def app(app_settings):
     from snovault import main
     app = main({}, **app_settings)
@@ -45,7 +45,7 @@ def teardown(app, dbapi_conn):
     cursor.close()
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def dbapi_conn(DBSession):
     connection = DBSession.bind.pool.unique_connection()
     connection.detach()

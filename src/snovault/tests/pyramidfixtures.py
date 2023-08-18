@@ -3,14 +3,14 @@ import pytest
 # Fixtures  for pyramid, embedding
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def config():
     from pyramid.testing import setUp, tearDown
     yield setUp()
     tearDown()
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def threadlocals(request, dummy_request, registry):
     from pyramid.threadlocal import manager
     manager.push({'request': dummy_request, 'registry': registry})

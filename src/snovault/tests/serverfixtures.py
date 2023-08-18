@@ -35,12 +35,12 @@ def ini_file(request):
 
 
 @pytest.mark.fixture_cost(10)
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def engine_url(request, ini_file):
     yield ini_file.get('sqlalchemy.url')
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def postgresql_server(engine_url):
     yield engine_url
 
@@ -52,12 +52,12 @@ def elasticsearch_host_port():
 
 
 @pytest.mark.fixture_cost(10)
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def elasticsearch_server(request, elasticsearch_host_port, ini_file):
     yield ini_file.get('elasticsearch.server')
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def conn(engine_url):
     from snovault.app import configure_engine
     from snovault.storage import Base
@@ -95,7 +95,7 @@ def DBSession(_DBSession, zsa_savepoints, check_constraints):
     return _DBSession
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def external_tx(request, conn):
     # print('BEGIN external_tx')
     tx = conn.begin_nested()
@@ -115,7 +115,7 @@ def transaction(request, external_tx, zsa_savepoints, check_constraints):
     return transaction
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def zsa_savepoints(conn):
     """ Place a savepoint at the start of the zope transaction
 
@@ -175,7 +175,7 @@ def session(transaction, DBSession):
     return DBSession()
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def check_constraints(conn, _DBSession):
     '''Check deffered constraints on zope transaction commit.
 
@@ -227,7 +227,7 @@ def check_constraints(conn, _DBSession):
     transaction.manager.unregisterSynch(check_constraints)
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def execute_counter(conn, zsa_savepoints, check_constraints):
     """ Count calls to execute
     """
@@ -263,7 +263,7 @@ def execute_counter(conn, zsa_savepoints, check_constraints):
     event.remove(conn, 'after_cursor_execute', after_cursor_execute)
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def no_deps(conn, DBSession):
     from sqlalchemy import event
 
@@ -317,7 +317,7 @@ def wsgi_server_app(app):
 
 
 @pytest.mark.fixture_cost(100)
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def wsgi_server(request, wsgi_server_app, wsgi_server_host_port):
     from webtest.http import StopableWSGIServer
     host, port = wsgi_server_host_port

@@ -81,7 +81,7 @@ def app(app_settings):
 
 
 @pytest.mark.fixture_cost(500)
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def workbook(conn, app, app_settings):
     tx = conn.begin_nested()
     try:

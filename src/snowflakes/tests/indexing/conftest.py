@@ -45,7 +45,7 @@ def app_settings(wsgi_server_host_port, postgresql_server, elasticsearch_server)
     return settings
 
 
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def app(app_settings):
     from snowflakes import main
     app = main({}, **app_settings)
@@ -59,7 +59,7 @@ def app(app_settings):
 
 
 @pytest.mark.fixture_cost(500)
-@pytest.yield_fixture(scope='session')
+@pytest.fixture(scope='session')
 def workbook(app):
     from snovault.elasticsearch.manage_mappings import manage_mappings
     from webtest import TestApp
