@@ -1,9 +1,16 @@
+import os
+
+from functools import wraps
+
 from past.builtins import basestring
 from pyramid.settings import asbool
 from pyramid.traversal import (
     find_resource,
 )
 from pyramid.view import view_config
+
+from pyramid.httpexceptions import HTTPServiceUnavailable
+
 from uuid import (
     UUID,
     uuid4,
@@ -150,6 +157,19 @@ def delete_item(context, request):
     update_item(context, request, properties)
 
 
+def maybe_block_database_writes(view_callable):
+    @wraps(view_callable)
+    def wrapper(context, request, *args, **kwargs):
+        block_flag = os.environ.get('BLOCK_DATABASE_WRITES', False)
+        if block_flag in ['true', 'True', '1', True]:
+            raise HTTPServiceUnavailable(
+                'Database writes are temporarily blocked.'
+            )
+        return view_callable(context, request, *args, **kwargs)
+    return wrapper
+
+
+@maybe_block_database_writes
 @view_config(context=Collection, permission='add', request_method='POST',
              validators=[validate_item_content_post])
 @view_config(context=Collection, permission='add_unvalidated', request_method='POST',
@@ -179,6 +199,7 @@ def collection_add(context, request, render=None):
     return result
 
 
+@maybe_block_database_writes
 @view_config(context=Item, permission='edit', request_method='PUT',
              validators=[validate_item_content_put], decorator=if_match_tid)
 @view_config(context=Item, permission='edit', request_method='PATCH',
