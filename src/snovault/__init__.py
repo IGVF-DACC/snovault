@@ -1,4 +1,4 @@
-__version__ = '9.1.0'
+__version__ = '10.0.0'
 
 
 from pyramid.config import Configurator
