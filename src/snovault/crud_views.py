@@ -169,12 +169,13 @@ def maybe_block_database_writes(view_callable):
     return wrapper
 
 
-@maybe_block_database_writes
+
 @view_config(context=Collection, permission='add', request_method='POST',
              validators=[validate_item_content_post])
 @view_config(context=Collection, permission='add_unvalidated', request_method='POST',
              validators=[no_validate_item_content_post],
              request_param=['validate=false'])
+@maybe_block_database_writes
 def collection_add(context, request, render=None):
     if render is None:
         render = request.params.get('render', True)
@@ -199,7 +200,6 @@ def collection_add(context, request, render=None):
     return result
 
 
-@maybe_block_database_writes
 @view_config(context=Item, permission='edit', request_method='PUT',
              validators=[validate_item_content_put], decorator=if_match_tid)
 @view_config(context=Item, permission='edit', request_method='PATCH',
@@ -210,6 +210,7 @@ def collection_add(context, request, render=None):
 @view_config(context=Item, permission='edit_unvalidated', request_method='PATCH',
              validators=[no_validate_item_content_patch],
              request_param=['validate=false'], decorator=if_match_tid)
+@maybe_block_database_writes
 def item_edit(context, request, render=None):
     """ This handles both PUT and PATCH, difference is the validator
 
