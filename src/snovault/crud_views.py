@@ -169,7 +169,6 @@ def maybe_block_database_writes(view_callable):
     return wrapper
 
 
-
 @view_config(context=Collection, permission='add', request_method='POST',
              validators=[validate_item_content_post])
 @view_config(context=Collection, permission='add_unvalidated', request_method='POST',
