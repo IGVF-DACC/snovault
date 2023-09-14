@@ -24,7 +24,7 @@ def register_feature_flags(config, local_feature_flags):
     registry = config.registry
     registry[FEATURE_FLAGS] = initialize_feature_flags(
         registry.settings,
-        LOCAL_FEATURE_FLAGS
+        local_feature_flags
     )
 
 
