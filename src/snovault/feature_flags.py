@@ -15,18 +15,17 @@ LOCAL_FEATURE_FLAGS = {
 
 
 def includeme(config):
-    registry = config.registry
-    registry[FEATURE_FLAGS] = initialize_feature_flags(registry.settings, LOCAL_FEATURE_FLAGS)
+    register_feature_flags(config, LOCAL_FEATURE_FLAGS)
     config.add_route('feature_flags', '/feature-flags{slash:/?}')
     config.scan(__name__, categories=None)
 
 
-def get_local_feature_flags():
-    return {
-        'block_database_writes': {
-            'enabled': False
-        }
-    }
+def register_feature_flags(config, local_feature_flags):
+    registry = config.registry
+    registry[FEATURE_FLAGS] = initialize_feature_flags(
+        registry.settings,
+        LOCAL_FEATURE_FLAGS
+    )
 
 
 def initialize_feature_flags(settings, local_feature_flags):
