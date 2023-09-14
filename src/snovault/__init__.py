@@ -84,6 +84,7 @@ def includeme(config):
     config.include('.indexing_views')
     config.include('.resource_views')
     config.include('.elasticsearch.searches.configs')
+    config.include('.feature_flags')
 
 
 def app_version(config):
