@@ -1,5 +1,7 @@
 import os
 
+from pyramid.view import view_config
+
 from appconfig_helper import AppConfigHelper
 
 
@@ -8,10 +10,13 @@ FEATURE_FLAGS = 'FEATURE_FLAGS'
 
 def includeme(config):
     registry = config.registry
-    registry[FEATURE_FLAGS] = get_feature_flags(registry.settings)
+    registry[FEATURE_FLAGS] = register_feature_flags(registry.settings)
+    config.add_route('feature_flags', '/feature-flags{slash:/?}')
+    config.scan(__name__, categories=None)
 
 
-def get_feature_flags(settings):
+
+def register_feature_flags(settings):
     feature_flag_strategy = settings.get('feature_flag_strategy')
     if feature_flag_strategy == 'local':
         return LocalFeatureFlags()
@@ -37,3 +42,11 @@ class LocalFeatureFlags:
     @property
     def config(self):
         return self.config
+
+
+@view_config(
+    route_name='feature_flags',
+    request_method='GET',
+)
+def feature_flags(context, request):
+    return request.registry[FEATURE_FLAGS].config
