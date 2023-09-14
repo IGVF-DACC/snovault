@@ -7,10 +7,16 @@ from appconfig_helper import AppConfigHelper
 
 FEATURE_FLAGS = 'FEATURE_FLAGS'
 
+LOCAL_FEATURE_FLAGS = {
+    'block_database_writes': {
+        'enabled': False
+    }
+}
+
 
 def includeme(config):
     registry = config.registry
-    registry[FEATURE_FLAGS] = initialize_feature_flags(registry.settings)
+    registry[FEATURE_FLAGS] = initialize_feature_flags(registry.settings, LOCAL_FEATURE_FLAGS)
     config.add_route('feature_flags', '/feature-flags{slash:/?}')
     config.scan(__name__, categories=None)
 
@@ -23,11 +29,11 @@ def get_local_feature_flags():
     }
 
 
-def initialize_feature_flags(settings):
+def initialize_feature_flags(settings, local_feature_flags):
     feature_flag_strategy = settings.get('feature_flag_strategy')
     if feature_flag_strategy == 'local':
         return LocalFeatureFlags(
-            feature_flags=get_local_feature_flags()
+            feature_flags=local_feature_flags
         )
     elif feature_flag_strategy == 'appconfig':
         return AppConfigHelper(
