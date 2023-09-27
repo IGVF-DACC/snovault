@@ -68,12 +68,12 @@ def feature_flags(context, request):
     return request.registry[FEATURE_FLAGS].config
 
 
-def try_to_get_config_value_or_default(request, key, default):
+def try_to_get_feature_flag_value_or_default(*, request, flag, default):
     try:
-        return request.registry[FEATURE_FLAGS].config[key]['enabled']
+        return request.registry[FEATURE_FLAGS].config[flag]['enabled']
     except Exception:
         logger.exception(
-            f'Unable to get key {key} from feature flag config. '
+            f'Unable to get flag {flag} from feature flag config. '
             f'Returning default {default}.'
         )
         return default

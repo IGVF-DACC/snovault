@@ -1,5 +1,3 @@
-import os
-
 from functools import wraps
 
 from past.builtins import basestring
@@ -37,7 +35,7 @@ from .validators import (
     validate_item_content_put,
 )
 
-from snovault.feature_flags import try_to_get_config_value_or_default
+from snovault.feature_flags import try_to_get_feature_flag_value_or_default
 
 
 def includeme(config):
@@ -162,10 +160,10 @@ def delete_item(context, request):
 def maybe_block_database_writes(view_callable):
     @wraps(view_callable)
     def wrapper(context, request, *args, **kwargs):
-        block_flag = try_to_get_config_value_or_default(
-            request,
-            'BLOCK_DATABASE_WRITES',
-            False
+        block_flag = try_to_get_feature_flag_value_or_default(
+            request=request,
+            flag='block_database_writes',
+            default=False
         )
         if block_flag in ['true', 'True', '1', True]:
             raise HTTPServiceUnavailable(
