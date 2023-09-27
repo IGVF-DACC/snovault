@@ -30,7 +30,7 @@ def register_feature_flags(config, local_feature_flags):
     registry = config.registry
     registry[FEATURE_FLAGS] = initialize_feature_flags(
         registry.settings,
-        local_feature_flags
+        local_feature_flags,
     )
 
 
@@ -38,7 +38,7 @@ def initialize_feature_flags(settings, local_feature_flags):
     feature_flag_strategy = settings.get('feature_flag_strategy')
     if feature_flag_strategy == 'local':
         return LocalFeatureFlags(
-            feature_flags=local_feature_flags
+            feature_flags=local_feature_flags,
         )
     elif feature_flag_strategy == 'appconfig':
         return AppConfigHelper(
