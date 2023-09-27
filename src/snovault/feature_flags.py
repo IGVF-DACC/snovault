@@ -1,3 +1,5 @@
+import logging
+
 import os
 
 from pyramid.view import view_config
@@ -5,7 +7,11 @@ from pyramid.view import view_config
 from appconfig_helper import AppConfigHelper
 
 
+logger = logging.getLogger(__name__)
+
+
 FEATURE_FLAGS = 'FEATURE_FLAGS'
+
 
 LOCAL_FEATURE_FLAGS = {
     'block_database_writes': {
@@ -60,3 +66,14 @@ class LocalFeatureFlags:
 )
 def feature_flags(context, request):
     return request.registry[FEATURE_FLAGS].config
+
+
+def try_to_get_config_value_or_default(request, key, default):
+    try:
+        return request.registry[FEATURE_FLAGS].config[key]['enabled']
+    except Exception:
+        logger.exception(
+            f'Unable to get key {key} from feature flag config. '
+            f'Returning default {default}.'
+        )
+        return default
