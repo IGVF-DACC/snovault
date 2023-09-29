@@ -1,9 +1,14 @@
+from functools import wraps
+
 from past.builtins import basestring
 from pyramid.settings import asbool
 from pyramid.traversal import (
     find_resource,
 )
 from pyramid.view import view_config
+
+from pyramid.httpexceptions import HTTPServiceUnavailable
+
 from uuid import (
     UUID,
     uuid4,
@@ -29,6 +34,8 @@ from .validators import (
     validate_item_content_post,
     validate_item_content_put,
 )
+
+from snovault.feature_flags import try_to_get_feature_flag_value_or_default
 
 
 def includeme(config):
@@ -150,11 +157,28 @@ def delete_item(context, request):
     update_item(context, request, properties)
 
 
+def maybe_block_database_writes(view_callable):
+    @wraps(view_callable)
+    def wrapper(context, request, *args, **kwargs):
+        block_flag = try_to_get_feature_flag_value_or_default(
+            request=request,
+            flag='block_database_writes',
+            default=False
+        )
+        if block_flag in ['true', 'True', '1', True]:
+            raise HTTPServiceUnavailable(
+                'Database writes are temporarily blocked.'
+            )
+        return view_callable(context, request, *args, **kwargs)
+    return wrapper
+
+
 @view_config(context=Collection, permission='add', request_method='POST',
              validators=[validate_item_content_post])
 @view_config(context=Collection, permission='add_unvalidated', request_method='POST',
              validators=[no_validate_item_content_post],
              request_param=['validate=false'])
+@maybe_block_database_writes
 def collection_add(context, request, render=None):
     if render is None:
         render = request.params.get('render', True)
@@ -189,6 +213,7 @@ def collection_add(context, request, render=None):
 @view_config(context=Item, permission='edit_unvalidated', request_method='PATCH',
              validators=[no_validate_item_content_patch],
              request_param=['validate=false'], decorator=if_match_tid)
+@maybe_block_database_writes
 def item_edit(context, request, render=None):
     """ This handles both PUT and PATCH, difference is the validator
 
