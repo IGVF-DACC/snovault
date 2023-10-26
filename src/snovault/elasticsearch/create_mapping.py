@@ -166,7 +166,7 @@ def index_settings():
                 'analyzer': {
                     'default': {
                         'type': 'custom',
-                        'tokenizer': 'whitespace',
+                        'tokenizer': 'standard',
                         'char_filter': 'html_strip',
                         'filter': [
                             'english_possessive_stemmer',
@@ -179,28 +179,29 @@ def index_settings():
                     },
                     'snovault_index_analyzer': {
                         'type': 'custom',
-                        'tokenizer': 'whitespace',
+                        'tokenizer': 'standard',
                         'char_filter': 'html_strip',
                         'filter': [
-                            'english_possessive_stemmer',
+                            'delimiter',
                             'lowercase',
+                            'asciifolding',
+                            'english_possessive_stemmer',
                             'english_stop',
                             'english_stemmer',
-                            'asciifolding',
-                            'delimiter',
                             'substring'
                         ]
                     },
                     'snovault_search_analyzer': {
                         'type': 'custom',
-                        'tokenizer': 'whitespace',
+                        'tokenizer': 'standard',
+                        'char_filter': 'html_strip',
                         'filter': [
-                            'english_possessive_stemmer',
+                            'delimiter',
                             'lowercase',
+                            'asciifolding',
+                            'english_possessive_stemmer',
                             'english_stop',
                             'english_stemmer',
-                            'asciifolding',
-                            'delimiter'
                         ]
                     },
                     'snovault_path_analyzer': {
