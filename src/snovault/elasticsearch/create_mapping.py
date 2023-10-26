@@ -159,7 +159,6 @@ def index_settings():
                     'delimiter': {
                         'type': 'word_delimiter_graph',
                         'catenate_all': True,
-                        'stem_english_possessive': True,
                         'split_on_numerics': False
                     }
                 },
@@ -169,12 +168,12 @@ def index_settings():
                         'tokenizer': 'standard',
                         'char_filter': 'html_strip',
                         'filter': [
-                            'english_possessive_stemmer',
                             'lowercase',
+                            'asciifolding',
+                            'delimiter',
+                            'english_possessive_stemmer',
                             'english_stop',
                             'english_stemmer',
-                            'asciifolding',
-                            'delimiter'
                         ]
                     },
                     'snovault_index_analyzer': {
@@ -182,9 +181,9 @@ def index_settings():
                         'tokenizer': 'standard',
                         'char_filter': 'html_strip',
                         'filter': [
-                            'delimiter',
                             'lowercase',
                             'asciifolding',
+                            'delimiter',
                             'english_possessive_stemmer',
                             'english_stop',
                             'english_stemmer',
@@ -196,9 +195,9 @@ def index_settings():
                         'tokenizer': 'standard',
                         'char_filter': 'html_strip',
                         'filter': [
-                            'delimiter',
                             'lowercase',
                             'asciifolding',
+                            'delimiter',
                             'english_possessive_stemmer',
                             'english_stop',
                             'english_stemmer',
