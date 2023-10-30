@@ -101,12 +101,7 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
                 'integers': {
                     'match_mapping_type': 'long',
                     'mapping': {
-                        'type': 'long',
-                        'fields': {
-                            'raw': {
-                                'type': 'keyword'
-                            }
-                        }
+                        'type': 'long'
                     }
                 }
             }
@@ -115,14 +110,14 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
             '_fuzzy': {
                 'type': 'text',
                 'store': False,
-                'analyzer': 'snovault_index_analyzer',
-                'search_analyzer': 'snovault_search_analyzer'
+                'analyzer': 'snovault_fuzzy_index_analyzer',
+                'search_analyzer': 'snovault_fuzzy_search_analyzer'
             },
             '_exact': {
                 'type': 'text',
                 'store': False,
-                'analyzer': 'snovault_exact_analyzer',
-                'search_analyzer': 'snovault_exact_analyzer'
+                'analyzer': 'snovault_exact_index_and_search_analyzer',
+                'search_analyzer': 'snovault_exact_index_and_search_analyzer'
             },
             'uuid': {
                 'type': 'keyword',
