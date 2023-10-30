@@ -176,7 +176,7 @@ def index_settings():
                             'english_stemmer',
                         ]
                     },
-                    'snovault_index_analyzer': {
+                    'snovault_fuzzy_index_analyzer': {
                         'type': 'custom',
                         'tokenizer': 'standard',
                         'char_filter': 'html_strip',
@@ -190,7 +190,7 @@ def index_settings():
                             'substring'
                         ]
                     },
-                    'snovault_search_analyzer': {
+                    'snovault_fuzzy_search_analyzer': {
                         'type': 'custom',
                         'tokenizer': 'standard',
                         'char_filter': 'html_strip',
@@ -203,12 +203,7 @@ def index_settings():
                             'english_stemmer',
                         ]
                     },
-                    'snovault_path_analyzer': {
-                        'type': 'custom',
-                        'tokenizer': 'snovault_path_tokenizer',
-                        'filter': ['lowercase']
-                    },
-                    'snovault_exact_analyzer': {
+                    'snovault_exact_index_and_search_analyzer': {
                         'type': 'custom',
                         'char_filter': ['remove_dashes'],
                         'tokenizer': 'standard',
@@ -222,12 +217,6 @@ def index_settings():
                     'remove_dashes': {
                         'type': 'mapping',
                         'mappings': ['-=>']
-                    }
-                },
-                'tokenizer': {
-                    'snovault_path_tokenizer': {
-                        'type': 'path_hierarchy',
-                        'reverse': True
                     }
                 }
             }
@@ -297,11 +286,6 @@ def es_mapping(mapping):
                     'match_mapping_type': 'long',
                     'mapping': {
                         'type': 'long',
-                        'fields': {
-                            'raw': {
-                                'type': 'keyword'
-                            }
-                        },
                     },
                 },
             }
@@ -310,14 +294,14 @@ def es_mapping(mapping):
             '_fuzzy': {
                 'type': 'text',
                 'store': False,
-                'analyzer': 'snovault_index_analyzer',
-                'search_analyzer': 'snovault_search_analyzer'
+                'analyzer': 'snovault_fuzzy_index_analyzer',
+                'search_analyzer': 'snovault_fuzzy_search_analyzer'
             },
             '_exact': {
                 'type': 'text',
                 'store': False,
-                'analyzer': 'snovault_exact_analyzer',
-                'search_analyzer': 'snovault_exact_analyzer'
+                'analyzer': 'snovault_exact_index_and_search_analyzer',
+                'search_analyzer': 'snovault_exact_index_and_search_analyzer'
             },
             'uuid': {
                 'type': 'keyword',
