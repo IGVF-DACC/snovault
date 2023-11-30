@@ -119,7 +119,7 @@ def test_searchv2_view_values_malformed_query_string(workbook, testapp):
 
 def test_searchv2_view_values_regex_slash_escape(workbook, testapp):
     r = testapp.get(
-        '/search/?searchTerm=*'
+        '/search/?query=*'
     )
     assert r.json['total'] >= 32
 
@@ -147,11 +147,11 @@ def test_searchv2_view_values_item_wildcard(workbook, testapp):
 
 def test_searchv2_view_values_invalid_search_term(workbook, testapp):
     r = testapp.get(
-        '/search/?searchTerm=[',
+        '/search/?query=[',
         status=404
     )
     r = testapp.get(
-        '/search/?searchTerm=cherry^',
+        '/search/?query=cherry^',
         status=200
     )
     assert r.json['total'] == 1
@@ -167,27 +167,27 @@ def test_searchv2_view_values_invalid_advanced_query(workbook, testapp):
 
 def test_searchv2_view_values_reserved_characters_advanced_query(workbook, testapp):
     r = testapp.get(
-        '/search/?searchTerm=cherry^',
+        '/search/?query=cherry^',
         status=200
     )
     assert r.json['total'] == 1
     r = testapp.get(
-        '/search/?searchTerm=cherry~',
+        '/search/?query=cherry~',
         status=200
     )
     assert r.json['total'] == 1
     r = testapp.get(
-        '/search/?searchTerm=/cherry',
+        '/search/?query=/cherry',
         status=200
     )
     assert r.json['total'] == 1
     r = testapp.get(
-        '/search/?searchTerm=/cherryp',
+        '/search/?query=/cherryp',
         status=404
     )
     assert r.json['total'] == 0
     r = testapp.get(
-        '/search/?searchTerm=/cherry:',
+        '/search/?query=/cherry:',
         status=200
     )
     assert r.json['total'] == 1
@@ -418,11 +418,11 @@ def test_search_cached_facets_view_values_malformed_query_string(workbook, testa
 
 def test_search_cached_facets_view_values_invalid_search_term(workbook, testapp):
     r = testapp.get(
-        '/search-cached-facets/?searchTerm=[',
+        '/search-cached-facets/?query=[',
         status=404
     )
     r = testapp.get(
-        '/search-cached-facets/?searchTerm=cherry^',
+        '/search-cached-facets/?query=cherry^',
         status=200
     )
     assert r.json['total'] == 1
@@ -490,7 +490,7 @@ def test_reportv2_view(workbook, testapp):
 
 
 def test_reportv2_response_with_search_term_type_only_clear_filters(workbook, testapp):
-    r = testapp.get('/report/?type=Snowball&searchTerm=crisp')
+    r = testapp.get('/report/?type=Snowball&query=crisp')
     assert 'clear_filters' in r.json
     assert r.json['clear_filters'] == '/report/?type=Snowball'
 
@@ -668,7 +668,7 @@ def test_matrixv2_response(workbook, testapp):
 
 
 def test_matrixv2_response_with_search_term_type_only_clear_filters(workbook, testapp):
-    r = testapp.get('/matrix/?type=Snowball&searchTerm=crisp')
+    r = testapp.get('/matrix/?type=Snowball&query=crisp')
     assert 'clear_filters' in r.json
     assert r.json['clear_filters'] == '/matrix/?type=Snowball'
 
@@ -804,7 +804,7 @@ def test_auditv2_response(workbook, testapp):
 
 
 def test_auditv2_response_with_search_term_type_only_clear_filters(workbook, testapp):
-    r = testapp.get('/audit/?type=Snowball&searchTerm=crisp')
+    r = testapp.get('/audit/?type=Snowball&query=crisp')
     assert 'clear_filters' in r.json
     assert r.json['clear_filters'] == '/audit/?type=Snowball'
 
@@ -831,7 +831,7 @@ def test_auditv2_view_no_matrix_defined(workbook, testapp):
 
 
 def test_top_hits_raw_view_response(workbook, testapp):
-    r = testapp.get('/top_hits_raw/?searchTerm=cherry')
+    r = testapp.get('/top_hits_raw/?query=cherry')
     assert not r.json['hits']['hits']
     assert 'aggregations' in r.json
     assert '_shards' in r.json
