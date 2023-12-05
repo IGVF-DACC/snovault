@@ -384,12 +384,20 @@ def item_view_history(context, request):
             }
         )
     history = sorted(history, key=lambda t: t['timestamp'])
+
+    for version in history:
+        userid = version['userid']
+        if 'accesskey' in userid:
+            user = request.embed(f'/access-keys/{userid.split(".")[1]}')['user']
+            title = request.embed(user).get('title', user)
+            version['user_from_access_key'] = title
+
     latest = history[-1]
 
     return {
         'rid': request.resource_path(context),
         'latest': latest,
-        'history': history
+        'history': history[::-1]
     }
 
 
