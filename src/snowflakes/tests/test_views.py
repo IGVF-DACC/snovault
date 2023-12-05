@@ -193,7 +193,6 @@ def test_views_history_view_resolves_access_key_to_user(snowball, testapp, acces
     assert 'user_from_access_key' not in r.json['history'][1]
 
 
-
 @pytest.mark.slow
 @pytest.mark.parametrize(('item_type', 'length'), TYPE_LENGTH.items())
 def test_load_workbook(workbook, testapp, item_type, length):
