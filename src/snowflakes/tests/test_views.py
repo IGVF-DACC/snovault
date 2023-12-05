@@ -161,6 +161,37 @@ def test_view_history_view(workbook, testapp):
     assert len(r.json['history']) == 1
 
 
+def test_views_history_view_resolves_access_key_to_user(snowball, testapp, access_key, anontestapp):
+    from .test_access_key import auth_header
+    # Given a snowball posted by system with one version and empty description:
+    r = testapp.get(f'{snowball["@id"]}?frame=history')
+    assert len(r.json['history']) == 1
+    assert r.json['latest']['props']['description'] == ''
+    assert r.json['latest']['userid'] == 'remoteuser.TEST'
+    assert 'user_from_access_key' not in r.json['latest']
+    # When it's patched by a user using an auth key:
+    headers = {'Authorization': auth_header(access_key)}
+    r = anontestapp.patch_json(
+        snowball['@id'],
+        {
+            'description': 'another example snowball'
+        },
+        headers=headers,
+    )
+    # Then there are two versions of history and it shows user title from access key:
+    r = testapp.get(f'{snowball["@id"]}?frame=history')
+    assert len(r.json['history']) == 2
+    assert r.json['latest']['props']['description'] == 'another example snowball'
+    assert 'accesskey' in r.json['latest']['userid']
+    assert 'user_from_access_key' in r.json['latest']
+    assert r.json['latest']['user_from_access_key'] == 'ENCODE Submitter'
+    # And history shows most recent edit first:
+    assert r.json['history'][0] == r.json['latest']
+    # And only shows user from access key if it was modified with an access key:
+    assert 'user_from_access_key' in r.json['history'][0]
+    assert 'user_from_access_key' not in r.json['history'][1]
+
+
 @pytest.mark.slow
 @pytest.mark.parametrize(('item_type', 'length'), TYPE_LENGTH.items())
 def test_load_workbook(workbook, testapp, item_type, length):
