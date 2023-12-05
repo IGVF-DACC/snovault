@@ -167,7 +167,6 @@ def test_views_history_view_resolves_access_key_to_user(snowball, testapp, acces
     r = testapp.get(f'{snowball["@id"]}?frame=history')
     assert len(r.json['history']) == 1
     assert r.json['latest']['props']['description'] == ''
-    print(r.json['latest'])
     assert r.json['latest']['userid'] == 'remoteuser.TEST'
     assert 'user_from_access_key' not in r.json['latest']
     # When it's patched by a user using an auth key:
