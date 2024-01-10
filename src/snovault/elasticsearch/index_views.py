@@ -218,22 +218,42 @@ def is_indexing(indexer_info: Dict[str, Any]) -> bool:
     )
 
 
+def has_indexing_errors(indexer_info: Dict[str, Any]) -> bool:
+    return any(
+        (
+            indexer_info['transaction_dead_letter_queue']['ApproximateNumberOfMessages'] > 0,
+            indexer_info['invalidation_dead_letter_queue']['ApproximateNumberOfMessages'] > 0,
+        )
+    )
+
+
 @view_config(
     route_name='indexer_info',
     request_method='GET',
 )
 def indexer_info_view(request):
     transaction_queue = request.registry['TRANSACTION_QUEUE']
+    transaction_dead_letter_queue = request.registry['TRANSACTION_DEAD_LETTER_QUEUE']
     invalidation_queue = request.registry['INVALIDATION_QUEUE']
+    invalidation_dead_letter_queue = request.registry['INVALIDATION_DEAD_LETTER_QUEUE']
     indexer_info = {
         'transaction_queue': get_approximate_numbers_from_queue(
             transaction_queue.info()
         ),
+        'transaction_dead_letter_queue': get_approximate_numbers_from_queue(
+            transaction_dead_letter_queue.info()
+        ),
         'invalidation_queue': get_approximate_numbers_from_queue(
             invalidation_queue.info()
         ),
+        'invalidation_dead_letter_queue': get_approximate_numbers_from_queue(
+            invalidation_dead_letter_queue.info()
+        ),
     }
     indexer_info['is_indexing'] = is_indexing(
+        indexer_info
+    )
+    indexer_info['has_indexing_errors'] = has_indexing_errors(
         indexer_info
     )
     return indexer_info
