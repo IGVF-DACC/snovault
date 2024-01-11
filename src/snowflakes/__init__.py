@@ -15,7 +15,9 @@ from snovault.app import (
     configure_dbsession,
     configure_sqs_client,
     configure_transaction_queue,
+    configure_transaction_dead_letter_queue,
     configure_invalidation_queue,
+    configure_invalidation_dead_letter_queue,
     # static_resources,
     changelogs,
     json_from_path,
@@ -90,6 +92,8 @@ def main(global_config, **local_config):
     config.include(configure_sqs_client)
     config.include(configure_transaction_queue)
     config.include(configure_invalidation_queue)
+    config.include(configure_transaction_dead_letter_queue)
+    config.include(configure_invalidation_dead_letter_queue)
     config.include('snovault')
     config.commit()  # commit so search can override listing
 

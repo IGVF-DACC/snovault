@@ -158,6 +158,21 @@ def configure_transaction_queue(config):
         )
 
 
+def configure_transaction_dead_letter_queue(config):
+    transaction_dead_letter_queue_url = os.environ.get(
+        'TRANSACTION_DEAD_LETTER_QUEUE_URL'
+    )
+    if transaction_dead_letter_queue_url is not None:
+        transaction_dead_letter_queue = SQSQueue(
+            props=SQSQueueProps(
+                queue_url=transaction_dead_letter_queue_url,
+                client=config.registry['SQS_CLIENT']
+            )
+        )
+        transaction_dead_letter_queue.wait_for_queue_to_exist()
+        config.registry['TRANSACTION_DEAD_LETTER_QUEUE'] = transaction_dead_letter_queue
+
+
 def configure_invalidation_queue(config):
     invalidation_queue_url = os.environ.get(
         'INVALIDATION_QUEUE_URL'
@@ -171,6 +186,21 @@ def configure_invalidation_queue(config):
         )
         invalidation_queue.wait_for_queue_to_exist()
         config.registry['INVALIDATION_QUEUE'] = invalidation_queue
+
+
+def configure_invalidation_dead_letter_queue(config):
+    invalidation_dead_letter_queue_url = os.environ.get(
+        'INVALIDATION_DEAD_LETTER_QUEUE_URL'
+    )
+    if invalidation_dead_letter_queue_url is not None:
+        invalidation_dead_letter_queue = SQSQueue(
+            props=SQSQueueProps(
+                queue_url=invalidation_dead_letter_queue_url,
+                client=config.registry['SQS_CLIENT']
+            )
+        )
+        invalidation_dead_letter_queue.wait_for_queue_to_exist()
+        config.registry['INVALIDATION_DEAD_LETTER_QUEUE'] = invalidation_dead_letter_queue
 
 
 def session(config):
