@@ -183,7 +183,7 @@ def test_snowflake_accession_patch_wrangler(wrangler_testapp, snowflake):
 
 def test_snowflake_accession_patch_submitter(submitter_testapp, snowflake):
     new_accession = 'SNOFL123ABC'
-    # permission 'import_items' required
+    # permission 'admin_only' required
     submitter_testapp.patch_json(snowflake['@id'], {'accession': new_accession}, status=422)
 
 

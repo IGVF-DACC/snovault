@@ -66,7 +66,7 @@
             "title": "External accession",
             "comment": "Only admins are allowed to set or update this value.",
             "type": "string",
-            "permission": "import_items",
+            "permission": "admin_only",
             "uniqueKey": "accession"
         },
         "type": {

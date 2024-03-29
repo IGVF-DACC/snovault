@@ -69,7 +69,7 @@ def update_item(storage, context):
     return update, errors
 
 
-@view_config(route_name='batch_upgrade', request_method='POST', permission='import_items')
+@view_config(route_name='batch_upgrade', request_method='POST', permission='admin_only')
 def batch_upgrade(request):
     request.datastore = 'database'
     transaction.get().setExtendedInfo('upgrade', True)

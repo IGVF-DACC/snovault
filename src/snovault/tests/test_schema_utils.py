@@ -464,7 +464,7 @@ def test_schema_utils_resolve_merge_ref_in_real_schema():
             'type': 'string',
             'format': 'accession',
             'serverDefault': 'accession',
-            'permission': 'import_items'
+            'permission': 'admin_only'
         }
     }
     assert resolved == expected
@@ -577,7 +577,7 @@ def test_schema_utils_resolve_merge_ref_in_real_schema():
             'type': 'string',
             'anyOf': [{'format': 'date-time'}, {'format': 'date'}],
             'serverDefault': 'now',
-            'permission': 'import_items'
+            'permission': 'admin_only'
         },
         'submitted_by': {
             'rdfs:subPropertyOf': 'dc:creator',
@@ -586,7 +586,7 @@ def test_schema_utils_resolve_merge_ref_in_real_schema():
             'type': 'string',
             'linkTo': 'User',
             'serverDefault': 'userid',
-            'permission': 'import_items'
+            'permission': 'admin_only'
         }
     }
     assert resolved == expected
@@ -668,7 +668,7 @@ def test_schema_utils_resolve_merge_ref_in_real_schema():
             'type': 'string',
             'anyOf': [{'format': 'date-time'}, {'format': 'date'}],
             'serverDefault': 'now',
-            'permission': 'import_items'
+            'permission': 'admin_only'
         },
         'submitted_by': {
             'rdfs:subPropertyOf': 'dc:creator',
@@ -677,7 +677,7 @@ def test_schema_utils_resolve_merge_ref_in_real_schema():
             'type': 'string',
             'linkTo': 'User',
             'serverDefault': 'userid',
-            'permission': 'import_items'
+            'permission': 'admin_only'
         }
     }
     assert resolved == expected
@@ -716,7 +716,7 @@ def test_schema_utils_resolve_merge_ref_in_real_schema():
                 {'format': 'date'}
             ],
             'serverDefault': 'now',
-            'permission': 'import_items'
+            'permission': 'admin_only'
         },
         'submitted_by': {
             'override': 'value'

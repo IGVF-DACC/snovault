@@ -185,7 +185,7 @@ class TestingSearchSchema(Item):
                 'description': 'Unique identifier',
                 'type': 'string',
                 'format': 'uuid',
-                'permission': 'import_items',
+                'permission': 'admin_only',
                 'requestMethod': 'POST',
             },
             'accession': {
@@ -193,7 +193,7 @@ class TestingSearchSchema(Item):
                 'description': '',
                 'type': 'string',
                 'format': 'accession',
-                'permission': 'import_items'
+                'permission': 'admin_only'
             },
             'label': {
                 'type': 'string',
@@ -294,7 +294,7 @@ class TestingPostPutPatch(Item):
                 'description': '',
                 'type': 'string',
                 'format': 'uuid',
-                'permission': 'import_items',
+                'permission': 'admin_only',
                 'requestMethod': 'POST',
             },
             'accession': {
@@ -302,7 +302,7 @@ class TestingPostPutPatch(Item):
                 'description': '',
                 'type': 'string',
                 'format': 'accession',
-                'permission': 'import_items'
+                'permission': 'admin_only'
             },
             'required': {
                 'type': 'string',
@@ -319,14 +319,14 @@ class TestingPostPutPatch(Item):
                 # This should be allowed on PUT so long as value is the same
                 'type': 'string',
                 'default': 'protected default',
-                'permission': 'import_items',
+                'permission': 'admin_only',
             },
             'protected_link': {
                 # This should be allowed on PUT so long as the linked uuid is
                 # the same
                 'type': 'string',
                 'linkTo': 'TestingLinkTarget',
-                'permission': 'import_items',
+                'permission': 'admin_only',
             },
         }
     }
@@ -348,7 +348,7 @@ class TestingServerDefault(Item):
                 'description': '',
                 'type': 'string',
                 'format': 'uuid',
-                'permission': 'import_items',
+                'permission': 'admin_only',
                 'requestMethod': 'POST',
             },
             'user': {
@@ -386,7 +386,7 @@ class TestingBadAccession(Item):
                 'description': '',
                 'type': 'string',
                 'format': 'uuid',
-                'permission': 'import_items',
+                'permission': 'admin_only',
                 'requestMethod': 'POST',
             },
             'thing': {
@@ -589,7 +589,7 @@ class TestingSearchSchemaSpecialFacets(Item):
                 'description': 'Unique identifier',
                 'type': 'string',
                 'format': 'uuid',
-                'permission': 'import_items',
+                'permission': 'admin_only',
                 'requestMethod': 'POST',
             },
             'accession': {
@@ -597,7 +597,7 @@ class TestingSearchSchemaSpecialFacets(Item):
                 'description': '',
                 'type': 'string',
                 'format': 'accession',
-                'permission': 'import_items'
+                'permission': 'admin_only'
             },
             'label': {
                 'type': 'string',

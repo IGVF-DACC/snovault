@@ -56,7 +56,7 @@ class SnowflakesRoot(Root):
             (Allow, Everyone, ['list', 'search', 'search_audit', 'audit']),
             (Allow, 'group.admin', ALL_PERMISSIONS),
             # Avoid schema validation errors during audit
-            (Allow, 'remoteuser.EMBED', 'import_items'),
+            (Allow, 'remoteuser.EMBED', 'admin_only'),
         ] + Root.__acl__
         return acl
 
