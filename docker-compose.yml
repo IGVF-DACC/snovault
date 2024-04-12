@@ -134,7 +134,7 @@ services:
     depends_on:
       - pyramid
 
-deduplication-service:
+  deduplication-service:
     build:
       context: ./docker/dedup/
     image: igvfd-dedup
