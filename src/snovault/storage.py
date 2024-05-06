@@ -681,8 +681,8 @@ def record_transaction_data(session):
     # txn.note(text)
     if txn.description:
         if 'description' not in data or data['description'] != txn.description:
-             data['description'] = txn.description
-             changed = True
+            data['description'] = txn.description
+            changed = True
 
     userid = txn.user
     if userid:
@@ -697,6 +697,7 @@ def record_transaction_data(session):
 
     if changed:
         session.add(record)
+
 
 _set_transaction_snapshot = text(
     'SET TRANSACTION ISOLATION LEVEL SERIALIZABLE, READ ONLY;'
