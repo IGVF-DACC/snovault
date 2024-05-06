@@ -70,7 +70,6 @@ def test_batch_upgrade_regex(testapp, invalid_award):
 
 
 def test_batch_upgrade_records_transaction(testapp, registry, award, lab):
-    import time
     item = {
         'award': award['uuid'],
         'lab': lab['uuid'],
@@ -99,9 +98,8 @@ def test_batch_upgrade_records_transaction(testapp, registry, award, lab):
         False,  # errors
         '',  # error message
     ]
-    time.sleep(3)  # Wait for record to show up.
-    assert registry['TRANSACTION_QUEUE'].info(
-    )['ApproximateNumberOfMessages'] == '1', 'Upgrade not recorded as transaction'
+    number_of_transaction = registry['TRANSACTION_QUEUE'].info()['ApproximateNumberOfMessages']
+    assert number_of_transaction == '1', f'Upgrade not recorded as transaction. Number of transaction: {number_of_transaction}'
     response4 = testapp.post_json(
         '/batch_upgrade',
         {
@@ -110,6 +108,5 @@ def test_batch_upgrade_records_transaction(testapp, registry, award, lab):
             ]
         }
     ).json
-    time.sleep(3)  # Make sure record doesn't show up.
-    assert registry['TRANSACTION_QUEUE'].info(
-    )['ApproximateNumberOfMessages'] == '1', 'Null upgrade produced transaction'
+    number_of_transaction = registry['TRANSACTION_QUEUE'].info()['ApproximateNumberOfMessages']
+    assert number_of_transaction == '1', f'Null upgrade produced transaction. Number of transaction: {number_of_transaction}'
