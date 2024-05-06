@@ -26,6 +26,11 @@ from snovault.interfaces import UPGRADER
 
 from snovault.schema_utils import validate
 
+from .interfaces import (
+    BeforeModified,
+    AfterModified,
+)
+
 
 BATCH_UPGRADE_LOG = logging.getLogger('snovault.batchupgrade')
 EPILOG = __doc__
@@ -37,7 +42,7 @@ def includeme(config):
     config.scan(__name__, categories=None)
 
 
-def update_item(storage, context):
+def update_item(storage, context, request):
     target_version = context.type_info.schema_version
     current_version = context.properties.get('schema_version', '')
     update = False
@@ -63,8 +68,10 @@ def update_item(storage, context):
         schema = context.type_info.schema
         properties['uuid'] = str(context.uuid)
         validated, errors = validate(schema, properties, properties)
-        # Do not send modification events to skip indexing
+        # Send modification events to trigger indexing
+        context.registry.notify(BeforeModified(context, request))
         context.update(validated)
+        context.registry.notify(AfterModified(context, request))
         update = True
     return update, errors
 
@@ -87,7 +94,7 @@ def batch_upgrade(request):
         try:
             item = find_resource(root, uuid)
             item_type = item.type_info.item_type
-            update, errors = update_item(storage, item)
+            update, errors = update_item(storage, item, request)
         except Exception as ecp:
             error_msg = 'Exception: {} updating: /{}/{}'.format(
                 ecp,
