@@ -94,11 +94,12 @@ def test_batch_upgrade_records_transaction(testapp, registry, award, lab):
     assert response3['results'][0] == [
         'snowball',
         response1['uuid'],
-        True, # updated
-        False, # errors
-        '', # error message
+        True,  # updated
+        False,  # errors
+        '',  # error message
     ]
-    assert registry['TRANSACTION_QUEUE'].info()['ApproximateNumberOfMessages'] == '1', 'Upgrade not recorded as transaction'
+    assert registry['TRANSACTION_QUEUE'].info(
+    )['ApproximateNumberOfMessages'] == '1', 'Upgrade not recorded as transaction'
     response4 = testapp.post_json(
         '/batch_upgrade',
         {
@@ -107,4 +108,5 @@ def test_batch_upgrade_records_transaction(testapp, registry, award, lab):
             ]
         }
     ).json
-    assert registry['TRANSACTION_QUEUE'].info()['ApproximateNumberOfMessages'] == '1', 'Null upgrade produced transaction'
+    assert registry['TRANSACTION_QUEUE'].info(
+    )['ApproximateNumberOfMessages'] == '1', 'Null upgrade produced transaction'
