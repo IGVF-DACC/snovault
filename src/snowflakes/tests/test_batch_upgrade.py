@@ -78,11 +78,11 @@ def test_batch_upgrade_records_transaction(testapp, registry, award, lab):
         'status': 'DELETED',
     }
     response1 = testapp.post_json('/snowball/' + '?validate=false', item).json['@graph'][0]
-    registry['TRANSACTION_QUEUE'].clear()
-    assert registry['TRANSACTION_QUEUE'].info()['ApproximateNumberOfMessages'] == '0'
     response2 = testapp.get(response1['@id'] + '@@raw?upgrade=false').json
     assert response2['schema_version'] == '1'
     assert response2['status'] == 'DELETED'
+    registry['TRANSACTION_QUEUE'].clear()
+    assert registry['TRANSACTION_QUEUE'].info()['ApproximateNumberOfMessages'] == '0'
     response3 = testapp.post_json(
         '/batch_upgrade',
         {
@@ -98,8 +98,8 @@ def test_batch_upgrade_records_transaction(testapp, registry, award, lab):
         False,  # errors
         '',  # error message
     ]
-    number_of_transaction = registry['TRANSACTION_QUEUE'].info()['ApproximateNumberOfMessages']
-    assert number_of_transaction == '1', f'Upgrade not recorded as transaction. Number of transaction: {number_of_transaction}'
+    number_of_transaction = int(registry['TRANSACTION_QUEUE'].info()['ApproximateNumberOfMessages'])
+    assert number_of_transaction == 1, f'Upgrade not recorded as transaction. Number of transaction: {number_of_transaction}'
     response4 = testapp.post_json(
         '/batch_upgrade',
         {
@@ -108,5 +108,5 @@ def test_batch_upgrade_records_transaction(testapp, registry, award, lab):
             ]
         }
     ).json
-    number_of_transaction = registry['TRANSACTION_QUEUE'].info()['ApproximateNumberOfMessages']
-    assert number_of_transaction == '1', f'Null upgrade produced transaction. Number of transaction: {number_of_transaction}'
+    number_of_transaction = int(registry['TRANSACTION_QUEUE'].info()['ApproximateNumberOfMessages'])
+    assert number_of_transaction == 1, f'Null upgrade produced transaction. Number of transaction: {number_of_transaction}'
