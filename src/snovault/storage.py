@@ -675,30 +675,18 @@ def record_transaction_data(session):
     if '_snovault_transaction_record' not in data:
         return
 
-    changed = False
     record = data['_snovault_transaction_record']
-    print('old data', data, record.data)
 
     # txn.note(text)
     if txn.description:
-        if 'description' not in data or data['description'] != txn.description:
-            data['description'] = txn.description
-            changed = True
+        data['description'] = txn.description
 
     userid = txn.user
     if userid:
-        if 'userid' not in data or data['userid'] != userid:
-            data['userid'] = userid
-            changed = True
-    new_data = {k: v for k, v in data.items() if not k.startswith('_')}
-    if not record.data or record.data != new_data:
-        record.data = new_data
-        changed = True
+        data['userid'] = userid
 
-    print('data changed', changed, new_data)
-
-    if changed:
-        session.add(record)
+    record.data = {k: v for k, v in data.items() if not k.startswith('_')}
+    session.add(record)
 
 
 _set_transaction_snapshot = text(
@@ -753,7 +741,6 @@ def transaction_record_updated(transaction_queue, mapper, connection, target):
         unique_id=event['metadata']['tid'],
         body=event,
     )
-    print('sending', outbound_message)
     transaction_queue.send_messages(
         [
             outbound_message,
