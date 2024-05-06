@@ -78,7 +78,6 @@ def test_batch_upgrade_records_transaction(testapp, registry, award, lab):
         'status': 'DELETED',
     }
     response1 = testapp.post_json('/snowball/' + '?validate=false', item).json['@graph'][0]
-    print('NEW SNOWBALL', award['uuid'], lab['uuid'], response1['@id'])
     response2 = testapp.get(response1['@id'] + '@@raw?upgrade=false').json
     assert response2['schema_version'] == '1'
     assert response2['status'] == 'DELETED'
