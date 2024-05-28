@@ -22,6 +22,7 @@ def includeme(config):
 
 
 def force_database_for_request():
+    print('forcing database for request')
     request = get_current_request()
     if request:
         request.datastore = 'database'
@@ -53,23 +54,31 @@ class CachedModel(object):
         return self.source['tid']
 
     def invalidated(self):
+        print('checking if model is invalidated', self.source)
         request = get_root_request()
         if request is None:
             return False
         edits = dict.get(request.session, 'edits', None)
+        print('got edits', edits)
         if edits is None:
             return False
         version = self.hit['_version']
+        print('got version', version)
         source = self.source
         linked_uuids = set(source['linked_uuids'])
         embedded_uuids = set(source['embedded_uuids'])
         for xid, updated, linked in edits:
+            print(xid, updated, linked)
             if xid < version:
+                print('xid is less than version')
                 continue
             if not embedded_uuids.isdisjoint(updated):
+                print('embedded_uuids is disjoint from updated, returning True')
                 return True
             if not linked_uuids.isdisjoint(linked):
+                print('linked uuids is disjoint from linked, returning True')
                 return True
+        print('returning False')
         return False
 
     def used_for(self, item):
