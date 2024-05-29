@@ -64,7 +64,7 @@ class CachedModel(object):
         linked_uuids = set(source['linked_uuids'])
         embedded_uuids = set(source['embedded_uuids'])
         for xid, updated, linked in edits:
-            if xid < version:
+            if xid <= version:
                 continue
             if not embedded_uuids.isdisjoint(updated):
                 return True
