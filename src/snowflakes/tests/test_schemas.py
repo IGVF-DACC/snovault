@@ -154,6 +154,54 @@ def test_schemas_collection_names_view(testapp):
     assert actual == expected
 
 
+def test_schemas_embedded_fields_view(testapp):
+    actual = testapp.get('/embedded-fields/').json
+    expected_snowfort = {
+        'embedded': [
+            'snowflakes',
+            'snowflakes.submitted_by',
+            'snowflakes.lab',
+            'submitted_by',
+            'lab',
+            'award'
+        ],
+        'embedded_with_frame': []
+    }
+    assert actual['Snowfort'] == expected_snowfort
+    expected_custom_embed = {
+        'embedded': [],
+        'embedded_with_frame': [
+            {
+                'path': 'reverse',
+                'include': [],
+                'exclude': []
+            },
+            {
+                'path': 'filtered_reverse',
+                'include': [
+                    'uuid',
+                    'status'
+                ],
+                'exclude': []
+            },
+            {
+                'path': 'filtered_reverse1',
+                'include': [],
+                'exclude': [
+                    'uuid',
+                    '@type'
+                ]
+            },
+            {
+                'path': 'reverse_uncalculated',
+                'include': [],
+                'exclude': []
+            }
+        ]
+    }
+    assert actual['TestingCustomEmbedTarget'] == expected_custom_embed
+
+
 def test_etag_if_match_tid(testapp, award):
     res = testapp.get(award['@id'] + '?frame=edit', status=200)
     etag = res.etag

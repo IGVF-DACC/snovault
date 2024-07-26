@@ -16,6 +16,7 @@ def includeme(config):
     config.add_route('schemas_titles', '/profiles-titles{slash:/?}')
     config.add_route('collection_titles', '/collection-titles{slash:/?}')
     config.add_route('collection_names', '/collection-names{slash:/?}')
+    config.add_route('embedded_fields', '/embedded-fields{slash:/?}')
     config.scan(__name__, categories=None)
 
 
@@ -131,5 +132,28 @@ def collection_names(context, request):
     collections = request.registry[COLLECTIONS]
     return {
         v.type_info.name: v.__name__
+        for k, v in collections.by_item_type.items()
+    }
+
+
+@view_config(
+    route_name='embedded_fields',
+    request_method='GET',
+    decorator=etag_app_version_effective_principals
+)
+def embedded_fields(context, request):
+    collections = request.registry[COLLECTIONS]
+    return {
+        v.type_info.name: {
+            'embedded': v.type_info.embedded,
+            'embedded_with_frame': [
+                {
+                    'path': e.path,
+                    'include': e._params['include'],
+                    'exclude': e._params['exclude'],
+                }
+                for e in v.type_info.embedded_with_frame
+            ]
+        }
         for k, v in collections.by_item_type.items()
     }
