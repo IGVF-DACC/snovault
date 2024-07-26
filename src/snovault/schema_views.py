@@ -15,6 +15,7 @@ def includeme(config):
     config.add_route('schemas_map', '/profiles-map{slash:/?}')
     config.add_route('schemas_titles', '/profiles-titles{slash:/?}')
     config.add_route('collection_titles', '/collection-titles{slash:/?}')
+    config.add_route('collection_names', '/collection-names{slash:/?}')
     config.scan(__name__, categories=None)
 
 
@@ -119,3 +120,16 @@ def collection_titles(context, request):
     }
     collection_titles['@type'] = ['CollectionTitles']
     return collection_titles
+
+
+@view_config(
+    route_name='collection_names',
+    request_method='GET',
+    decorator=etag_app_version_effective_principals
+)
+def collection_names(context, request):
+    collections = request.registry[COLLECTIONS]
+    return {
+        v.type_info.name: v.__name__
+        for k, v in collections.by_item_type.items()
+    }

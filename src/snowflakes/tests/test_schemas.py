@@ -127,6 +127,33 @@ def test_schemas_collection_titles_view(testapp):
     assert actual == expected
 
 
+def test_schemas_collection_names_view(testapp):
+    actual = testapp.get('/collection-names/').json
+    expected = {
+        "Award": "awards",
+        "Lab": "labs",
+        "AccessKey": "access-keys",
+        "Image": "images",
+        "Page": "pages",
+        "Snowball": "snowballs",
+        "Snowflake": "snowflakes",
+        "Snowfort": "snowforts",
+        "User": "users",
+        "TestingBadAccession": "testing-bad-accession",
+        "TestingCustomEmbedSource": "testing-custom-embed-sources",
+        "TestingCustomEmbedTarget": "testing-custom-embed-targets",
+        "TestingDependencies": "testing-dependencies",
+        "TestingDownload": "testing-downloads",
+        "TestingLinkSource": "testing-link-sources",
+        "TestingLinkTarget": "testing-link-targets",
+        "TestingPostPutPatch": "testing-post-put-patch",
+        "TestingSearchSchema": "testing-search-schemas",
+        "TestingSearchSchemaSpecialFacets": "testing-search-schema-special-facets",
+        "TestingServerDefault": "testing-server-defaults"
+    }
+    assert actual == expected
+
+
 def test_etag_if_match_tid(testapp, award):
     res = testapp.get(award['@id'] + '?frame=edit', status=200)
     etag = res.etag
