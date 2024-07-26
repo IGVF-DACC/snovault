@@ -164,7 +164,7 @@ class TestingLinkTarget(Item):
 
 
 @collection(
-    'testing-search-scheams',
+    'testing-search-schemas',
     unique_key='testing_search_schema:name'
 )
 class TestingSearchSchema(Item):
