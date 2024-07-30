@@ -1,6 +1,6 @@
 {
-    "hash": "6f4c73a42344efb49513619d7c37c611",
-    "index_name": "snowball_6f4c73a4",
+    "hash": "536778864836fef15361a29232b7eaf3",
+    "index_name": "snowball_53677886",
     "item_type": "snowball",
     "mapping": {
         "dynamic_templates": [
@@ -569,7 +569,68 @@
                 "type": "keyword"
             },
             "object": {
-                "enabled": false,
+                "properties": {
+                    "properties": {
+                        "@id": {
+                            "type": "keyword"
+                        },
+                        "@type": {
+                            "type": "keyword"
+                        },
+                        "accession": {
+                            "type": "keyword"
+                        },
+                        "alternate_accessions": {
+                            "type": "keyword"
+                        },
+                        "another_test_calculated": {
+                            "type": "keyword"
+                        },
+                        "award": {
+                            "type": "keyword"
+                        },
+                        "conditional_test_calculated": {
+                            "type": "keyword"
+                        },
+                        "date_created": {
+                            "type": "keyword"
+                        },
+                        "date_released": {
+                            "type": "keyword"
+                        },
+                        "description": {
+                            "type": "text"
+                        },
+                        "lab": {
+                            "type": "keyword"
+                        },
+                        "method": {
+                            "type": "keyword"
+                        },
+                        "month_released": {
+                            "type": "keyword"
+                        },
+                        "schema_version": {
+                            "type": "keyword"
+                        },
+                        "snowflakes": {
+                            "type": "keyword"
+                        },
+                        "status": {
+                            "type": "keyword"
+                        },
+                        "submitted_by": {
+                            "type": "keyword"
+                        },
+                        "test_calculated": {
+                            "type": "keyword"
+                        },
+                        "uuid": {
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "object"
+                },
                 "type": "object"
             },
             "paths": {

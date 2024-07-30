@@ -1,6 +1,6 @@
 {
-    "hash": "9d79d5e4fd594df65693f089d0aaf49a",
-    "index_name": "image_9d79d5e4",
+    "hash": "b42114cc6bce1edb488d8ec341c2c338",
+    "index_name": "image_b42114cc",
     "item_type": "image",
     "mapping": {
         "dynamic_templates": [
@@ -290,7 +290,79 @@
                 "type": "keyword"
             },
             "object": {
-                "enabled": false,
+                "properties": {
+                    "properties": {
+                        "@id": {
+                            "type": "keyword"
+                        },
+                        "@type": {
+                            "type": "keyword"
+                        },
+                        "attachment": {
+                            "properties": {
+                                "download": {
+                                    "type": "keyword"
+                                },
+                                "height": {
+                                    "fields": {
+                                        "raw": {
+                                            "type": "keyword"
+                                        }
+                                    },
+                                    "store": true,
+                                    "type": "long"
+                                },
+                                "href": {
+                                    "type": "keyword"
+                                },
+                                "md5sum": {
+                                    "type": "keyword"
+                                },
+                                "size": {
+                                    "fields": {
+                                        "raw": {
+                                            "type": "keyword"
+                                        }
+                                    },
+                                    "store": true,
+                                    "type": "long"
+                                },
+                                "type": {
+                                    "type": "keyword"
+                                },
+                                "width": {
+                                    "fields": {
+                                        "raw": {
+                                            "type": "keyword"
+                                        }
+                                    },
+                                    "store": true,
+                                    "type": "long"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "caption": {
+                            "type": "keyword"
+                        },
+                        "date_created": {
+                            "type": "keyword"
+                        },
+                        "schema_version": {
+                            "type": "keyword"
+                        },
+                        "status": {
+                            "type": "keyword"
+                        },
+                        "submitted_by": {
+                            "type": "keyword"
+                        },
+                        "uuid": {
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "object"
+                },
                 "type": "object"
             },
             "paths": {

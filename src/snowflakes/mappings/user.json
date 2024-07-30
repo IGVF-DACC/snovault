@@ -1,6 +1,6 @@
 {
-    "hash": "5466c37669e3ae2c284663a567773279",
-    "index_name": "user_5466c376",
+    "hash": "d662477a6c2d935e6bbb6d60cb382c39",
+    "index_name": "user_d662477a",
     "item_type": "user",
     "mapping": {
         "dynamic_templates": [
@@ -285,7 +285,71 @@
                 "type": "keyword"
             },
             "object": {
-                "enabled": false,
+                "properties": {
+                    "properties": {
+                        "@id": {
+                            "type": "keyword"
+                        },
+                        "@type": {
+                            "type": "keyword"
+                        },
+                        "email": {
+                            "type": "keyword"
+                        },
+                        "fax": {
+                            "type": "keyword"
+                        },
+                        "first_name": {
+                            "type": "keyword"
+                        },
+                        "google": {
+                            "type": "keyword"
+                        },
+                        "groups": {
+                            "type": "keyword"
+                        },
+                        "job_title": {
+                            "type": "keyword"
+                        },
+                        "lab": {
+                            "type": "keyword"
+                        },
+                        "last_name": {
+                            "type": "keyword"
+                        },
+                        "phone1": {
+                            "type": "keyword"
+                        },
+                        "phone2": {
+                            "type": "keyword"
+                        },
+                        "schema_version": {
+                            "type": "keyword"
+                        },
+                        "skype": {
+                            "type": "keyword"
+                        },
+                        "status": {
+                            "type": "keyword"
+                        },
+                        "submits_for": {
+                            "type": "keyword"
+                        },
+                        "timezone": {
+                            "type": "keyword"
+                        },
+                        "title": {
+                            "type": "keyword"
+                        },
+                        "uuid": {
+                            "type": "keyword"
+                        },
+                        "viewing_groups": {
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "object"
+                },
                 "type": "object"
             },
             "paths": {

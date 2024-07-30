@@ -1,6 +1,6 @@
 {
-    "hash": "5bd72e25ccb0b1a5b52d1ee2149a169d",
-    "index_name": "access_key_5bd72e25",
+    "hash": "020bb4296fd9c890ce34bb65264af072",
+    "index_name": "access_key_020bb429",
     "item_type": "access_key",
     "mapping": {
         "dynamic_templates": [
@@ -186,7 +186,38 @@
                 "type": "keyword"
             },
             "object": {
-                "enabled": false,
+                "properties": {
+                    "properties": {
+                        "@id": {
+                            "type": "keyword"
+                        },
+                        "@type": {
+                            "type": "keyword"
+                        },
+                        "access_key_id": {
+                            "type": "keyword"
+                        },
+                        "description": {
+                            "type": "text"
+                        },
+                        "schema_version": {
+                            "type": "keyword"
+                        },
+                        "secret_access_key_hash": {
+                            "type": "keyword"
+                        },
+                        "status": {
+                            "type": "keyword"
+                        },
+                        "user": {
+                            "type": "keyword"
+                        },
+                        "uuid": {
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "object"
+                },
                 "type": "object"
             },
             "paths": {

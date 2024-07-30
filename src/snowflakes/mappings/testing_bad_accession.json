@@ -1,6 +1,6 @@
 {
-    "hash": "68bd87b27d8aac9e9cc2f64f4df78553",
-    "index_name": "testing_bad_accession_68bd87b2",
+    "hash": "1a843d998d417c08fd316904cad4d5d6",
+    "index_name": "testing_bad_accession_1a843d99",
     "item_type": "testing_bad_accession",
     "mapping": {
         "dynamic_templates": [
@@ -189,7 +189,41 @@
                 "type": "keyword"
             },
             "object": {
-                "enabled": false,
+                "properties": {
+                    "properties": {
+                        "@id": {
+                            "type": "keyword"
+                        },
+                        "@type": {
+                            "type": "keyword"
+                        },
+                        "accession": {
+                            "type": "keyword"
+                        },
+                        "now": {
+                            "type": "keyword"
+                        },
+                        "schema_version": {
+                            "type": "keyword"
+                        },
+                        "thing": {
+                            "fields": {
+                                "raw": {
+                                    "type": "keyword"
+                                }
+                            },
+                            "store": true,
+                            "type": "float"
+                        },
+                        "user": {
+                            "type": "keyword"
+                        },
+                        "uuid": {
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "object"
+                },
                 "type": "object"
             },
             "paths": {

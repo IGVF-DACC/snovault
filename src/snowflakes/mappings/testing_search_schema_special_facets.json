@@ -1,6 +1,6 @@
 {
-    "hash": "ce73ae5f514df6e6265fed17e9f1af8f",
-    "index_name": "testing_search_schema_special_facets_ce73ae5f",
+    "hash": "ea589773944f98c6e57ccf42bf3e97d8",
+    "index_name": "testing_search_schema_special_facets_ea589773",
     "item_type": "testing_search_schema_special_facets",
     "mapping": {
         "dynamic_templates": [
@@ -192,7 +192,41 @@
                 "type": "keyword"
             },
             "object": {
-                "enabled": false,
+                "properties": {
+                    "properties": {
+                        "@id": {
+                            "type": "keyword"
+                        },
+                        "@type": {
+                            "type": "keyword"
+                        },
+                        "accession": {
+                            "type": "keyword"
+                        },
+                        "label": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "keyword"
+                        },
+                        "read_count": {
+                            "fields": {
+                                "raw": {
+                                    "type": "keyword"
+                                }
+                            },
+                            "store": true,
+                            "type": "float"
+                        },
+                        "status": {
+                            "type": "keyword"
+                        },
+                        "uuid": {
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "object"
+                },
                 "type": "object"
             },
             "paths": {

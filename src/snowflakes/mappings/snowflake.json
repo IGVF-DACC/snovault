@@ -1,6 +1,6 @@
 {
-    "hash": "30db45cf9d8a49fd4296f466e623202d",
-    "index_name": "snowflake_30db45cf",
+    "hash": "6e4f248716da27e008b35de4075f620d",
+    "index_name": "snowflake_6e4f2487",
     "item_type": "snowflake",
     "mapping": {
         "dynamic_templates": [
@@ -325,7 +325,50 @@
                 "type": "keyword"
             },
             "object": {
-                "enabled": false,
+                "properties": {
+                    "properties": {
+                        "@id": {
+                            "type": "keyword"
+                        },
+                        "@type": {
+                            "type": "keyword"
+                        },
+                        "accession": {
+                            "type": "keyword"
+                        },
+                        "award": {
+                            "type": "keyword"
+                        },
+                        "date_created": {
+                            "type": "keyword"
+                        },
+                        "external_accession": {
+                            "type": "keyword"
+                        },
+                        "lab": {
+                            "type": "keyword"
+                        },
+                        "schema_version": {
+                            "type": "keyword"
+                        },
+                        "snowset": {
+                            "type": "keyword"
+                        },
+                        "status": {
+                            "type": "keyword"
+                        },
+                        "submitted_by": {
+                            "type": "keyword"
+                        },
+                        "type": {
+                            "type": "keyword"
+                        },
+                        "uuid": {
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "object"
+                },
                 "type": "object"
             },
             "paths": {

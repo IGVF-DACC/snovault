@@ -1,6 +1,6 @@
 {
-    "hash": "a469c52ff91350020e24ec190269f92a",
-    "index_name": "testing_post_put_patch_a469c52f",
+    "hash": "293b61f4e8cf9dc5636c4d28d5ae2e10",
+    "index_name": "testing_post_put_patch_293b61f4",
     "item_type": "testing_post_put_patch",
     "mapping": {
         "dynamic_templates": [
@@ -189,7 +189,41 @@
                 "type": "keyword"
             },
             "object": {
-                "enabled": false,
+                "properties": {
+                    "properties": {
+                        "@id": {
+                            "type": "keyword"
+                        },
+                        "@type": {
+                            "type": "keyword"
+                        },
+                        "accession": {
+                            "type": "keyword"
+                        },
+                        "protected": {
+                            "type": "keyword"
+                        },
+                        "protected_link": {
+                            "type": "keyword"
+                        },
+                        "required": {
+                            "type": "keyword"
+                        },
+                        "schema_version": {
+                            "type": "keyword"
+                        },
+                        "simple1": {
+                            "type": "keyword"
+                        },
+                        "simple2": {
+                            "type": "keyword"
+                        },
+                        "uuid": {
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "object"
+                },
                 "type": "object"
             },
             "paths": {

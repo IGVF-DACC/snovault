@@ -1,6 +1,6 @@
 {
-    "hash": "8ab12598baa275f0242d171f537ef0e5",
-    "index_name": "award_8ab12598",
+    "hash": "23b87cf14616d79e4d8145b15d0a2b23",
+    "index_name": "award_23b87cf1",
     "item_type": "award",
     "mapping": {
         "dynamic_templates": [
@@ -270,7 +270,56 @@
                 "type": "keyword"
             },
             "object": {
-                "enabled": false,
+                "properties": {
+                    "properties": {
+                        "@id": {
+                            "type": "keyword"
+                        },
+                        "@type": {
+                            "type": "keyword"
+                        },
+                        "description": {
+                            "type": "text"
+                        },
+                        "end_date": {
+                            "type": "keyword"
+                        },
+                        "name": {
+                            "type": "keyword"
+                        },
+                        "pi": {
+                            "type": "keyword"
+                        },
+                        "project": {
+                            "type": "keyword"
+                        },
+                        "rfa": {
+                            "type": "keyword"
+                        },
+                        "schema_version": {
+                            "type": "keyword"
+                        },
+                        "start_date": {
+                            "type": "keyword"
+                        },
+                        "status": {
+                            "type": "keyword"
+                        },
+                        "title": {
+                            "type": "keyword"
+                        },
+                        "url": {
+                            "type": "keyword"
+                        },
+                        "uuid": {
+                            "type": "keyword"
+                        },
+                        "viewing_group": {
+                            "type": "keyword"
+                        }
+                    },
+                    "type": "object"
+                },
                 "type": "object"
             },
             "paths": {

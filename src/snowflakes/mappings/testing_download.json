@@ -1,6 +1,6 @@
 {
-    "hash": "ff92c2cbca71ff11d50dd80e6d23352d",
-    "index_name": "testing_download_ff92c2cb",
+    "hash": "428c61a48031775f01a8b32174045373",
+    "index_name": "testing_download_428c61a4",
     "item_type": "testing_download",
     "mapping": {
         "dynamic_templates": [
@@ -197,7 +197,49 @@
                 "type": "keyword"
             },
             "object": {
-                "enabled": false,
+                "properties": {
+                    "properties": {
+                        "@id": {
+                            "type": "keyword"
+                        },
+                        "@type": {
+                            "type": "keyword"
+                        },
+                        "attachment": {
+                            "properties": {
+                                "type": {
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "attachment2": {
+                            "properties": {
+                                "type": {
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "attachment3": {
+                            "properties": {
+                                "type": {
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "object"
+                        },
+                        "attachment4": {
+                            "properties": {
+                                "type": {
+                                    "type": "keyword"
+                                }
+                            },
+                            "type": "object"
+                        }
+                    },
+                    "type": "object"
+                },
                 "type": "object"
             },
             "paths": {
