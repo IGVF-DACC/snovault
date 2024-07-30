@@ -1,6 +1,6 @@
 {
-    "hash": "eab14669f52c38e683543ce107e5e831",
-    "index_name": "testing_dependencies_eab14669",
+    "hash": "974b801d01e38ff1b6a3944f29b2f36a",
+    "index_name": "testing_dependencies_974b801d",
     "item_type": "testing_dependencies",
     "mapping": {
         "dynamic_templates": [
@@ -172,21 +172,18 @@
             },
             "object": {
                 "properties": {
-                    "properties": {
-                        "@id": {
-                            "type": "keyword"
-                        },
-                        "@type": {
-                            "type": "keyword"
-                        },
-                        "dep1": {
-                            "type": "keyword"
-                        },
-                        "dep2": {
-                            "type": "keyword"
-                        }
+                    "@id": {
+                        "type": "keyword"
                     },
-                    "type": "object"
+                    "@type": {
+                        "type": "keyword"
+                    },
+                    "dep1": {
+                        "type": "keyword"
+                    },
+                    "dep2": {
+                        "type": "keyword"
+                    }
                 },
                 "type": "object"
             },

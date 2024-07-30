@@ -1,6 +1,6 @@
 {
-    "hash": "020bb4296fd9c890ce34bb65264af072",
-    "index_name": "access_key_020bb429",
+    "hash": "981871b2f7bb5cd5afa932d1bfbe10ec",
+    "index_name": "access_key_981871b2",
     "item_type": "access_key",
     "mapping": {
         "dynamic_templates": [
@@ -187,36 +187,33 @@
             },
             "object": {
                 "properties": {
-                    "properties": {
-                        "@id": {
-                            "type": "keyword"
-                        },
-                        "@type": {
-                            "type": "keyword"
-                        },
-                        "access_key_id": {
-                            "type": "keyword"
-                        },
-                        "description": {
-                            "type": "text"
-                        },
-                        "schema_version": {
-                            "type": "keyword"
-                        },
-                        "secret_access_key_hash": {
-                            "type": "keyword"
-                        },
-                        "status": {
-                            "type": "keyword"
-                        },
-                        "user": {
-                            "type": "keyword"
-                        },
-                        "uuid": {
-                            "type": "keyword"
-                        }
+                    "@id": {
+                        "type": "keyword"
                     },
-                    "type": "object"
+                    "@type": {
+                        "type": "keyword"
+                    },
+                    "access_key_id": {
+                        "type": "keyword"
+                    },
+                    "description": {
+                        "type": "text"
+                    },
+                    "schema_version": {
+                        "type": "keyword"
+                    },
+                    "secret_access_key_hash": {
+                        "type": "keyword"
+                    },
+                    "status": {
+                        "type": "keyword"
+                    },
+                    "user": {
+                        "type": "keyword"
+                    },
+                    "uuid": {
+                        "type": "keyword"
+                    }
                 },
                 "type": "object"
             },

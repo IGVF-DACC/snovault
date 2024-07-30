@@ -1,6 +1,6 @@
 {
-    "hash": "3136c28d076a6319bd773e329b3c6b40",
-    "index_name": "page_3136c28d",
+    "hash": "fb31e059d1e6ced872eebc0e371efc15",
+    "index_name": "page_fb31e059",
     "item_type": "page",
     "mapping": {
         "dynamic_templates": [
@@ -292,68 +292,65 @@
             },
             "object": {
                 "properties": {
-                    "properties": {
-                        "@id": {
-                            "type": "keyword"
-                        },
-                        "@type": {
-                            "type": "keyword"
-                        },
-                        "award": {
-                            "type": "keyword"
-                        },
-                        "canonical_uri": {
-                            "type": "keyword"
-                        },
-                        "date_created": {
-                            "type": "keyword"
-                        },
-                        "lab": {
-                            "type": "keyword"
-                        },
-                        "layout": {
-                            "properties": {
-                                "blocks": {
-                                    "properties": {
-                                        "body": {
-                                            "type": "keyword"
-                                        },
-                                        "image": {
-                                            "type": "keyword"
-                                        },
-                                        "item": {
-                                            "type": "keyword"
-                                        }
-                                    },
-                                    "type": "object"
-                                },
-                                "rows": {
-                                    "enabled": false,
-                                    "type": "object"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "name": {
-                            "type": "keyword"
-                        },
-                        "schema_version": {
-                            "type": "keyword"
-                        },
-                        "status": {
-                            "type": "keyword"
-                        },
-                        "submitted_by": {
-                            "type": "keyword"
-                        },
-                        "title": {
-                            "type": "keyword"
-                        },
-                        "uuid": {
-                            "type": "keyword"
-                        }
+                    "@id": {
+                        "type": "keyword"
                     },
-                    "type": "object"
+                    "@type": {
+                        "type": "keyword"
+                    },
+                    "award": {
+                        "type": "keyword"
+                    },
+                    "canonical_uri": {
+                        "type": "keyword"
+                    },
+                    "date_created": {
+                        "type": "keyword"
+                    },
+                    "lab": {
+                        "type": "keyword"
+                    },
+                    "layout": {
+                        "properties": {
+                            "blocks": {
+                                "properties": {
+                                    "body": {
+                                        "type": "keyword"
+                                    },
+                                    "image": {
+                                        "type": "keyword"
+                                    },
+                                    "item": {
+                                        "type": "keyword"
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "rows": {
+                                "enabled": false,
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "name": {
+                        "type": "keyword"
+                    },
+                    "schema_version": {
+                        "type": "keyword"
+                    },
+                    "status": {
+                        "type": "keyword"
+                    },
+                    "submitted_by": {
+                        "type": "keyword"
+                    },
+                    "title": {
+                        "type": "keyword"
+                    },
+                    "uuid": {
+                        "type": "keyword"
+                    }
                 },
                 "type": "object"
             },

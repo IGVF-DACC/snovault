@@ -487,8 +487,7 @@ def generate_indices_and_mappings(app, collections=None):
             mapping = es_mapping(type_mapping(app.registry[TYPES], collection.type_info.item_type))
             # Search on object frame
             object_frame_mapping = type_mapping(app.registry[TYPES], collection.type_info.item_type, embed=False)
-            mapping['properties']['object']['properties'] = object_frame_mapping
-            mapping['properties']['object'].pop('enabled', None)
+            mapping['properties']['object'] = object_frame_mapping
         if mapping is None:
             continue  # Testing collections
         mappings[index] = mapping

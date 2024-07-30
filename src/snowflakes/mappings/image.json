@@ -1,6 +1,6 @@
 {
-    "hash": "b42114cc6bce1edb488d8ec341c2c338",
-    "index_name": "image_b42114cc",
+    "hash": "8dfd9cb9c51ff5b89428cae73d2bb261",
+    "index_name": "image_8dfd9cb9",
     "item_type": "image",
     "mapping": {
         "dynamic_templates": [
@@ -291,77 +291,74 @@
             },
             "object": {
                 "properties": {
-                    "properties": {
-                        "@id": {
-                            "type": "keyword"
-                        },
-                        "@type": {
-                            "type": "keyword"
-                        },
-                        "attachment": {
-                            "properties": {
-                                "download": {
-                                    "type": "keyword"
-                                },
-                                "height": {
-                                    "fields": {
-                                        "raw": {
-                                            "type": "keyword"
-                                        }
-                                    },
-                                    "store": true,
-                                    "type": "long"
-                                },
-                                "href": {
-                                    "type": "keyword"
-                                },
-                                "md5sum": {
-                                    "type": "keyword"
-                                },
-                                "size": {
-                                    "fields": {
-                                        "raw": {
-                                            "type": "keyword"
-                                        }
-                                    },
-                                    "store": true,
-                                    "type": "long"
-                                },
-                                "type": {
-                                    "type": "keyword"
-                                },
-                                "width": {
-                                    "fields": {
-                                        "raw": {
-                                            "type": "keyword"
-                                        }
-                                    },
-                                    "store": true,
-                                    "type": "long"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "caption": {
-                            "type": "keyword"
-                        },
-                        "date_created": {
-                            "type": "keyword"
-                        },
-                        "schema_version": {
-                            "type": "keyword"
-                        },
-                        "status": {
-                            "type": "keyword"
-                        },
-                        "submitted_by": {
-                            "type": "keyword"
-                        },
-                        "uuid": {
-                            "type": "keyword"
-                        }
+                    "@id": {
+                        "type": "keyword"
                     },
-                    "type": "object"
+                    "@type": {
+                        "type": "keyword"
+                    },
+                    "attachment": {
+                        "properties": {
+                            "download": {
+                                "type": "keyword"
+                            },
+                            "height": {
+                                "fields": {
+                                    "raw": {
+                                        "type": "keyword"
+                                    }
+                                },
+                                "store": true,
+                                "type": "long"
+                            },
+                            "href": {
+                                "type": "keyword"
+                            },
+                            "md5sum": {
+                                "type": "keyword"
+                            },
+                            "size": {
+                                "fields": {
+                                    "raw": {
+                                        "type": "keyword"
+                                    }
+                                },
+                                "store": true,
+                                "type": "long"
+                            },
+                            "type": {
+                                "type": "keyword"
+                            },
+                            "width": {
+                                "fields": {
+                                    "raw": {
+                                        "type": "keyword"
+                                    }
+                                },
+                                "store": true,
+                                "type": "long"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "caption": {
+                        "type": "keyword"
+                    },
+                    "date_created": {
+                        "type": "keyword"
+                    },
+                    "schema_version": {
+                        "type": "keyword"
+                    },
+                    "status": {
+                        "type": "keyword"
+                    },
+                    "submitted_by": {
+                        "type": "keyword"
+                    },
+                    "uuid": {
+                        "type": "keyword"
+                    }
                 },
                 "type": "object"
             },

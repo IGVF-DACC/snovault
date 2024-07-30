@@ -1,6 +1,6 @@
 {
-    "hash": "3709327b70b28b8e772ad4f8749de638",
-    "index_name": "testing_custom_embed_target_3709327b",
+    "hash": "ed9797a4a2167fa8ecb62d818914c382",
+    "index_name": "testing_custom_embed_target_ed9797a4",
     "item_type": "testing_custom_embed_target",
     "mapping": {
         "dynamic_templates": [
@@ -303,36 +303,33 @@
             },
             "object": {
                 "properties": {
-                    "properties": {
-                        "@id": {
-                            "type": "keyword"
-                        },
-                        "@type": {
-                            "type": "keyword"
-                        },
-                        "filtered_reverse": {
-                            "type": "keyword"
-                        },
-                        "filtered_reverse1": {
-                            "type": "keyword"
-                        },
-                        "name": {
-                            "type": "keyword"
-                        },
-                        "reverse": {
-                            "type": "keyword"
-                        },
-                        "reverse_uncalculated": {
-                            "type": "keyword"
-                        },
-                        "status": {
-                            "type": "keyword"
-                        },
-                        "uuid": {
-                            "type": "keyword"
-                        }
+                    "@id": {
+                        "type": "keyword"
                     },
-                    "type": "object"
+                    "@type": {
+                        "type": "keyword"
+                    },
+                    "filtered_reverse": {
+                        "type": "keyword"
+                    },
+                    "filtered_reverse1": {
+                        "type": "keyword"
+                    },
+                    "name": {
+                        "type": "keyword"
+                    },
+                    "reverse": {
+                        "type": "keyword"
+                    },
+                    "reverse_uncalculated": {
+                        "type": "keyword"
+                    },
+                    "status": {
+                        "type": "keyword"
+                    },
+                    "uuid": {
+                        "type": "keyword"
+                    }
                 },
                 "type": "object"
             },

@@ -1,6 +1,6 @@
 {
-    "hash": "ea589773944f98c6e57ccf42bf3e97d8",
-    "index_name": "testing_search_schema_special_facets_ea589773",
+    "hash": "09b94aafedb7b716033ca47902fc739c",
+    "index_name": "testing_search_schema_special_facets_09b94aaf",
     "item_type": "testing_search_schema_special_facets",
     "mapping": {
         "dynamic_templates": [
@@ -193,39 +193,36 @@
             },
             "object": {
                 "properties": {
-                    "properties": {
-                        "@id": {
-                            "type": "keyword"
-                        },
-                        "@type": {
-                            "type": "keyword"
-                        },
-                        "accession": {
-                            "type": "keyword"
-                        },
-                        "label": {
-                            "type": "keyword"
-                        },
-                        "name": {
-                            "type": "keyword"
-                        },
-                        "read_count": {
-                            "fields": {
-                                "raw": {
-                                    "type": "keyword"
-                                }
-                            },
-                            "store": true,
-                            "type": "float"
-                        },
-                        "status": {
-                            "type": "keyword"
-                        },
-                        "uuid": {
-                            "type": "keyword"
-                        }
+                    "@id": {
+                        "type": "keyword"
                     },
-                    "type": "object"
+                    "@type": {
+                        "type": "keyword"
+                    },
+                    "accession": {
+                        "type": "keyword"
+                    },
+                    "label": {
+                        "type": "keyword"
+                    },
+                    "name": {
+                        "type": "keyword"
+                    },
+                    "read_count": {
+                        "fields": {
+                            "raw": {
+                                "type": "keyword"
+                            }
+                        },
+                        "store": true,
+                        "type": "float"
+                    },
+                    "status": {
+                        "type": "keyword"
+                    },
+                    "uuid": {
+                        "type": "keyword"
+                    }
                 },
                 "type": "object"
             },

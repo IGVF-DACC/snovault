@@ -1,6 +1,6 @@
 {
-    "hash": "f00acd59f7d4154e215bb9945b257497",
-    "index_name": "lab_f00acd59",
+    "hash": "03f4a51f040c85c962337013c6b4404f",
+    "index_name": "lab_03f4a51f",
     "item_type": "lab",
     "mapping": {
         "dynamic_templates": [
@@ -275,72 +275,69 @@
             },
             "object": {
                 "properties": {
-                    "properties": {
-                        "@id": {
-                            "type": "keyword"
-                        },
-                        "@type": {
-                            "type": "keyword"
-                        },
-                        "address1": {
-                            "type": "keyword"
-                        },
-                        "address2": {
-                            "type": "keyword"
-                        },
-                        "awards": {
-                            "type": "keyword"
-                        },
-                        "city": {
-                            "type": "keyword"
-                        },
-                        "country": {
-                            "type": "keyword"
-                        },
-                        "fax": {
-                            "type": "keyword"
-                        },
-                        "institute_label": {
-                            "type": "keyword"
-                        },
-                        "institute_name": {
-                            "type": "keyword"
-                        },
-                        "name": {
-                            "type": "keyword"
-                        },
-                        "phone1": {
-                            "type": "keyword"
-                        },
-                        "phone2": {
-                            "type": "keyword"
-                        },
-                        "pi": {
-                            "type": "keyword"
-                        },
-                        "postal_code": {
-                            "type": "keyword"
-                        },
-                        "schema_version": {
-                            "type": "keyword"
-                        },
-                        "state": {
-                            "type": "keyword"
-                        },
-                        "status": {
-                            "type": "keyword"
-                        },
-                        "title": {
-                            "type": "keyword"
-                        },
-                        "url": {
-                            "type": "keyword"
-                        },
-                        "uuid": {
-                            "type": "keyword"
-                        }
+                    "@id": {
+                        "type": "keyword"
                     },
-                    "type": "object"
+                    "@type": {
+                        "type": "keyword"
+                    },
+                    "address1": {
+                        "type": "keyword"
+                    },
+                    "address2": {
+                        "type": "keyword"
+                    },
+                    "awards": {
+                        "type": "keyword"
+                    },
+                    "city": {
+                        "type": "keyword"
+                    },
+                    "country": {
+                        "type": "keyword"
+                    },
+                    "fax": {
+                        "type": "keyword"
+                    },
+                    "institute_label": {
+                        "type": "keyword"
+                    },
+                    "institute_name": {
+                        "type": "keyword"
+                    },
+                    "name": {
+                        "type": "keyword"
+                    },
+                    "phone1": {
+                        "type": "keyword"
+                    },
+                    "phone2": {
+                        "type": "keyword"
+                    },
+                    "pi": {
+                        "type": "keyword"
+                    },
+                    "postal_code": {
+                        "type": "keyword"
+                    },
+                    "schema_version": {
+                        "type": "keyword"
+                    },
+                    "state": {
+                        "type": "keyword"
+                    },
+                    "status": {
+                        "type": "keyword"
+                    },
+                    "title": {
+                        "type": "keyword"
+                    },
+                    "url": {
+                        "type": "keyword"
+                    },
+                    "uuid": {
+                        "type": "keyword"
+                    }
                 },
                 "type": "object"
             },

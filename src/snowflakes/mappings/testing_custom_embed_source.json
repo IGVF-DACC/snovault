@@ -1,6 +1,6 @@
 {
-    "hash": "61db2942941ffac37db7a95afde130c1",
-    "index_name": "testing_custom_embed_source_61db2942",
+    "hash": "d1db18a6a608e955733cbcef04084af9",
+    "index_name": "testing_custom_embed_source_d1db18a6",
     "item_type": "testing_custom_embed_source",
     "mapping": {
         "dynamic_templates": [
@@ -187,36 +187,33 @@
             },
             "object": {
                 "properties": {
-                    "properties": {
-                        "@id": {
-                            "type": "keyword"
-                        },
-                        "@type": {
-                            "type": "keyword"
-                        },
-                        "condition1": {
-                            "fields": {
-                                "raw": {
-                                    "type": "keyword"
-                                }
-                            },
-                            "store": true,
-                            "type": "boolean"
-                        },
-                        "name": {
-                            "type": "keyword"
-                        },
-                        "status": {
-                            "type": "keyword"
-                        },
-                        "target": {
-                            "type": "keyword"
-                        },
-                        "uuid": {
-                            "type": "keyword"
-                        }
+                    "@id": {
+                        "type": "keyword"
                     },
-                    "type": "object"
+                    "@type": {
+                        "type": "keyword"
+                    },
+                    "condition1": {
+                        "fields": {
+                            "raw": {
+                                "type": "keyword"
+                            }
+                        },
+                        "store": true,
+                        "type": "boolean"
+                    },
+                    "name": {
+                        "type": "keyword"
+                    },
+                    "status": {
+                        "type": "keyword"
+                    },
+                    "target": {
+                        "type": "keyword"
+                    },
+                    "uuid": {
+                        "type": "keyword"
+                    }
                 },
                 "type": "object"
             },

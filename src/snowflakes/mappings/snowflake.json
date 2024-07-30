@@ -1,6 +1,6 @@
 {
-    "hash": "6e4f248716da27e008b35de4075f620d",
-    "index_name": "snowflake_6e4f2487",
+    "hash": "f4f4964d98b9502d3ea2acd20cd8ee47",
+    "index_name": "snowflake_f4f4964d",
     "item_type": "snowflake",
     "mapping": {
         "dynamic_templates": [
@@ -326,48 +326,45 @@
             },
             "object": {
                 "properties": {
-                    "properties": {
-                        "@id": {
-                            "type": "keyword"
-                        },
-                        "@type": {
-                            "type": "keyword"
-                        },
-                        "accession": {
-                            "type": "keyword"
-                        },
-                        "award": {
-                            "type": "keyword"
-                        },
-                        "date_created": {
-                            "type": "keyword"
-                        },
-                        "external_accession": {
-                            "type": "keyword"
-                        },
-                        "lab": {
-                            "type": "keyword"
-                        },
-                        "schema_version": {
-                            "type": "keyword"
-                        },
-                        "snowset": {
-                            "type": "keyword"
-                        },
-                        "status": {
-                            "type": "keyword"
-                        },
-                        "submitted_by": {
-                            "type": "keyword"
-                        },
-                        "type": {
-                            "type": "keyword"
-                        },
-                        "uuid": {
-                            "type": "keyword"
-                        }
+                    "@id": {
+                        "type": "keyword"
                     },
-                    "type": "object"
+                    "@type": {
+                        "type": "keyword"
+                    },
+                    "accession": {
+                        "type": "keyword"
+                    },
+                    "award": {
+                        "type": "keyword"
+                    },
+                    "date_created": {
+                        "type": "keyword"
+                    },
+                    "external_accession": {
+                        "type": "keyword"
+                    },
+                    "lab": {
+                        "type": "keyword"
+                    },
+                    "schema_version": {
+                        "type": "keyword"
+                    },
+                    "snowset": {
+                        "type": "keyword"
+                    },
+                    "status": {
+                        "type": "keyword"
+                    },
+                    "submitted_by": {
+                        "type": "keyword"
+                    },
+                    "type": {
+                        "type": "keyword"
+                    },
+                    "uuid": {
+                        "type": "keyword"
+                    }
                 },
                 "type": "object"
             },

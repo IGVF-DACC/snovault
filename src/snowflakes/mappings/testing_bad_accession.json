@@ -1,6 +1,6 @@
 {
-    "hash": "1a843d998d417c08fd316904cad4d5d6",
-    "index_name": "testing_bad_accession_1a843d99",
+    "hash": "d7572812b40d839f08fbc6185eb257ba",
+    "index_name": "testing_bad_accession_d7572812",
     "item_type": "testing_bad_accession",
     "mapping": {
         "dynamic_templates": [
@@ -190,39 +190,36 @@
             },
             "object": {
                 "properties": {
-                    "properties": {
-                        "@id": {
-                            "type": "keyword"
-                        },
-                        "@type": {
-                            "type": "keyword"
-                        },
-                        "accession": {
-                            "type": "keyword"
-                        },
-                        "now": {
-                            "type": "keyword"
-                        },
-                        "schema_version": {
-                            "type": "keyword"
-                        },
-                        "thing": {
-                            "fields": {
-                                "raw": {
-                                    "type": "keyword"
-                                }
-                            },
-                            "store": true,
-                            "type": "float"
-                        },
-                        "user": {
-                            "type": "keyword"
-                        },
-                        "uuid": {
-                            "type": "keyword"
-                        }
+                    "@id": {
+                        "type": "keyword"
                     },
-                    "type": "object"
+                    "@type": {
+                        "type": "keyword"
+                    },
+                    "accession": {
+                        "type": "keyword"
+                    },
+                    "now": {
+                        "type": "keyword"
+                    },
+                    "schema_version": {
+                        "type": "keyword"
+                    },
+                    "thing": {
+                        "fields": {
+                            "raw": {
+                                "type": "keyword"
+                            }
+                        },
+                        "store": true,
+                        "type": "float"
+                    },
+                    "user": {
+                        "type": "keyword"
+                    },
+                    "uuid": {
+                        "type": "keyword"
+                    }
                 },
                 "type": "object"
             },

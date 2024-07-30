@@ -1,6 +1,6 @@
 {
-    "hash": "428c61a48031775f01a8b32174045373",
-    "index_name": "testing_download_428c61a4",
+    "hash": "ac18de841b5bf2c3cb9de4d0937e7a7d",
+    "index_name": "testing_download_ac18de84",
     "item_type": "testing_download",
     "mapping": {
         "dynamic_templates": [
@@ -198,47 +198,44 @@
             },
             "object": {
                 "properties": {
-                    "properties": {
-                        "@id": {
-                            "type": "keyword"
-                        },
-                        "@type": {
-                            "type": "keyword"
-                        },
-                        "attachment": {
-                            "properties": {
-                                "type": {
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "attachment2": {
-                            "properties": {
-                                "type": {
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "attachment3": {
-                            "properties": {
-                                "type": {
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "object"
-                        },
-                        "attachment4": {
-                            "properties": {
-                                "type": {
-                                    "type": "keyword"
-                                }
-                            },
-                            "type": "object"
-                        }
+                    "@id": {
+                        "type": "keyword"
                     },
-                    "type": "object"
+                    "@type": {
+                        "type": "keyword"
+                    },
+                    "attachment": {
+                        "properties": {
+                            "type": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "attachment2": {
+                        "properties": {
+                            "type": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "attachment3": {
+                        "properties": {
+                            "type": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "attachment4": {
+                        "properties": {
+                            "type": {
+                                "type": "keyword"
+                            }
+                        },
+                        "type": "object"
+                    }
                 },
                 "type": "object"
             },
