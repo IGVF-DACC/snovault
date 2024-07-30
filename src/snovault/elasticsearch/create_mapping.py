@@ -485,6 +485,10 @@ def generate_indices_and_mappings(app, collections=None):
             index = collection_name
             collection = app.registry[COLLECTIONS].by_item_type[collection_name]
             mapping = es_mapping(type_mapping(app.registry[TYPES], collection.type_info.item_type))
+            # Search on object frame
+            object_frame_mapping = type_mapping(app.registry[TYPES], collection.type_info.item_type, embed=False)
+            mapping['properties']['object']['properties'] = object_frame_mapping
+            mapping['properties']['object'].pop('enabled', None)
         if mapping is None:
             continue  # Testing collections
         mappings[index] = mapping
