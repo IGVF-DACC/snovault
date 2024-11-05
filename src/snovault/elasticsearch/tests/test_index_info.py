@@ -21,10 +21,12 @@ def test_index_views_is_indexing():
     from snovault.elasticsearch.index_views import is_indexing
     indexer_info = {
         'transaction_queue': {
-            'ApproximateNumberOfMessages': 0
+            'ApproximateNumberOfMessages': 0,
+            'ApproximateNumberOfMessagesNotVisible': 0,
         },
         'invalidation_queue': {
-            'ApproximateNumberOfMessages': 0
+            'ApproximateNumberOfMessages': 0,
+            'ApproximateNumberOfMessagesNotVisible': 0,
         }
     }
     assert not is_indexing(
@@ -48,6 +50,15 @@ def test_index_views_is_indexing():
     )
     indexer_info['transaction_queue']['ApproximateNumberOfMessages'] = 103
     indexer_info['invalidation_queue']['ApproximateNumberOfMessages'] = 3534
+    assert is_indexing(
+        indexer_info
+    )
+    indexer_info['transaction_queue']['ApproximateNumberOfMessages'] = 0
+    indexer_info['invalidation_queue']['ApproximateNumberOfMessages'] = 0
+    assert not is_indexing(
+        indexer_info
+    )
+    indexer_info['transaction_queue']['ApproximateNumberOfMessagesNotVisible'] = 5
     assert is_indexing(
         indexer_info
     )
