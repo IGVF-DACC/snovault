@@ -9,6 +9,8 @@ from pyramid.traversal import resource_path
 from pyramid.view import view_config
 from .resources import Item
 
+from snovault.interfaces import DBSESSION
+
 
 def includeme(config):
     config.scan(__name__, categories=None)
@@ -76,7 +78,7 @@ def item_index_data(context, request):
 
     index_name = item_type_to_index_name[item_type]
 
-    xmin = get_current_xmin()
+    xmin = get_current_xmin(request)
 
     document = {
         'audit': audit,
