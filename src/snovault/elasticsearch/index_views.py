@@ -213,7 +213,9 @@ def is_indexing(indexer_info: Dict[str, Any]) -> bool:
     return any(
         (
             indexer_info['transaction_queue']['ApproximateNumberOfMessages'] > 0,
+            indexer_info['transaction_queue']['ApproximateNumberOfMessagesNotVisible'] > 0,
             indexer_info['invalidation_queue']['ApproximateNumberOfMessages'] > 0,
+            indexer_info['invalidation_queue']['ApproximateNumberOfMessagesNotVisible'] > 0,
         )
     )
 

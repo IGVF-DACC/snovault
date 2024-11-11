@@ -9,10 +9,22 @@ from pyramid.traversal import resource_path
 from pyramid.view import view_config
 from .resources import Item
 
+from snovault.interfaces import DBSESSION
+
 
 def includeme(config):
     config.scan(__name__, categories=None)
     config.add_route('opensearch-item-type-to-index-name', '/opensearch-item-type-to-index-name{slash:/?}')
+
+
+def get_current_xmin(request):
+    session = request.registry[DBSESSION]()
+    connection = session.connection()
+    query = connection.execute(
+        'SELECT pg_snapshot_xmin(pg_current_snapshot());'
+    )
+    xmin = query.scalar()
+    return xmin
 
 
 @view_config(context=Item, name='index-data', permission='index', request_method='GET')
@@ -66,6 +78,8 @@ def item_index_data(context, request):
 
     index_name = item_type_to_index_name[item_type]
 
+    xmin = get_current_xmin(request)
+
     document = {
         'audit': audit,
         'embedded': embedded,
@@ -83,6 +97,7 @@ def item_index_data(context, request):
             for name in context.propsheets.keys() if name != ''
         },
         'tid': context.tid,
+        'xmin': xmin,
         'unique_keys': unique_keys,
         'uuid': uuid,
     }

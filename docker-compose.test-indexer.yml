@@ -74,7 +74,7 @@ services:
       - TRANSACTION_QUEUE_URL=http://localstack:4566/000000000000/transaction-queue
       - INVALIDATION_QUEUE_URL=http://localhost:4566/000000000000/invalidation-queue
       - RESOURCES_INDEX=snovault-resources
-    command: run-invalidation-service
+    command: run-bulk-invalidation-service
     depends_on:
       - pyramid
 
