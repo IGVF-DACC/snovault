@@ -1,6 +1,6 @@
 {
-    "hash": "ce73ae5f514df6e6265fed17e9f1af8f",
-    "index_name": "testing_search_schema_special_facets_ce73ae5f",
+    "hash": "7e8922e10b48b19c17dbe6b747b76d03",
+    "index_name": "testing_search_schema_special_facets_7e8922e1",
     "item_type": "testing_search_schema_special_facets",
     "mapping": {
         "dynamic_templates": [
@@ -212,6 +212,9 @@
             "uuid": {
                 "copy_to": "_exact",
                 "type": "keyword"
+            },
+            "xmin": {
+                "type": "integer"
             }
         }
     }

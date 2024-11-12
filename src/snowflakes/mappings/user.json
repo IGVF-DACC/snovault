@@ -1,6 +1,6 @@
 {
-    "hash": "5466c37669e3ae2c284663a567773279",
-    "index_name": "user_5466c376",
+    "hash": "8de028e407935629ee5c0b9b63881ee6",
+    "index_name": "user_8de028e4",
     "item_type": "user",
     "mapping": {
         "dynamic_templates": [
@@ -305,6 +305,9 @@
             "uuid": {
                 "copy_to": "_exact",
                 "type": "keyword"
+            },
+            "xmin": {
+                "type": "integer"
             }
         }
     }

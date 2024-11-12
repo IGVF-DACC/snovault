@@ -1,6 +1,6 @@
 {
-    "hash": "68bd87b27d8aac9e9cc2f64f4df78553",
-    "index_name": "testing_bad_accession_68bd87b2",
+    "hash": "597d18c96396f897f4c75cf2df0d8223",
+    "index_name": "testing_bad_accession_597d18c9",
     "item_type": "testing_bad_accession",
     "mapping": {
         "dynamic_templates": [
@@ -209,6 +209,9 @@
             "uuid": {
                 "copy_to": "_exact",
                 "type": "keyword"
+            },
+            "xmin": {
+                "type": "integer"
             }
         }
     }

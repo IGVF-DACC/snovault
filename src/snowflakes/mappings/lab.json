@@ -1,6 +1,6 @@
 {
-    "hash": "dd2e527fccd624fa017719b0b19ec7ce",
-    "index_name": "lab_dd2e527f",
+    "hash": "ca4719b28ebc4b833b8d076b96a729a7",
+    "index_name": "lab_ca4719b2",
     "item_type": "lab",
     "mapping": {
         "dynamic_templates": [
@@ -294,6 +294,9 @@
             "uuid": {
                 "copy_to": "_exact",
                 "type": "keyword"
+            },
+            "xmin": {
+                "type": "integer"
             }
         }
     }

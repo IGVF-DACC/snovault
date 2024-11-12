@@ -1,6 +1,6 @@
 {
-    "hash": "5e0163f6e476e84fb8a95cd19709bb97",
-    "index_name": "snowfort_5e0163f6",
+    "hash": "be941cb20c3b545ffae5deca7d3608ce",
+    "index_name": "snowfort_be941cb2",
     "item_type": "snowfort",
     "mapping": {
         "dynamic_templates": [
@@ -584,6 +584,9 @@
             "uuid": {
                 "copy_to": "_exact",
                 "type": "keyword"
+            },
+            "xmin": {
+                "type": "integer"
             }
         }
     }

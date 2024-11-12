@@ -1,6 +1,6 @@
 {
-    "hash": "9d79d5e4fd594df65693f089d0aaf49a",
-    "index_name": "image_9d79d5e4",
+    "hash": "2fa710c529198aeb60c1cf6ff206f83d",
+    "index_name": "image_2fa710c5",
     "item_type": "image",
     "mapping": {
         "dynamic_templates": [
@@ -310,6 +310,9 @@
             "uuid": {
                 "copy_to": "_exact",
                 "type": "keyword"
+            },
+            "xmin": {
+                "type": "integer"
             }
         }
     }

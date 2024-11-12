@@ -1,6 +1,6 @@
 {
-    "hash": "6f4c73a42344efb49513619d7c37c611",
-    "index_name": "snowball_6f4c73a4",
+    "hash": "fb0e82a645c10490973d407057bc3d44",
+    "index_name": "snowball_fb0e82a6",
     "item_type": "snowball",
     "mapping": {
         "dynamic_templates": [
@@ -589,6 +589,9 @@
             "uuid": {
                 "copy_to": "_exact",
                 "type": "keyword"
+            },
+            "xmin": {
+                "type": "integer"
             }
         }
     }
