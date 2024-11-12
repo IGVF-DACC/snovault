@@ -65,7 +65,7 @@ def test_indexing_opensearch_mappings_exist(testapp, registry, dummy_request, wo
     assert actual == expected, actual
     actual = list(os.indices.get_alias('award').keys())
     expected = [
-        'award_8ab12598'
+        'award_d7f390e2'
     ]
     assert actual == expected, actual
     actual = list(sorted(os.indices.get_alias('snovault-resources').keys()))
