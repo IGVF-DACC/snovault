@@ -78,7 +78,7 @@ def item_index_data(context, request):
 
     index_name = item_type_to_index_name[item_type]
 
-    xmin = get_current_xmin(request)
+    xmin = int(get_current_xmin(request))
 
     document = {
         'audit': audit,

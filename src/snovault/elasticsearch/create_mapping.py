@@ -310,6 +310,9 @@ def es_mapping(mapping):
             'tid': {
                 'type': 'keyword',
             },
+            'xmin': {
+                'type': 'integer',
+            },
             'item_type': {
                 'type': 'keyword',
                 'copy_to': '_exact',

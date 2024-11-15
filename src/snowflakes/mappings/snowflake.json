@@ -1,6 +1,6 @@
 {
-    "hash": "30db45cf9d8a49fd4296f466e623202d",
-    "index_name": "snowflake_30db45cf",
+    "hash": "cf91c1bada2f4b845d625789886ce881",
+    "index_name": "snowflake_cf91c1ba",
     "item_type": "snowflake",
     "mapping": {
         "dynamic_templates": [
@@ -345,6 +345,9 @@
             "uuid": {
                 "copy_to": "_exact",
                 "type": "keyword"
+            },
+            "xmin": {
+                "type": "integer"
             }
         }
     }

@@ -126,6 +126,9 @@ def test_mapping_generate_indices_and_mappings(testapp, registry):
             'tid': {
                 'type': 'keyword'
             },
+            'xmin': {
+                'type': 'integer'
+            },
             'item_type': {
                 'type': 'keyword',
                 'copy_to': '_exact'

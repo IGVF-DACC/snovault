@@ -1,6 +1,6 @@
 {
-    "hash": "fe00209c6b53a7a863e6765556a0fe59",
-    "index_name": "testing_server_default_fe00209c",
+    "hash": "1a963606260285e3e68c2b5d96ab8001",
+    "index_name": "testing_server_default_1a963606",
     "item_type": "testing_server_default",
     "mapping": {
         "dynamic_templates": [
@@ -200,6 +200,9 @@
             "uuid": {
                 "copy_to": "_exact",
                 "type": "keyword"
+            },
+            "xmin": {
+                "type": "integer"
             }
         }
     }

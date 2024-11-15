@@ -1,6 +1,6 @@
 {
-    "hash": "de2a5001899edb114f1900c67cdbc7e0",
-    "index_name": "testing_link_source_de2a5001",
+    "hash": "7cb36f2a3e5c6ef2d20d9fee0ead3e17",
+    "index_name": "testing_link_source_7cb36f2a",
     "item_type": "testing_link_source",
     "mapping": {
         "dynamic_templates": [
@@ -206,6 +206,9 @@
             "uuid": {
                 "copy_to": "_exact",
                 "type": "keyword"
+            },
+            "xmin": {
+                "type": "integer"
             }
         }
     }

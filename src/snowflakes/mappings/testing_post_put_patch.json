@@ -1,6 +1,6 @@
 {
-    "hash": "a469c52ff91350020e24ec190269f92a",
-    "index_name": "testing_post_put_patch_a469c52f",
+    "hash": "d091fc575ea36c69ddac672e4730f8ac",
+    "index_name": "testing_post_put_patch_d091fc57",
     "item_type": "testing_post_put_patch",
     "mapping": {
         "dynamic_templates": [
@@ -209,6 +209,9 @@
             "uuid": {
                 "copy_to": "_exact",
                 "type": "keyword"
+            },
+            "xmin": {
+                "type": "integer"
             }
         }
     }

@@ -41,54 +41,54 @@ def test_indexing_opensearch_mappings_exist(testapp, registry, dummy_request, wo
     os = registry[ELASTIC_SEARCH]
     actual = list(sorted(os.indices.get('*').keys()))
     expected = list(sorted([
-        'access_key_5bd72e25',
-        'award_8ab12598',
-        'image_9d79d5e4',
-        'lab_dd2e527f',
-        'page_54c9ebeb',
-        'snowball_6f4c73a4',
-        'snowflake_30db45cf',
-        'snowfort_5e0163f6',
-        'testing_bad_accession_68bd87b2',
-        'testing_custom_embed_source_d90ac323',
-        'testing_custom_embed_target_6881adca',
-        'testing_dependencies_965e4e95',
-        'testing_download_ff92c2cb',
-        'testing_link_source_de2a5001',
-        'testing_link_target_1b833428',
-        'testing_post_put_patch_a469c52f',
-        'testing_search_schema_cac5d36a',
-        'testing_search_schema_special_facets_ce73ae5f',
-        'testing_server_default_fe00209c',
-        'user_5466c376'
+        'access_key_b135add2',
+        'award_d7f390e2',
+        'image_2fa710c5',
+        'lab_ca4719b2',
+        'page_06b7b3c1',
+        'snowball_fb0e82a6',
+        'snowflake_cf91c1ba',
+        'snowfort_be941cb2',
+        'testing_bad_accession_597d18c9',
+        'testing_custom_embed_source_0cbcd5e3',
+        'testing_custom_embed_target_62547261',
+        'testing_dependencies_92c80b0d',
+        'testing_download_356eca88',
+        'testing_link_source_7cb36f2a',
+        'testing_link_target_65ce962c',
+        'testing_post_put_patch_d091fc57',
+        'testing_search_schema_912808ca',
+        'testing_search_schema_special_facets_7e8922e1',
+        'testing_server_default_1a963606',
+        'user_8de028e4'
     ]))
     assert actual == expected, actual
     actual = list(os.indices.get_alias('award').keys())
     expected = [
-        'award_8ab12598'
+        'award_d7f390e2'
     ]
     assert actual == expected, actual
     actual = list(sorted(os.indices.get_alias('snovault-resources').keys()))
     expected = list(sorted([
-        'access_key_5bd72e25',
-        'award_8ab12598',
-        'image_9d79d5e4',
-        'lab_dd2e527f',
-        'page_54c9ebeb',
-        'snowball_6f4c73a4',
-        'snowflake_30db45cf',
-        'snowfort_5e0163f6',
-        'testing_bad_accession_68bd87b2',
-        'testing_custom_embed_source_d90ac323',
-        'testing_custom_embed_target_6881adca',
-        'testing_dependencies_965e4e95',
-        'testing_download_ff92c2cb',
-        'testing_link_source_de2a5001',
-        'testing_link_target_1b833428',
-        'testing_post_put_patch_a469c52f',
-        'testing_search_schema_cac5d36a',
-        'testing_search_schema_special_facets_ce73ae5f',
-        'testing_server_default_fe00209c',
-        'user_5466c376'
+        'access_key_b135add2',
+        'award_d7f390e2',
+        'image_2fa710c5',
+        'lab_ca4719b2',
+        'page_06b7b3c1',
+        'snowball_fb0e82a6',
+        'snowflake_cf91c1ba',
+        'snowfort_be941cb2',
+        'testing_bad_accession_597d18c9',
+        'testing_custom_embed_source_0cbcd5e3',
+        'testing_custom_embed_target_62547261',
+        'testing_dependencies_92c80b0d',
+        'testing_download_356eca88',
+        'testing_link_source_7cb36f2a',
+        'testing_link_target_65ce962c',
+        'testing_post_put_patch_d091fc57',
+        'testing_search_schema_912808ca',
+        'testing_search_schema_special_facets_7e8922e1',
+        'testing_server_default_1a963606',
+        'user_8de028e4'
     ]))
     assert actual == expected, actual

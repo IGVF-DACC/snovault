@@ -1,6 +1,6 @@
 {
-    "hash": "965e4e9540bb3880d906e7c91f63ce91",
-    "index_name": "testing_dependencies_965e4e95",
+    "hash": "92c80b0dbb67519727897b0a9daafe99",
+    "index_name": "testing_dependencies_92c80b0d",
     "item_type": "testing_dependencies",
     "mapping": {
         "dynamic_templates": [
@@ -191,6 +191,9 @@
             "uuid": {
                 "copy_to": "_exact",
                 "type": "keyword"
+            },
+            "xmin": {
+                "type": "integer"
             }
         }
     }
