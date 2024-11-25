@@ -1,6 +1,6 @@
 {
-    "hash": "1a963606260285e3e68c2b5d96ab8001",
-    "index_name": "testing_server_default_1a963606",
+    "hash": "d476d5162cb78e3a9575afada92cf11d",
+    "index_name": "testing_server_default_d476d516",
     "item_type": "testing_server_default",
     "mapping": {
         "dynamic_templates": [
@@ -152,7 +152,7 @@
                         "type": "keyword"
                     },
                     "now": {
-                        "type": "keyword"
+                        "type": "date"
                     },
                     "schema_version": {
                         "type": "keyword"

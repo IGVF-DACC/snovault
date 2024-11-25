@@ -1,6 +1,6 @@
 {
-    "hash": "2fa710c529198aeb60c1cf6ff206f83d",
-    "index_name": "image_2fa710c5",
+    "hash": "0611cffca25a2587e205c26af0537afc",
+    "index_name": "image_0611cffc",
     "item_type": "image",
     "mapping": {
         "dynamic_templates": [
@@ -154,11 +154,6 @@
                                 "type": "keyword"
                             },
                             "height": {
-                                "fields": {
-                                    "raw": {
-                                        "type": "keyword"
-                                    }
-                                },
                                 "store": true,
                                 "type": "long"
                             },
@@ -169,11 +164,6 @@
                                 "type": "keyword"
                             },
                             "size": {
-                                "fields": {
-                                    "raw": {
-                                        "type": "keyword"
-                                    }
-                                },
                                 "store": true,
                                 "type": "long"
                             },
@@ -181,11 +171,6 @@
                                 "type": "keyword"
                             },
                             "width": {
-                                "fields": {
-                                    "raw": {
-                                        "type": "keyword"
-                                    }
-                                },
                                 "store": true,
                                 "type": "long"
                             }

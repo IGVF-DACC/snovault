@@ -1,6 +1,6 @@
 {
-    "hash": "597d18c96396f897f4c75cf2df0d8223",
-    "index_name": "testing_bad_accession_597d18c9",
+    "hash": "10bbcf16cde888857ab5a57567cd988b",
+    "index_name": "testing_bad_accession_10bbcf16",
     "item_type": "testing_bad_accession",
     "mapping": {
         "dynamic_templates": [
@@ -152,17 +152,12 @@
                         "type": "keyword"
                     },
                     "now": {
-                        "type": "keyword"
+                        "type": "date"
                     },
                     "schema_version": {
                         "type": "keyword"
                     },
                     "thing": {
-                        "fields": {
-                            "raw": {
-                                "type": "keyword"
-                            }
-                        },
                         "store": true,
                         "type": "float"
                     },

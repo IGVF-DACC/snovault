@@ -1,6 +1,6 @@
 {
-    "hash": "06b7b3c17bb54be14e21a596babdfdb2",
-    "index_name": "page_06b7b3c1",
+    "hash": "f311e755502c803da085a4d115031f65",
+    "index_name": "page_f311e755",
     "item_type": "page",
     "mapping": {
         "dynamic_templates": [
@@ -182,11 +182,6 @@
                                                         "type": "keyword"
                                                     },
                                                     "height": {
-                                                        "fields": {
-                                                            "raw": {
-                                                                "type": "keyword"
-                                                            }
-                                                        },
                                                         "store": true,
                                                         "type": "long"
                                                     },
@@ -197,11 +192,6 @@
                                                         "type": "keyword"
                                                     },
                                                     "size": {
-                                                        "fields": {
-                                                            "raw": {
-                                                                "type": "keyword"
-                                                            }
-                                                        },
                                                         "store": true,
                                                         "type": "long"
                                                     },
@@ -209,11 +199,6 @@
                                                         "type": "keyword"
                                                     },
                                                     "width": {
-                                                        "fields": {
-                                                            "raw": {
-                                                                "type": "keyword"
-                                                            }
-                                                        },
                                                         "store": true,
                                                         "type": "long"
                                                     }
