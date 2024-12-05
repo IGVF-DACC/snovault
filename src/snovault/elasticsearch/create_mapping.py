@@ -117,6 +117,7 @@ def schema_mapping(name, schema):
 
     print(f'Warning no match for type {type_}, returning without a mapping. Name: {name} Schema: {schema}')
 
+
 def index_settings():
     return {
         'settings': {
