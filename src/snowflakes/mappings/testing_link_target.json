@@ -1,6 +1,6 @@
 {
-    "hash": "65ce962ca2640ee826080c6981c1837a",
-    "index_name": "testing_link_target_65ce962c",
+    "hash": "b28678af03946c519628161d9434e31d",
+    "index_name": "testing_link_target_b28678af",
     "item_type": "testing_link_target",
     "mapping": {
         "dynamic_templates": [
@@ -160,11 +160,6 @@
                                 "type": "keyword"
                             },
                             "condition1": {
-                                "fields": {
-                                    "raw": {
-                                        "type": "keyword"
-                                    }
-                                },
                                 "store": true,
                                 "type": "boolean"
                             },

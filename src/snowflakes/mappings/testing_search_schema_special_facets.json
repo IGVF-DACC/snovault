@@ -1,6 +1,6 @@
 {
-    "hash": "7e8922e10b48b19c17dbe6b747b76d03",
-    "index_name": "testing_search_schema_special_facets_7e8922e1",
+    "hash": "82782cf34f35e20202b56dc81761fd97",
+    "index_name": "testing_search_schema_special_facets_82782cf3",
     "item_type": "testing_search_schema_special_facets",
     "mapping": {
         "dynamic_templates": [
@@ -160,11 +160,6 @@
                         "type": "keyword"
                     },
                     "read_count": {
-                        "fields": {
-                            "raw": {
-                                "type": "keyword"
-                            }
-                        },
                         "store": true,
                         "type": "float"
                     },

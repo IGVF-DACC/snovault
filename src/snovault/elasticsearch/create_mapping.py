@@ -54,6 +54,8 @@ def schema_mapping(name, schema):
     else:
         type_ = schema['type']
 
+    format_ = schema['format'] if 'format' in schema else None
+
     # Elasticsearch handles multiple values for a field
     if type_ == 'array':
         return schema_mapping(name, schema['items'])
@@ -77,9 +79,6 @@ def schema_mapping(name, schema):
                 'value': {
                     'type': 'float',
                     'ignore_malformed': True,
-                },
-                'raw': {
-                    'type': 'keyword',
                 }
             }
         }
@@ -88,15 +87,12 @@ def schema_mapping(name, schema):
         return {
             'type': 'boolean',
             'store': True,
-            'fields': {
-                'raw': {
-                    'type': 'keyword',
-                }
-            }
         }
 
     if type_ == 'string':
-        if name in KEYWORD_FIELDS:
+        if format_ == 'date-time':
+            field_type = 'date'
+        elif name in KEYWORD_FIELDS:
             field_type = 'keyword'
         elif name in TEXT_FIELDS:
             field_type = 'text'
@@ -111,23 +107,15 @@ def schema_mapping(name, schema):
         return {
             'type': 'float',
             'store': True,
-            'fields': {
-                'raw': {
-                    'type': 'keyword',
-                }
-            }
         }
 
     if type_ == 'integer':
         return {
             'type': 'long',
             'store': True,
-            'fields': {
-                'raw': {
-                    'type': 'keyword',
-                }
-            }
         }
+
+    print(f'Warning no match for type {type_}, returning without a mapping. Name: {name} Schema: {schema}')
 
 
 def index_settings():
