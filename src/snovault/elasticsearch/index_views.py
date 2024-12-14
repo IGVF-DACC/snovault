@@ -216,6 +216,8 @@ def is_indexing(indexer_info: Dict[str, Any]) -> bool:
             indexer_info['transaction_queue']['ApproximateNumberOfMessagesNotVisible'] > 0,
             indexer_info['invalidation_queue']['ApproximateNumberOfMessages'] > 0,
             indexer_info['invalidation_queue']['ApproximateNumberOfMessagesNotVisible'] > 0,
+            indexer_info['deduplication_queue']['ApproximateNumberOfMessages'] > 0,
+            indexer_info['deduplication_queue']['ApproximateNumberOfMessagesNotVisible'] > 0,
         )
     )
 
@@ -225,6 +227,7 @@ def has_indexing_errors(indexer_info: Dict[str, Any]) -> bool:
         (
             indexer_info['transaction_dead_letter_queue']['ApproximateNumberOfMessages'] > 0,
             indexer_info['invalidation_dead_letter_queue']['ApproximateNumberOfMessages'] > 0,
+            indexer_info['deduplication_dead_letter_queue']['ApproximateNumberOfMessages'] > 0,
         )
     )
 
@@ -238,6 +241,8 @@ def indexer_info_view(request):
     transaction_dead_letter_queue = request.registry['TRANSACTION_DEAD_LETTER_QUEUE']
     invalidation_queue = request.registry['INVALIDATION_QUEUE']
     invalidation_dead_letter_queue = request.registry['INVALIDATION_DEAD_LETTER_QUEUE']
+    deduplication_queue = request.registry['DEDUPLICATION_QUEUE']
+    deduplication_dead_letter_queue = request.registry['DEDUPLICATION_DEAD_LETTER_QUEUE']
     indexer_info = {
         'transaction_queue': get_approximate_numbers_from_queue(
             transaction_queue.info()
@@ -250,6 +255,12 @@ def indexer_info_view(request):
         ),
         'invalidation_dead_letter_queue': get_approximate_numbers_from_queue(
             invalidation_dead_letter_queue.info()
+        ),
+        'deduplication_queue': get_approximate_numbers_from_queue(
+            deduplication_queue.info()
+        ),
+        'deduplication_dead_letter_queue': get_approximate_numbers_from_queue(
+            deduplication_dead_letter_queue.info()
         ),
     }
     indexer_info['is_indexing'] = is_indexing(
