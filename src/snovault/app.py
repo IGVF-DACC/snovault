@@ -203,6 +203,36 @@ def configure_invalidation_dead_letter_queue(config):
         config.registry['INVALIDATION_DEAD_LETTER_QUEUE'] = invalidation_dead_letter_queue
 
 
+def configure_deduplication_queue(config):
+    deduplication_queue_url = os.environ.get(
+        'DEDUPLICATION_QUEUE_URL'
+    )
+    if deduplication_queue_url is not None:
+        deduplication_queue = SQSQueue(
+            props=SQSQueueProps(
+                queue_url=deduplication_queue_url,
+                client=config.registry['SQS_CLIENT']
+            )
+        )
+        deduplication_queue.wait_for_queue_to_exist()
+        config.registry['DEDUPLICATION_QUEUE'] = deduplication_queue
+
+
+def configure_deduplication_dead_letter_queue(config):
+    deduplication_dead_letter_queue_url = os.environ.get(
+        'DEDUPLICATION_DEAD_LETTER_QUEUE_URL'
+    )
+    if deduplication_dead_letter_queue_url is not None:
+        deduplication_dead_letter_queue = SQSQueue(
+            props=SQSQueueProps(
+                queue_url=deduplication_dead_letter_queue_url,
+                client=config.registry['SQS_CLIENT']
+            )
+        )
+        deduplication_dead_letter_queue.wait_for_queue_to_exist()
+        config.registry['DEDUPLICATION_DEAD_LETTER_QUEUE'] = deduplication_dead_letter_queue
+
+
 def session(config):
     """ To create a session secret on the server:
 
