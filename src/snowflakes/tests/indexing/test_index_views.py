@@ -27,6 +27,16 @@ def test_index_views_indexer_info_view(testapp, workbook, poll_until_indexing_is
             'ApproximateNumberOfMessagesNotVisible': 0,
             'ApproximateNumberOfMessagesDelayed': 0
         },
+        'deduplication_queue': {
+            'ApproximateNumberOfMessages': 0,
+            'ApproximateNumberOfMessagesNotVisible': 0,
+            'ApproximateNumberOfMessagesDelayed': 0
+        },
+        'deduplication_dead_letter_queue': {
+            'ApproximateNumberOfMessages': 0,
+            'ApproximateNumberOfMessagesNotVisible': 0,
+            'ApproximateNumberOfMessagesDelayed': 0
+        },
         'is_indexing': False,
         'has_indexing_errors': False
     }

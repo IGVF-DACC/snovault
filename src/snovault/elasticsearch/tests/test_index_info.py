@@ -27,6 +27,10 @@ def test_index_views_is_indexing():
         'invalidation_queue': {
             'ApproximateNumberOfMessages': 0,
             'ApproximateNumberOfMessagesNotVisible': 0,
+        },
+        'deduplication_queue': {
+            'ApproximateNumberOfMessages': 0,
+            'ApproximateNumberOfMessagesNotVisible': 0,
         }
     }
     assert not is_indexing(
@@ -59,6 +63,14 @@ def test_index_views_is_indexing():
         indexer_info
     )
     indexer_info['transaction_queue']['ApproximateNumberOfMessagesNotVisible'] = 5
+    assert is_indexing(
+        indexer_info
+    )
+    indexer_info['transaction_queue']['ApproximateNumberOfMessagesNotVisible'] = 0
+    assert not is_indexing(
+        indexer_info
+    )
+    indexer_info['deduplication_queue']['ApproximateNumberOfMessagesNotVisible'] = 18
     assert is_indexing(
         indexer_info
     )
