@@ -173,11 +173,11 @@ def test_post_put_patch_integer_with_fraction_does_not_fail_validation(testapp, 
     r = testapp.post_json(COLLECTION_URL, item, status=201)
     new_item = r.json['@graph'][0]
     assert new_item['some_integer_value'] == 3
-    testapp.patch_json(new_item['@id'], {'some_integer_value': 4}, status=200)
     # Can patch new int.
+    testapp.patch_json(new_item['@id'], {'some_integer_value': 4}, status=200)
     r = testapp.get(new_item['@id'])
     assert r.json['some_integer_value'] == 4
-    # Can't patch string to int.
+    # Can not patch string to int.
     testapp.patch_json(new_item['@id'], {'some_integer_value': '5'}, status=422)
     r = testapp.get(new_item['@id'])
     assert r.json['some_integer_value'] == 4
