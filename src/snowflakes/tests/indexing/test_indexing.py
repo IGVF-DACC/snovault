@@ -56,7 +56,7 @@ def test_indexing_opensearch_mappings_exist(testapp, registry, dummy_request, wo
         'testing_download_356eca88',
         'testing_link_source_1d2673dd',
         'testing_link_target_b28678af',
-        'testing_post_put_patch_d091fc57',
+        'testing_post_put_patch_4e15f857'
         'testing_search_schema_912808ca',
         'testing_search_schema_special_facets_82782cf3',
         'testing_server_default_d476d516',
@@ -85,7 +85,7 @@ def test_indexing_opensearch_mappings_exist(testapp, registry, dummy_request, wo
         'testing_download_356eca88',
         'testing_link_source_1d2673dd',
         'testing_link_target_b28678af',
-        'testing_post_put_patch_d091fc57',
+        'testing_post_put_patch_4e15f857'
         'testing_search_schema_912808ca',
         'testing_search_schema_special_facets_82782cf3',
         'testing_server_default_d476d516',
