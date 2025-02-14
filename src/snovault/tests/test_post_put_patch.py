@@ -181,10 +181,10 @@ def test_post_put_patch_integer_with_fraction_does_not_fail_validation(testapp, 
     testapp.patch_json(new_item['@id'], {'some_integer_value': '5'}, status=422)
     r = testapp.get(new_item['@id'])
     assert r.json['some_integer_value'] == 4
-    # Can patch float integer.
-    testapp.patch_json(new_item['@id'], {'some_integer_value': 6.0})
+    # Can not patch float integer.
+    testapp.patch_json(new_item['@id'], {'some_integer_value': 6.0}, status=422)
     r = testapp.get(new_item['@id'])
-    assert r.json['some_integer_value'] == 6.0
+    assert r.json['some_integer_value'] == 4
 
 
 def test_admin_put_protected_link(link_targets, testapp):
