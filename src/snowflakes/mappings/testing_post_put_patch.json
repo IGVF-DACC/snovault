@@ -1,6 +1,6 @@
 {
-    "hash": "d091fc575ea36c69ddac672e4730f8ac",
-    "index_name": "testing_post_put_patch_d091fc57",
+    "hash": "4e15f85775d1a60ce60d35695cc92ddc",
+    "index_name": "testing_post_put_patch_4e15f857",
     "item_type": "testing_post_put_patch",
     "mapping": {
         "dynamic_templates": [
@@ -168,6 +168,10 @@
                     },
                     "simple2": {
                         "type": "keyword"
+                    },
+                    "some_integer_value": {
+                        "store": true,
+                        "type": "long"
                     },
                     "uuid": {
                         "type": "keyword"

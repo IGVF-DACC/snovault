@@ -169,9 +169,22 @@ def test_patch(content, testapp):
     assert res.json['@graph'][0]['simple2'] == 'supplied simple2'
 
 
-# def test_patch_new_schema_version(content, root, testapp, monkeypatch):
-# this test was removed as it was silently throwing errors and doesn't make much
-# sense anyway
+def test_post_put_patch_integer_with_fraction_does_not_fail_validation(testapp, external_tx):
+    r = testapp.post_json(COLLECTION_URL, item, status=201)
+    new_item = r.json['@graph'][0]
+    assert new_item['some_integer_value'] == 3
+    # Can patch new int.
+    testapp.patch_json(new_item['@id'], {'some_integer_value': 4}, status=200)
+    r = testapp.get(new_item['@id'])
+    assert r.json['some_integer_value'] == 4
+    # Can not patch string to int.
+    testapp.patch_json(new_item['@id'], {'some_integer_value': '5'}, status=422)
+    r = testapp.get(new_item['@id'])
+    assert r.json['some_integer_value'] == 4
+    # Can not patch float integer.
+    testapp.patch_json(new_item['@id'], {'some_integer_value': 6.0}, status=422)
+    r = testapp.get(new_item['@id'])
+    assert r.json['some_integer_value'] == 4
 
 
 def test_admin_put_protected_link(link_targets, testapp):

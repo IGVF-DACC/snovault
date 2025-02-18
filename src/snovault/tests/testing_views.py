@@ -328,6 +328,10 @@ class TestingPostPutPatch(Item):
                 'linkTo': 'TestingLinkTarget',
                 'permission': 'admin_only',
             },
+            'some_integer_value': {
+                'type': 'integer',
+                'default': 3
+            }
         }
     }
 

@@ -2,6 +2,7 @@ from copy import deepcopy
 from jsonschema import Draft202012Validator
 from jsonschema import validators
 from jsonschema.exceptions import ValidationError
+from jsonschema._types import is_integer
 from pyramid.threadlocal import get_current_request
 from pyramid.traversal import find_resource
 
@@ -109,8 +110,17 @@ def extend_with_default(validator_class):
             yield from mutate_properties(validator, properties, instance, schema)
         yield from validate_properties(validator, properties, instance, schema)
 
+    type_checker = validator_class.TYPE_CHECKER.redefine(
+        'integer',
+        is_integer,
+    )
+
     return validators.extend(
-        validator_class, {'properties': before_properties_validation_hook},
+        validator_class,
+        validators={
+            'properties': before_properties_validation_hook
+        },
+        type_checker=type_checker,
     )
 
 
