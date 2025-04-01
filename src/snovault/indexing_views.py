@@ -108,6 +108,7 @@ def item_index_data(context, request):
 @view_config(context=Item, name='index-data-external', permission='index', request_method='GET')
 def item_index_data_external(context, request):
     request.datastore = 'database'
+    request._stats['item_type'] = context.type_info.item_type
     uuid = str(context.uuid)
     return request.embed(
         f'/{uuid}/@@index-data',
