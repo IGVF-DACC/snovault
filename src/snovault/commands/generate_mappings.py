@@ -126,7 +126,10 @@ def update_indices_hashes_with_audits(app, indices_hashes):
         )
         index_hash = indices_hashes[index]
         for order, checker, condition, frame in sorted(audits_for_item_types):
-            index_hash.update(frame.encode('utf-8'))
+            if isinstance(frame, (tuple, list)):
+                index_hash.update(', '.join(sorted(frame)).encode('utf-8'))
+            else:
+                index_hash.update(frame.encode('utf-8'))
             index_hash.update(checker.__code__.co_name.encode('utf-8'))
             index_hash.update(checker.__code__.co_code)
             index_hash.update(str(checker.__code__.co_varnames).encode('utf-8'))
