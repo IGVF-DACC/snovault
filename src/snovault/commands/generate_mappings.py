@@ -84,6 +84,33 @@ def initialize_indices_hashes(app, indices):
     }
 
 
+def update_index_hash_with_function_signature(index_hash, function):
+    # Hashes the name, bytecode, variable names, and
+    # defaults of a function.
+    index_hash.update(function.__code__.co_name.encode('utf-8'))
+    index_hash.update(function.__code__.co_code)
+    index_hash.update(str(function.__code__.co_varnames).encode('utf-8'))
+    index_hash.update(str(function.__defaults__).encode('utf-8'))
+    # Strings constants are stable enough to hash.
+    # Avoid hashing constants that are functions or generators.
+    index_hash.update(
+        ''.join(
+            const
+            for const in function.__code__.co_consts
+            if isinstance(const, str)
+        ).encode('utf-8')
+    )
+    # Recurse on things this function watches. (Doesn't check for infinite recursion.)
+    if hasattr(function, '__watch_for_changes_in__'):
+        if function.__watch_for_changes_in__['version']	is not None:
+            index_hash.update(str(function.__watch_for_changes_in__['version']).encode('utf-8'))
+        for func in sorted(
+                function.__watch_for_changes_in__['functions'],
+                key=lambda f: f.__name__
+        ):
+            update_index_hash_with_function_signature(index_hash, func)
+
+
 def update_indices_hashes_with_calculated_properties(app, indices_hashes):
     collections = app.registry[COLLECTIONS]
     calculated_properties = app.registry[CALCULATED_PROPERTIES]
@@ -94,21 +121,7 @@ def update_indices_hashes_with_calculated_properties(app, indices_hashes):
         )
         index_hash = indices_hashes[index]
         for name, calculated_property in sorted(calculated_properties_for_item_type.items()):
-            # Hashes the name, bytecode, variable names, and
-            # defaults of a calculated_property function.
-            index_hash.update(calculated_property.fn.__code__.co_name.encode('utf-8'))
-            index_hash.update(calculated_property.fn.__code__.co_code)
-            index_hash.update(str(calculated_property.fn.__code__.co_varnames).encode('utf-8'))
-            index_hash.update(str(calculated_property.fn.__defaults__).encode('utf-8'))
-            # Strings constants are stable enough to hash.
-            # Avoid hashing constants that are functions or generators.
-            index_hash.update(
-                ''.join(
-                    const
-                    for const in calculated_property.fn.__code__.co_consts
-                    if isinstance(const, str)
-                ).encode('utf-8')
-            )
+            update_index_hash_with_function_signature(index_hash, calculated_property.fn)
 
 
 def update_indices_hashes_with_audits(app, indices_hashes):
@@ -130,17 +143,7 @@ def update_indices_hashes_with_audits(app, indices_hashes):
                 index_hash.update(', '.join(sorted(frame)).encode('utf-8'))
             else:
                 index_hash.update(frame.encode('utf-8'))
-            index_hash.update(checker.__code__.co_name.encode('utf-8'))
-            index_hash.update(checker.__code__.co_code)
-            index_hash.update(str(checker.__code__.co_varnames).encode('utf-8'))
-            index_hash.update(str(checker.__defaults__).encode('utf-8'))
-            index_hash.update(
-                ''.join(
-                    const
-                    for const in checker.__code__.co_consts
-                    if isinstance(const, str)
-                ).encode('utf-8')
-            )
+            update_index_hash_with_function_signature(index_hash, checker)
 
 
 def update_indices_hashes_with_mappings(app, indices_hashes, mappings):
