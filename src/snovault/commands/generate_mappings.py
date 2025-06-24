@@ -102,7 +102,7 @@ def update_index_hash_with_function_signature(index_hash, function):
     )
     # Recurse on things this function watches. (Doesn't check for infinite recursion.)
     if hasattr(function, '__watch_for_changes_in__'):
-        if function.__watch_for_changes_in__['version']	is not None:
+        if function.__watch_for_changes_in__['version'] is not None:
             index_hash.update(str(function.__watch_for_changes_in__['version']).encode('utf-8'))
         for func in sorted(
                 function.__watch_for_changes_in__['functions'],
