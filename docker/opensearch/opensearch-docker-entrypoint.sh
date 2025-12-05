@@ -1,4 +1,3 @@
-
 #!/bin/bash
 
 # Copied from https://github.com/opensearch-project/opensearch-build/blob/main/docker/release/config/opensearch/opensearch-docker-entrypoint-2.x.sh
