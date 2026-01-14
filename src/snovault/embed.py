@@ -53,6 +53,7 @@ def embed(request, *elements, **kw):
     as_user = kw.get('as_user')
     path = join(*elements)
     path = unquote_bytes_to_wsgi(native_(path))
+    print('Getting path', path)
     log.debug('embed: %s', path)
     if as_user is not None:
         result, embedded, linked = _embed(request, path, as_user)
@@ -64,6 +65,8 @@ def embed(request, *elements, **kw):
         result, embedded, linked = cached
         result = quick_deepcopy(result)
     request._embedded_uuids.update(embedded)
+    print('embedded', len(embedded), embedded)
+    print('linked', len(linked), linked)
     request._linked_uuids.update(linked)
     return result
 
