@@ -65,8 +65,9 @@ def embed(request, *elements, **kw):
         result, embedded, linked = cached
         result = quick_deepcopy(result)
     request._embedded_uuids.update(embedded)
-    print('embedded', len(embedded), embedded)
-    print('linked', len(linked), linked)
+    print('Getting path', path)
+    print('embedded', path, len(embedded), embedded)
+    print('linked', path, len(linked), linked)
     request._linked_uuids.update(linked)
     return result
 
