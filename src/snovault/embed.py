@@ -56,7 +56,7 @@ def embed(request, *elements, **kw):
     path = unquote_bytes_to_wsgi(native_(path))
     global level
     level += 1
-    print('    ' * level, 'Getting path', path, f'[[{level}]]')
+    print('    ' * level, f'[[{level}]]', 'Getting path', path)
     log.debug('embed: %s', path)
     if as_user is not None:
         result, embedded, linked = _embed(request, path, as_user)
@@ -66,8 +66,9 @@ def embed(request, *elements, **kw):
             cached = _embed(request, path)
             embed_cache[path] = cached
             result, embedded, linked = cached
-            print('    ' * level, 'embedded', path, len(embedded), embedded)
-            print('    ' * level, 'linked', path, len(linked), linked)
+            print('    ' * level, 'GOT!', path, 'embedded', len(embedded), 'linked', len(linked))
+        else:
+            print('    ' * level, 'GOT!', path, 'embedded', len(embedded), 'linked', len(linked), '*cached*')
         result, embedded, linked = cached
         result = quick_deepcopy(result)
     request._embedded_uuids.update(embedded)
