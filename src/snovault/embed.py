@@ -43,6 +43,7 @@ def make_subrequest(request, path):
     subreq.__parent__ = request
     return subreq
 
+level = 1
 
 def embed(request, *elements, **kw):
     """ as_user=True for current user
@@ -53,7 +54,9 @@ def embed(request, *elements, **kw):
     as_user = kw.get('as_user')
     path = join(*elements)
     path = unquote_bytes_to_wsgi(native_(path))
-    print('Getting path', path)
+    global level
+    level += 1
+    print('    ' * level, 'Getting path', path, f'[[{level}]]')
     log.debug('embed: %s', path)
     if as_user is not None:
         result, embedded, linked = _embed(request, path, as_user)
@@ -62,15 +65,15 @@ def embed(request, *elements, **kw):
         if cached is None:
             cached = _embed(request, path)
             embed_cache[path] = cached
+            result, embedded, linked = cached
+            print('    ' * level, 'embedded', path, len(embedded), embedded)
+            print('    ' * level, 'linked', path, len(linked), linked)
         result, embedded, linked = cached
         result = quick_deepcopy(result)
     request._embedded_uuids.update(embedded)
-    print('Getting path', path)
-    print('embedded', path, len(embedded), embedded)
-    print('linked', path, len(linked), linked)
     request._linked_uuids.update(linked)
+    level -= 1
     return result
-
 
 def _embed(request, path, as_user='EMBED'):
     subreq = make_subrequest(request, path)
