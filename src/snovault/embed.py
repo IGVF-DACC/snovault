@@ -66,9 +66,9 @@ def embed(request, *elements, **kw):
             cached = _embed(request, path)
             embed_cache[path] = cached
             result, embedded, linked = cached
-            print('    ' * level, 'GOT!', path, 'embedded', len(embedded), 'linked', len(linked))
+            print('    ' * level, f'[[{level}]]', 'GOT!', path, 'embedded', len(embedded), 'linked', len(linked))
         else:
-            print('    ' * level, 'GOT!', path, 'embedded', len(embedded), 'linked', len(linked), '*cached*')
+            print('    ' * level, f'[[{level}]]', 'GOT!', path, 'embedded', len(embedded), 'linked', len(linked), '*cached*')
         result, embedded, linked = cached
         result = quick_deepcopy(result)
     request._embedded_uuids.update(embedded)
