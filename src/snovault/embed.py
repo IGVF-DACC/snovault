@@ -68,6 +68,7 @@ def embed(request, *elements, **kw):
             result, embedded, linked = cached
             print('    ' * level, f'[[{level}]]', 'GOT!', path, 'embedded', len(embedded), 'linked', len(linked))
         else:
+            result, embedded, linked = cached
             print('    ' * level, f'[[{level}]]', 'GOT!', path, 'embedded', len(embedded), 'linked', len(linked), '*cached*')
         result, embedded, linked = cached
         result = quick_deepcopy(result)
