@@ -138,3 +138,77 @@ def test_pick_storage_get_by_uuid_does_not_force_database_when_model_is_none(dum
     # Make sure it looks in PG and doesn't force request.
     assert model is pg_model
     assert dummy_request.datastore == 'elasticsearch'
+
+
+def test_pick_storage_get_by_uuids_uses_elasticsearch(dummy_request):
+    from pyramid.testing import testConfig
+    from ..esstorage import PickStorage
+    dummy_request.datastore = 'elasticsearch'
+    es_model1 = Mock()
+    es_model2 = Mock()
+    es_model1.invalidated.return_value = False
+    es_model2.invalidated.return_value = False
+    read = Mock()
+    write = Mock()
+    read.get_by_uuids.return_value = [es_model1, es_model2]
+    storage = PickStorage(read, write)
+    with testConfig(request=dummy_request):
+        models = storage.get_by_uuids(['uuid1', 'uuid2'])
+    assert models == [es_model1, es_model2]
+    read.get_by_uuids.assert_called_once_with(['uuid1', 'uuid2'])
+    write.get_by_uuids.assert_not_called()
+
+
+def test_pick_storage_get_by_uuids_forces_database_for_invalidated(dummy_request):
+    from pyramid.testing import testConfig
+    from ..esstorage import PickStorage
+    dummy_request.datastore = 'elasticsearch'
+    es_model1 = Mock()
+    es_model2 = Mock()
+    pg_model2 = Mock()
+    es_model1.invalidated.return_value = False
+    es_model2.invalidated.return_value = True
+    read = Mock()
+    write = Mock()
+    read.get_by_uuids.return_value = [es_model1, es_model2]
+    write.get_by_uuids.return_value = [pg_model2]
+    storage = PickStorage(read, write)
+    with testConfig(request=dummy_request):
+        models = storage.get_by_uuids(['uuid1', 'uuid2'])
+    assert models[0] is es_model1
+    assert models[1] is pg_model2
+    assert dummy_request.datastore == 'database'
+    # Only the invalidated uuid is fetched from DB
+    write.get_by_uuids.assert_called_once_with(['uuid2'])
+
+
+def test_pick_storage_get_by_uuids_does_not_force_database_for_none(dummy_request):
+    from pyramid.testing import testConfig
+    from ..esstorage import PickStorage
+    dummy_request.datastore = 'elasticsearch'
+    pg_model = Mock()
+    read = Mock()
+    write = Mock()
+    read.get_by_uuids.return_value = [None]
+    write.get_by_uuids.return_value = [pg_model]
+    storage = PickStorage(read, write)
+    with testConfig(request=dummy_request):
+        models = storage.get_by_uuids(['uuid1'])
+    assert models[0] is pg_model
+    assert dummy_request.datastore == 'elasticsearch'
+
+
+def test_pick_storage_get_by_uuids_uses_database_datastore(dummy_request):
+    from pyramid.testing import testConfig
+    from ..esstorage import PickStorage
+    dummy_request.datastore = 'database'
+    pg_model = Mock()
+    read = Mock()
+    write = Mock()
+    write.get_by_uuids.return_value = [pg_model]
+    storage = PickStorage(read, write)
+    with testConfig(request=dummy_request):
+        models = storage.get_by_uuids(['uuid1'])
+    assert models == [pg_model]
+    read.get_by_uuids.assert_not_called()
+    write.get_by_uuids.assert_called_once_with(['uuid1'])

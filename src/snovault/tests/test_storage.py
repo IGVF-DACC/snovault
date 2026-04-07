@@ -223,6 +223,58 @@ def test_keys(session):
         session.flush()
 
 
+def test_get_by_uuids_returns_models_in_order(session, storage):
+    from snovault.storage import Resource
+    resource1 = Resource('test_item', {'': {'name': 'first'}})
+    resource2 = Resource('test_item', {'': {'name': 'second'}})
+    resource3 = Resource('test_item', {'': {'name': 'third'}})
+    session.add(resource1)
+    session.add(resource2)
+    session.add(resource3)
+    session.flush()
+    rids = [str(resource3.rid), str(resource1.rid), str(resource2.rid)]
+    models = storage.get_by_uuids(rids)
+    assert len(models) == 3
+    assert str(models[0].rid) == str(resource3.rid)
+    assert str(models[1].rid) == str(resource1.rid)
+    assert str(models[2].rid) == str(resource2.rid)
+
+
+def test_get_by_uuids_returns_default_for_missing(session, storage):
+    import uuid
+    missing = str(uuid.uuid4())
+    models = storage.get_by_uuids([missing])
+    assert models == [None]
+
+
+def test_get_by_uuids_empty_input(storage):
+    assert storage.get_by_uuids([]) == []
+
+
+def test_get_by_uuids_mixed_found_and_missing(session, storage):
+    import uuid
+    from snovault.storage import Resource
+    resource = Resource('test_item', {'': {'name': 'exists'}})
+    session.add(resource)
+    session.flush()
+    missing = str(uuid.uuid4())
+    models = storage.get_by_uuids([str(resource.rid), missing])
+    assert str(models[0].rid) == str(resource.rid)
+    assert models[1] is None
+
+
+def test_get_by_uuids_issues_single_query(session, storage, mocker):
+    from snovault.storage import Resource
+    resource1 = Resource('test_item', {'': {}})
+    resource2 = Resource('test_item', {'': {}})
+    session.add(resource1)
+    session.add(resource2)
+    session.flush()
+    spy = mocker.spy(type(session), 'execute')
+    storage.get_by_uuids([str(resource1.rid), str(resource2.rid)])
+    assert spy.call_count <= 1
+
+
 def test_S3BlobStorage_boto3(mocker):
     from snovault.storage import S3BlobStorage
     mocker.patch('boto3.Session.resource')
