@@ -36,15 +36,15 @@ RUN chmod -R +x /scripts
 
 WORKDIR /snovault
 
-COPY --chown=snovault:snovault setup.cfg pyproject.toml ./
+COPY --chown=snovault:snovault setup.cfg pyproject.toml build-constraint.txt ./
 
 COPY --chown=snovault:snovault src/snovault/__init__.py src/snovault/__init__.py
 
 USER snovault
 
-RUN python -m pip install --upgrade pip setuptools
+RUN python -m pip install pip==26.0.1
 
-RUN pip install -e .[dev]
+RUN PIP_BUILD_CONSTRAINT=build-constraint.txt pip --use-feature=build-constraint install -e .[dev]
 
 COPY --chown=snovault:snovault . .
 
