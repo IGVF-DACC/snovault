@@ -195,8 +195,9 @@ def uuid_to_path(request, obj, path):
     conn = request.registry[CONNECTION]
     if isinstance(value, list):
         obj[name] = [
-            request.resource_path(conn[v])
-            for v in value
+            request.resource_path(r)
+            for r in conn.get_by_uuids(value)
+            if r is not None
         ]
     else:
         obj[name] = request.resource_path(conn[value])
@@ -409,11 +410,12 @@ def item_view_edit(context, request):
     schema_rev_links = context.type_info.schema_rev_links
 
     for propname in schema_rev_links:
+        rev_link_uuids = context.get_rev_links(propname)
+        children = conn.get_by_uuids(rev_link_uuids)
         properties[propname] = sorted(
             request.resource_path(child)
-            for child in (
-                conn.get_by_uuid(uuid) for uuid in context.get_rev_links(propname)
-            ) if request.has_permission('visible_for_edit', child)
+            for child in children
+            if child is not None and request.has_permission('visible_for_edit', child)
         )
 
     return properties

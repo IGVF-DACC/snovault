@@ -94,6 +94,13 @@ class RDBStorage(object):
             return default
         return model
 
+    def get_by_uuids(self, rids, default=None):
+        session = self.DBSession()
+        uuids = [uuid.UUID(rid) if isinstance(rid, str) else rid for rid in rids]
+        models = session.query(Resource).filter(Resource.rid.in_(uuids)).all()
+        by_uuid = {str(m.rid): m for m in models}
+        return [by_uuid.get(str(rid), default) for rid in uuids]
+
     def get_by_unique_key(self, unique_key, name, default=None, index=None):
         session = self.DBSession()
         try:

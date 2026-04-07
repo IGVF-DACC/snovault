@@ -9,8 +9,9 @@ def etag_tid(view_callable):
     def wrapped(context, request):
         result = view_callable(context, request)
         conn = request.registry[CONNECTION]
-        embedded = (conn.get_by_uuid(uuid) for uuid in sorted(request._embedded_uuids))
-        uuid_tid = ((item.uuid, item.tid) for item in embedded)
+        embedded_uuids = sorted(request._embedded_uuids)
+        items = conn.get_by_uuids(embedded_uuids)
+        uuid_tid = ((item.uuid, item.tid) for item in items if item is not None)
         request.response.etag = '&'.join('%s=%s' % (u, t) for u, t in uuid_tid)
         cache_control = request.response.cache_control
         cache_control.private = True

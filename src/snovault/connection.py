@@ -65,6 +65,46 @@ class Connection(object):
         self.item_cache[uuid] = item
         return item
 
+    def get_by_uuids(self, uuids, default=None):
+        normalized = []
+        for u in uuids:
+            if isinstance(u, basestring):
+                try:
+                    normalized.append(str(UUID(u)))
+                except ValueError:
+                    normalized.append(None)
+            elif isinstance(u, UUID):
+                normalized.append(str(u))
+            else:
+                raise TypeError(u)
+
+        results = {}
+        missing = []
+        for u in normalized:
+            if u is None:
+                continue
+            cached = self.item_cache.get(u)
+            if cached is not None:
+                results[u] = cached
+            else:
+                missing.append(u)
+
+        if missing:
+            models = self.storage.get_by_uuids(missing)
+            for rid, model in zip(missing, models):
+                if model is None:
+                    continue
+                try:
+                    Item = self.types.by_item_type[model.item_type].factory
+                except KeyError:
+                    raise UnknownItemTypeError(model.item_type)
+                item = Item(self.registry, model)
+                model.used_for(item)
+                self.item_cache[rid] = item
+                results[rid] = item
+
+        return [results.get(u, default) for u in normalized]
+
     def get_by_unique_key(self, unique_key, name, default=None, index=None):
         pkey = (unique_key, name)
 

@@ -98,6 +98,22 @@ class PickStorage(object):
                 return self.write.get_by_uuid(uuid)
         return model
 
+    def get_by_uuids(self, uuids):
+        storage = self.storage()
+        models = list(storage.get_by_uuids(uuids))
+        if storage is self.read:
+            missing_indices = []
+            for i, model in enumerate(models):
+                if model is None or model.invalidated():
+                    if model is not None:
+                        force_database_for_request()
+                    missing_indices.append(i)
+            if missing_indices:
+                db_models = self.write.get_by_uuids([uuids[i] for i in missing_indices])
+                for i, db_model in zip(missing_indices, db_models):
+                    models[i] = db_model
+        return models
+
     def get_by_unique_key(self, unique_key, name, index=None):
         storage = self.storage()
         model = storage.get_by_unique_key(unique_key, name, index=index)
@@ -159,6 +175,16 @@ class ElasticSearchStorage(object):
             return None
         hit = result['hits']['hits'][0]
         return CachedModel(hit)
+
+    def get_by_uuids(self, uuids):
+        query = {
+            'query': {'terms': {'uuid': [str(u) for u in uuids]}},
+            'version': True,
+            'size': len(uuids),
+        }
+        result = self.es.search(index=self.index, body=query, _source=True)
+        hits = {hit['_source']['uuid']: CachedModel(hit) for hit in result['hits']['hits']}
+        return [hits.get(str(u)) for u in uuids]
 
     def get_by_unique_key(self, unique_key, name, index=None):
         term = 'unique_keys.' + unique_key
