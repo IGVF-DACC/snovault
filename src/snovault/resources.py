@@ -22,6 +22,7 @@ from .interfaces import (
 )
 from .validation import ValidationFailure
 from .util import (
+    batch_embed_enabled,
     ensurelist,
     quick_deepcopy,
     simple_path_ids,
@@ -211,6 +212,7 @@ class Item(Resource):
     embedded_with_frame = ()
     audit_inherit = []
     schema = None
+    _upgraded_cache = None
     AbstractCollection = AbstractCollection
     Collection = Collection
 
@@ -305,6 +307,18 @@ class Item(Resource):
                     current_version, target_version, exc_info=True)
         return properties
 
+    def upgraded_properties(self):
+        # Read-only: callers must not mutate the result. Reused per item while its stored properties are unchanged.
+        if not batch_embed_enabled():
+            return self.upgrade_properties()
+        stored = self.properties
+        cached = self._upgraded_cache
+        if cached is not None and cached[0] is stored:
+            return cached[1]
+        upgraded = self.upgrade_properties()
+        self._upgraded_cache = (stored, upgraded)
+        return upgraded
+
     def __json__(self, request):
         # Record embedding objects
         request._embedded_uuids.add(str(self.uuid))
@@ -326,6 +340,7 @@ class Item(Resource):
         self._update(properties, sheets)
 
     def _update(self, properties, sheets=None):
+        self._upgraded_cache = None
         unique_keys = None
         links = None
         if properties is not None:

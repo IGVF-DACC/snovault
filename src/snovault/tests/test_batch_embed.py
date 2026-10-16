@@ -274,3 +274,38 @@ def test_unique_keys_failure_does_not_break_loading_or_updates(
     assert str(item.uuid) == uuid
     assert ('testing_link_target:name', 'one') not in conn.unique_key_cache
     conn._forget_stale_entries(item.model, {'testing_link_target:name': ['one']}, {})
+
+
+def test_upgraded_properties_is_a_cached_read_only_view_only_when_batching(
+    dummy_request, threadlocals, registry, many_targets_and_sources
+):
+    from snovault.interfaces import CONNECTION
+    conn = registry[CONNECTION]
+    uuid = many_targets_and_sources['testing-link-sources'][0]
+    for batch_embed in (False, True):
+        reset_caches(threadlocals)
+        dummy_request.batch_embed = batch_embed
+        item = conn.get_by_uuid(uuid)
+        first = item.upgraded_properties()
+        second = item.upgraded_properties()
+        assert first == item.upgrade_properties()
+        assert (first is second) is batch_embed
+        assert item.upgrade_properties() is not item.upgrade_properties()
+
+
+def test_upgraded_properties_refresh_after_update(
+    dummy_request, threadlocals, registry, many_targets_and_sources
+):
+    from snovault.interfaces import CONNECTION
+    conn = registry[CONNECTION]
+    reset_caches(threadlocals)
+    dummy_request.batch_embed = True
+    item = conn.get_by_uuid(many_targets_and_sources['testing-link-sources'][0])
+    before = item.upgraded_properties()
+    assert before['status'] == 'current'
+    properties = item.upgrade_properties()
+    properties['status'] = 'deleted'
+    item.update(properties)
+    after = item.upgraded_properties()
+    assert after['status'] == 'deleted'
+    assert before['status'] == 'current'
