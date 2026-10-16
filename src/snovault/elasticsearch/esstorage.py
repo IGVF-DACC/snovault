@@ -1,4 +1,4 @@
-from snovault.util import batch_embed_enabled, get_root_request
+from snovault.util import get_root_request
 from opensearchpy.helpers import scan
 from pyramid.threadlocal import get_current_request
 from zope.interface import alsoProvides
@@ -113,9 +113,15 @@ class PickStorage(object):
         storage = self.storage()
         if isinstance(model, CachedModel) and storage is self.write:
             model = storage.get_by_uuid(str(model.uuid))
-        if storage is self.write and batch_embed_enabled() and hasattr(storage, 'get_rev_links_by_query'):
-            return storage.get_rev_links_by_query(model, rel, *item_types)
         return storage.get_rev_links(model, rel, *item_types)
+
+    def get_incoming_links(self, model):
+        storage = self.storage()
+        if storage is not self.write:
+            return None
+        if isinstance(model, CachedModel):
+            model = storage.get_by_uuid(str(model.uuid))
+        return storage.get_incoming_links(model)
 
     def __iter__(self, *item_types):
         return self.storage().__iter__(*item_types)

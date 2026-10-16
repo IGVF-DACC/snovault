@@ -208,26 +208,29 @@ def test_item_loaded_by_uuid_is_not_requeried_by_unique_key(
         assert spy.call_count == expected_queries
 
 
-def test_rev_links_memoized_per_request_and_same_in_both_modes(
+def test_rev_links_cost_one_query_per_item_and_match_in_both_modes(
     dummy_request, threadlocals, registry, many_targets_and_sources, mocker
 ):
     from snovault.interfaces import CONNECTION
     from snovault.storage import RDBStorage
     conn = registry[CONNECTION]
-    query_spy = mocker.spy(RDBStorage, 'get_rev_links_by_query')
+    incoming_spy = mocker.spy(RDBStorage, 'get_incoming_links')
     list_spy = mocker.spy(RDBStorage, 'get_rev_links')
     results = {}
     for batch_embed in (False, True):
         reset_caches(threadlocals)
         dummy_request.batch_embed = batch_embed
-        query_spy.reset_mock()
+        incoming_spy.reset_mock()
         list_spy.reset_mock()
         model = conn.get_by_uuid(many_targets_and_sources['testing-link-targets']['one']).model
         first = conn.get_rev_links(model, 'target', 'TestingLinkSource')
         second = conn.get_rev_links(model, 'target', 'TestingLinkSource')
-        assert sorted(map(str, first)) == sorted(map(str, second))
-        assert query_spy.call_count == (1 if batch_embed else 0)
-        assert list_spy.call_count == (0 if batch_embed else 2)
+        other_rel = conn.get_rev_links(model, 'no_such_rel', 'TestingLinkSource')
+        no_types = conn.get_rev_links(model, 'target')
+        assert sorted(map(str, first)) == sorted(map(str, second)) == sorted(map(str, no_types))
+        assert other_rel == []
+        assert incoming_spy.call_count == (1 if batch_embed else 0)
+        assert list_spy.call_count == (0 if batch_embed else 4)
         results[batch_embed] = sorted(map(str, first))
     assert results[True] == results[False]
     assert len(results[True]) == N_SOURCES - 1

@@ -134,14 +134,12 @@ class RDBStorage(object):
         by_value = {key.value: key.resource for key in keys}
         return [by_value.get(name, default) for name in names]
 
-    def get_rev_links_by_query(self, model, rel, *item_types):
+    def get_incoming_links(self, model):
         session = self.DBSession()
-        query = session.query(Link.source_rid).filter(Link.target_rid == model.rid, Link.rel == rel)
-        if item_types:
-            query = query.join(Resource, Resource.rid == Link.source_rid).filter(
-                Resource.item_type.in_(item_types)
-            )
-        return [source_rid for (source_rid,) in query]
+        query = session.query(Link.rel, Link.source_rid, Resource.item_type).select_from(Link).join(
+            Resource, Resource.rid == Link.source_rid
+        ).filter(Link.target_rid == model.rid)
+        return [tuple(row) for row in query]
 
     def get_rev_links(self, model, rel, *item_types):
         if item_types:

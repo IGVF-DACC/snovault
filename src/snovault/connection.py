@@ -221,10 +221,21 @@ class Connection(object):
         item_types = [self.types[t].item_type for t in types]
         if not batch_embed_enabled():
             return self.storage.get_rev_links(model, rel, *item_types)
-        key = (str(model.uuid), rel, tuple(item_types))
+        key = ('rev', str(model.uuid), rel, tuple(item_types))
         cached = self.rev_link_cache.get(key)
         if cached is None:
-            cached = self.rev_link_cache[key] = self.storage.get_rev_links(model, rel, *item_types)
+            rows_key = ('links', str(model.uuid))
+            rows = self.rev_link_cache.get(rows_key)
+            if rows is None:
+                rows = self.storage.get_incoming_links(model)
+                if rows is None:
+                    return self.storage.get_rev_links(model, rel, *item_types)
+                self.rev_link_cache[rows_key] = rows
+            wanted = set(item_types)
+            cached = self.rev_link_cache[key] = [
+                source for link_rel, source, item_type in rows
+                if link_rel == rel and (not wanted or item_type in wanted)
+            ]
         return list(cached)
 
     def __iter__(self, *types):

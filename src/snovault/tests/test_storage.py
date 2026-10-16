@@ -254,7 +254,7 @@ def test_get_by_unique_keys(session, storage):
     assert storage.get_by_unique_keys('foo', []) == []
 
 
-def test_get_rev_links_by_query_matches_get_rev_links(session, storage):
+def test_get_incoming_links_matches_get_rev_links(session, storage):
     from snovault.storage import Link, Resource
     target = Resource('target_type', {'': {}})
     sources = [Resource('type_a', {'': {}}), Resource('type_a', {'': {}}), Resource('type_b', {'': {}})]
@@ -267,13 +267,18 @@ def test_get_rev_links_by_query_matches_get_rev_links(session, storage):
     session.flush()
     session.expire_all()
     model = storage.get_by_uuid(str(target.rid))
+    rows = storage.get_incoming_links(model)
+    assert sorted((rel, str(source), item_type) for rel, source, item_type in rows) == sorted(
+        [('parent', str(source.rid), source.item_type) for source in sources]
+        + [('other_rel', str(other.rid), 'type_a')]
+    )
     for item_types in ((), ('type_a',), ('type_b',), ('type_a', 'type_b'), ('missing',)):
         expected = storage.get_rev_links(model, 'parent', *item_types)
-        actual = storage.get_rev_links_by_query(model, 'parent', *item_types)
+        actual = [
+            source for rel, source, item_type in rows
+            if rel == 'parent' and (not item_types or item_type in item_types)
+        ]
         assert sorted(map(str, actual)) == sorted(map(str, expected))
-    assert len(storage.get_rev_links_by_query(model, 'parent')) == 3
-    assert len(storage.get_rev_links_by_query(model, 'parent', 'type_a')) == 2
-    assert storage.get_rev_links_by_query(model, 'parent', 'missing') == []
 
 
 def test_S3BlobStorage_boto3(mocker):
