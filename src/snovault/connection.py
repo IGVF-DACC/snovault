@@ -27,6 +27,10 @@ class Connection(object):
         self.registry = registry
         self.item_cache = ManagerLRUCache('snovault.connection.item_cache', 1000)
         self.unique_key_cache = ManagerLRUCache('snovault.connection.key_cache', 1000)
+        item_capacity = int(registry.settings.get('snovault.connection.item_cache.capacity', 1000))
+        key_capacity = int(registry.settings.get('snovault.connection.key_cache.capacity', 1000))
+        # Half the smaller cache, leaving room for what each embed adds while warmed entries wait.
+        self.warm_chunk_size = max(min(item_capacity, key_capacity) // 2, 100)
         embed_cache_capacity = int(registry.settings.get('embed_cache.capacity', 5000))
         self.embed_cache = ManagerLRUCache('snovault.connection.embed_cache', embed_cache_capacity)
 
@@ -67,22 +71,8 @@ class Connection(object):
         return item
 
     def get_by_uuids(self, uuids, default=None):
-        ''' Batched equivalent of get_by_uuid.
-
-        Resolves cache hits locally and fetches the remaining uuids from
-        storage in a single call instead of one storage round trip per
-        uuid, which is what made large (5000-100000 member) linkTo/rev
-        lists expensive to resolve. Goes straight to write (Postgres)
-        storage: this is only ever reached when calculate_properties is
-        actually computing a schema_links/rev property from scratch,
-        which -- same as the deep-embed fan-out in Path.expand_path_with_frame
-        -- only happens when request.datastore is already 'database'
-        (indexing, or after a cache invalidation forces it for the rest
-        of the request). A cache-valid item's @@object view is served
-        directly from its pre-rendered ES document (cached_views.py) and
-        never reaches this code at all, so there's no case where this
-        should go through the ES-backed read path.
-        '''
+        # Write storage only: calculated properties are computed from scratch only when
+        # datastore is 'database'; cache-valid items are served from their ES document.
         results = [default] * len(uuids)
         fetch_uuids = []
         fetch_indices = []
@@ -161,16 +151,7 @@ class Connection(object):
         self.item_cache[uuid] = item
 
     def warm_cache_for_paths(self, paths):
-        ''' Pre-resolves a batch of resource paths (e.g. the members of a
-        large linkTo/rev list) against write (Postgres) storage in a
-        couple of grouped queries, so that the per-path request.embed()
-        calls that follow -- see Path.expand_path_with_frame in util.py --
-        hit a warm cache instead of each making their own database round
-        trip. Always goes through write storage: the deep-embed fan-out
-        this exists for only ever runs during indexing or after a cache
-        invalidation, both of which already force datastore='database',
-        so there is nothing for the ES-backed read path to contribute here.
-        '''
+        # Batch-resolve paths from write storage so per-path request.embed() hits warm caches.
         collections = self.registry[COLLECTIONS]
         by_collection = {}
         for path in paths:

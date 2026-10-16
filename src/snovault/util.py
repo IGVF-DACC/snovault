@@ -37,6 +37,33 @@ def simple_path_ids(obj, path):
             yield result
 
 
+def embed_list_members(request, members, frame):
+    """Embed non-dict members in place, warming the connection cache one chunk at a time."""
+    conn = request.registry[CONNECTION]
+    size = conn.warm_chunk_size
+    for start in range(0, len(members), size):
+        indices = range(start, min(start + size, len(members)))
+        unresolved = [members[i] for i in indices if not isinstance(members[i], dict)]
+        if len(unresolved) > 1:
+            conn.warm_cache_for_paths(unresolved)
+        for i in indices:
+            if not isinstance(members[i], dict):
+                members[i] = request.embed(members[i], frame)
+            yield members[i]
+
+
+def embed_paths(request, paths, frame):
+    """Yield request.embed(path, frame) for each path, warming the connection cache one chunk at a time."""
+    conn = request.registry[CONNECTION]
+    size = conn.warm_chunk_size
+    for start in range(0, len(paths), size):
+        chunk = paths[start:start + size]
+        if len(chunk) > 1:
+            conn.warm_cache_for_paths(chunk)
+        for path in chunk:
+            yield request.embed(path, frame)
+
+
 def expand_path(request, obj, path):
     if isinstance(path, basestring):
         path = path.split('.')
@@ -48,17 +75,7 @@ def expand_path(request, obj, path):
     if value is None:
         return
     if isinstance(value, list):
-        unresolved = [member for member in value if not isinstance(member, dict)]
-        if len(unresolved) > 1:
-            # Same rationale as Path.expand_path_with_frame: warm the
-            # connection cache in a couple of grouped queries instead of
-            # letting each request.embed() below hit the database on its
-            # own. Reachable directly via ?expand=<path>, independent of
-            # any embedded_with_frame config.
-            request.registry[CONNECTION].warm_cache_for_paths(unresolved)
-        for index, member in enumerate(value):
-            if not isinstance(member, dict):
-                member = value[index] = request.embed(member, '@@object')
+        for member in embed_list_members(request, value, '@@object'):
             expand_path(request, member, remaining)
     else:
         if not isinstance(value, dict):
@@ -184,17 +201,7 @@ class Path:
         if value is None:
             return
         if isinstance(value, list):
-            unresolved = [member for member in value if not isinstance(member, dict)]
-            if len(unresolved) > 1:
-                # Resolving each of these individually via request.embed()
-                # below means one database round trip per member. For a
-                # list of this size, pre-resolve them all in a couple of
-                # grouped queries so those per-member embeds become cache
-                # hits instead.
-                request.registry[CONNECTION].warm_cache_for_paths(unresolved)
-            for index, member in enumerate(value):
-                if not isinstance(member, dict):
-                    member = value[index] = request.embed(member, frame)
+            for member in embed_list_members(request, value, frame):
                 self.expand_path_with_frame(request, member, remaining, frame)
         else:
             if not isinstance(value, dict):

@@ -223,6 +223,37 @@ def test_keys(session):
         session.flush()
 
 
+def test_get_by_uuids(session, storage):
+    import uuid
+    from snovault.storage import Resource
+    resources = [Resource('test_item', {'': {'foo': str(i)}}) for i in range(3)]
+    session.add_all(resources)
+    session.flush()
+    rids = [resource.rid for resource in resources]
+    missing = uuid.uuid4()
+    models = storage.get_by_uuids([str(rids[2]), str(missing), rids[0]])
+    assert [model.rid if model else None for model in models] == [rids[2], None, rids[0]]
+    assert storage.get_by_uuids([]) == []
+
+
+def test_get_by_unique_keys(session, storage):
+    from snovault.storage import Key, Resource
+    resources = {}
+    for value in ('a', 'b'):
+        resource = Resource('test_item', {'': {'foo': value}})
+        session.add(resource)
+        session.flush()
+        session.add(Key(rid=resource.rid, name='foo', value=value))
+        resources[value] = resource
+    session.flush()
+    models = storage.get_by_unique_keys('foo', ['b', 'missing', 'a'])
+    assert [model.rid if model else None for model in models] == [
+        resources['b'].rid, None, resources['a'].rid,
+    ]
+    assert storage.get_by_unique_keys('other', ['a']) == [None]
+    assert storage.get_by_unique_keys('foo', []) == []
+
+
 def test_S3BlobStorage_boto3(mocker):
     from snovault.storage import S3BlobStorage
     mocker.patch('boto3.Session.resource')
