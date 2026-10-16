@@ -14,6 +14,12 @@ def includeme(config):
     config.add_directive('add_calculated_property', add_calculated_property)
 
 
+def _get_resources(request, conn, uuids):
+    if request.batch_embed:
+        return conn.get_by_uuids(uuids)
+    return [conn.get_by_uuid(uuid) for uuid in uuids]
+
+
 class ItemNamespace(object):
     def __init__(self, context, request, defined=None, ns=None):
         self.context = context
@@ -49,7 +55,7 @@ class ItemNamespace(object):
                 if isinstance(value, list):
                     value = [
                         request.resource_path(r)
-                        for r in conn.get_by_uuids(value)
+                        for r in _get_resources(request, conn, value)
                     ]
                 else:
                     value = request.resource_path(conn.get_by_uuid(value))
@@ -59,7 +65,7 @@ class ItemNamespace(object):
             value = context.get_rev_links(name)
             value = [
                 request.resource_path(r)
-                for r in conn.get_by_uuids(value)
+                for r in _get_resources(request, conn, value)
             ]
             setattr(self, name, value)
             return value

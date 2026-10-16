@@ -194,10 +194,14 @@ def uuid_to_path(request, obj, path):
         return
     conn = request.registry[CONNECTION]
     if isinstance(value, list):
-        obj[name] = [
-            request.resource_path(conn[v])
-            for v in value
-        ]
+        if request.batch_embed:
+            items = conn.get_by_uuids(value)
+            for v, item in zip(value, items):
+                if item is None:
+                    raise KeyError(v)
+        else:
+            items = [conn[v] for v in value]
+        obj[name] = [request.resource_path(item) for item in items]
     else:
         obj[name] = request.resource_path(conn[value])
 

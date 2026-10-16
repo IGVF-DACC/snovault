@@ -12,6 +12,7 @@ from pyramid.traversal import (
     traverse,
 )
 import snovault
+from snovault.util import iter_warmed
 from ..schema_formats import is_accession
 from snovault.elasticsearch.searches.configs import search_config
 
@@ -68,16 +69,12 @@ ALLOW_SUBMITTER_ADD = [
 
 
 def paths_filtered_by_status(request, paths, exclude=('deleted', 'replaced'), include=None):
+    def status(path):
+        return traverse(request.root, path)['context'].__json__(request).get('status')
+
     if include is not None:
-        return [
-            path for path in paths
-            if traverse(request.root, path)['context'].__json__(request).get('status') in include
-        ]
-    else:
-        return [
-            path for path in paths
-            if traverse(request.root, path)['context'].__json__(request).get('status') not in exclude
-        ]
+        return [path for path in iter_warmed(request, paths) if status(path) in include]
+    return [path for path in iter_warmed(request, paths) if status(path) not in exclude]
 
 
 class AbstractCollection(snovault.AbstractCollection):

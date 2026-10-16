@@ -5,6 +5,7 @@ from snovault.compat import (
     unquote_bytes_to_wsgi,
 )
 from pyramid.httpexceptions import HTTPNotFound
+from pyramid.settings import asbool
 from .interfaces import CONNECTION
 import logging
 log = logging.getLogger(__name__)
@@ -17,6 +18,18 @@ def includeme(config):
     config.add_request_method(lambda request: set(), '_embedded_uuids', reify=True)
     config.add_request_method(lambda request: set(), '_linked_uuids', reify=True)
     config.add_request_method(lambda request: None, '__parent__', reify=True)
+    config.add_request_method(batch_embed, 'batch_embed', reify=True)
+
+
+def batch_embed(request):
+    if request.__parent__ is not None:
+        return request.__parent__.batch_embed
+    value = None
+    if request.method in ('HEAD', 'GET'):
+        value = request.params.get('batch_embed') or request.headers.get('X-Batch-Embed')
+    if value is None:
+        value = request.registry.settings.get('snovault.batch_embed', True)
+    return asbool(value)
 
 
 def make_subrequest(request, path):

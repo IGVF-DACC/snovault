@@ -170,11 +170,14 @@ class Connection(object):
             key_names = []
             for name in names:
                 try:
-                    UUID(name)
+                    parsed = UUID(name)
                 except ValueError:
-                    key_names.append(name)
+                    cached = self.unique_key_cache.get((collection.unique_key, name))
+                    if cached is None or str(cached) not in self.item_cache:
+                        key_names.append(name)
                 else:
-                    uuid_names.append(name)
+                    if str(parsed) not in self.item_cache:
+                        uuid_names.append(name)
 
             if uuid_names:
                 for model in self.storage.write.get_by_uuids(uuid_names):

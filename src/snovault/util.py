@@ -44,7 +44,7 @@ def embed_list_members(request, members, frame):
     for start in range(0, len(members), size):
         indices = range(start, min(start + size, len(members)))
         unresolved = [members[i] for i in indices if not isinstance(members[i], dict)]
-        if len(unresolved) > 1:
+        if request.batch_embed and len(unresolved) > 1:
             conn.warm_cache_for_paths(unresolved)
         for i in indices:
             if not isinstance(members[i], dict):
@@ -52,16 +52,21 @@ def embed_list_members(request, members, frame):
             yield members[i]
 
 
-def embed_paths(request, paths, frame):
-    """Yield request.embed(path, frame) for each path, warming the connection cache one chunk at a time."""
+def iter_warmed(request, paths):
+    """Yield each path, warming the connection cache one chunk ahead when batch_embed is on."""
+    paths = list(paths)
     conn = request.registry[CONNECTION]
     size = conn.warm_chunk_size
     for start in range(0, len(paths), size):
         chunk = paths[start:start + size]
-        if len(chunk) > 1:
+        if request.batch_embed and len(chunk) > 1:
             conn.warm_cache_for_paths(chunk)
-        for path in chunk:
-            yield request.embed(path, frame)
+        yield from chunk
+
+
+def embed_paths(request, paths, frame):
+    for path in iter_warmed(request, paths):
+        yield request.embed(path, frame)
 
 
 def expand_path(request, obj, path):
