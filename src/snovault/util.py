@@ -48,6 +48,14 @@ def expand_path(request, obj, path):
     if value is None:
         return
     if isinstance(value, list):
+        unresolved = [member for member in value if not isinstance(member, dict)]
+        if len(unresolved) > 1:
+            # Same rationale as Path.expand_path_with_frame: warm the
+            # connection cache in a couple of grouped queries instead of
+            # letting each request.embed() below hit the database on its
+            # own. Reachable directly via ?expand=<path>, independent of
+            # any embedded_with_frame config.
+            request.registry[CONNECTION].warm_cache_for_paths(unresolved)
         for index, member in enumerate(value):
             if not isinstance(member, dict):
                 member = value[index] = request.embed(member, '@@object')

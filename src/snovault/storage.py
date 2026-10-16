@@ -64,6 +64,11 @@ Base = declarative_base()
 
 bakery = baked.bakery()
 baked_query_resource = bakery(lambda session: session.query(Resource))
+baked_query_resources = bakery(
+    lambda session: session.query(Resource).filter(
+        Resource.rid.in_(bindparam('rids', expanding=True))
+    )
+)
 baked_query_unique_key = bakery(
     lambda session: session.query(Key).options(
         orm.joinedload(Key.resource, innerjoin=True)
@@ -100,6 +105,16 @@ class RDBStorage(object):
         if model is None:
             return default
         return model
+
+    def get_by_uuids(self, rids, default=None):
+        rids = list(rids)
+        if not rids:
+            return []
+        session = self.DBSession()
+        rid_uuids = [uuid.UUID(rid) if isinstance(rid, str) else rid for rid in rids]
+        models = baked_query_resources(session).params(rids=rid_uuids).all()
+        by_rid = {model.rid: model for model in models}
+        return [by_rid.get(rid_uuid, default) for rid_uuid in rid_uuids]
 
     def get_by_unique_key(self, unique_key, name, default=None, index=None):
         session = self.DBSession()

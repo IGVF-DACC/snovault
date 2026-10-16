@@ -72,7 +72,16 @@ class Connection(object):
         Resolves cache hits locally and fetches the remaining uuids from
         storage in a single call instead of one storage round trip per
         uuid, which is what made large (5000-100000 member) linkTo/rev
-        lists expensive to resolve.
+        lists expensive to resolve. Goes straight to write (Postgres)
+        storage: this is only ever reached when calculate_properties is
+        actually computing a schema_links/rev property from scratch,
+        which -- same as the deep-embed fan-out in Path.expand_path_with_frame
+        -- only happens when request.datastore is already 'database'
+        (indexing, or after a cache invalidation forces it for the rest
+        of the request). A cache-valid item's @@object view is served
+        directly from its pre-rendered ES document (cached_views.py) and
+        never reaches this code at all, so there's no case where this
+        should go through the ES-backed read path.
         '''
         results = [default] * len(uuids)
         fetch_uuids = []
@@ -95,7 +104,7 @@ class Connection(object):
                 fetch_indices.append(i)
 
         if fetch_uuids:
-            models = self.storage.get_by_uuids(fetch_uuids)
+            models = self.storage.write.get_by_uuids(fetch_uuids)
             for i, fetch_uuid, model in zip(fetch_indices, fetch_uuids, models):
                 if model is None:
                     continue
