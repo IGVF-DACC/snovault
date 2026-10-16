@@ -35,6 +35,11 @@ class ManagerLRUCache(object):
         except KeyError:
             return default
 
+    def clear(self):
+        cache = self.cache
+        if cache is not None:
+            cache.clear()
+
     def __contains__(self, key):
         cache = self.cache
         if cache is None:

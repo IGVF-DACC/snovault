@@ -1,11 +1,16 @@
 from past.builtins import basestring
-from pyramid.threadlocal import manager as threadlocal_manager
+from pyramid.threadlocal import get_current_request, manager as threadlocal_manager
 from snovault.interfaces import CONNECTION, ROOT
 from urllib.parse import urlencode
 
 
 def includeme(config):
     config.add_request_method(select_distinct_values)
+
+
+def batch_embed_enabled(request=None):
+    request = request or get_current_request()
+    return bool(request is not None and getattr(request, 'batch_embed', False))
 
 
 def get_root_request():

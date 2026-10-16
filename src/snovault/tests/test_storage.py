@@ -254,6 +254,28 @@ def test_get_by_unique_keys(session, storage):
     assert storage.get_by_unique_keys('foo', []) == []
 
 
+def test_get_rev_links_by_query_matches_get_rev_links(session, storage):
+    from snovault.storage import Link, Resource
+    target = Resource('target_type', {'': {}})
+    sources = [Resource('type_a', {'': {}}), Resource('type_a', {'': {}}), Resource('type_b', {'': {}})]
+    other = Resource('type_a', {'': {}})
+    session.add_all([target, other] + sources)
+    session.flush()
+    for source in sources:
+        session.add(Link(source_rid=source.rid, rel='parent', target_rid=target.rid))
+    session.add(Link(source_rid=other.rid, rel='other_rel', target_rid=target.rid))
+    session.flush()
+    session.expire_all()
+    model = storage.get_by_uuid(str(target.rid))
+    for item_types in ((), ('type_a',), ('type_b',), ('type_a', 'type_b'), ('missing',)):
+        expected = storage.get_rev_links(model, 'parent', *item_types)
+        actual = storage.get_rev_links_by_query(model, 'parent', *item_types)
+        assert sorted(map(str, actual)) == sorted(map(str, expected))
+    assert len(storage.get_rev_links_by_query(model, 'parent')) == 3
+    assert len(storage.get_rev_links_by_query(model, 'parent', 'type_a')) == 2
+    assert storage.get_rev_links_by_query(model, 'parent', 'missing') == []
+
+
 def test_S3BlobStorage_boto3(mocker):
     from snovault.storage import S3BlobStorage
     mocker.patch('boto3.Session.resource')

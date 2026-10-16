@@ -2,6 +2,7 @@ from past.builtins import basestring
 from pyramid.decorator import reify
 from uuid import UUID
 from .cache import ManagerLRUCache
+from .util import batch_embed_enabled
 from .interfaces import (
     COLLECTIONS,
     CONNECTION,
@@ -19,6 +20,10 @@ class UnknownItemTypeError(Exception):
     pass
 
 
+def _as_sets(mapping):
+    return {key: set(values) for key, values in mapping.items()}
+
+
 class Connection(object):
     ''' Intermediates between the storage and the rest of the system
     '''
@@ -27,6 +32,7 @@ class Connection(object):
         self.registry = registry
         self.item_cache = ManagerLRUCache('snovault.connection.item_cache', 1000)
         self.unique_key_cache = ManagerLRUCache('snovault.connection.key_cache', 1000)
+        self.rev_link_cache = ManagerLRUCache('snovault.connection.rev_link_cache', 200)
         item_capacity = int(registry.settings.get('snovault.connection.item_cache.capacity', 1000))
         key_capacity = int(registry.settings.get('snovault.connection.key_cache.capacity', 1000))
         # Half the smaller cache, leaving room for what each embed adds while warmed entries wait.
@@ -68,6 +74,7 @@ class Connection(object):
         item = Item(self.registry, model)
         model.used_for(item)
         self.item_cache[uuid] = item
+        self._cache_unique_keys(item)
         return item
 
     def get_by_uuids(self, uuids, default=None):
@@ -105,6 +112,7 @@ class Connection(object):
                 item = Item(self.registry, model)
                 model.used_for(item)
                 self.item_cache[fetch_uuid] = item
+                self._cache_unique_keys(item)
                 results[i] = item
 
         return results
@@ -134,7 +142,21 @@ class Connection(object):
         item = Item(self.registry, model)
         model.used_for(item)
         self.item_cache[uuid] = item
+        self._cache_unique_keys(item)
         return item
+
+    def _cache_unique_keys(self, item):
+        # Paths are built from loaded items, so remember key -> uuid and skip re-querying by key.
+        if not batch_embed_enabled():
+            return
+        try:
+            unique_keys = item.unique_keys(item.properties)
+        except Exception:
+            # Stored properties can predate the schema a type's unique_keys expects; use database lookups.
+            return
+        for key, values in unique_keys.items():
+            for value in values:
+                self.unique_key_cache[(key, value)] = item.uuid
 
     def _cache_model(self, model):
         if model is None:
@@ -149,6 +171,7 @@ class Connection(object):
         item = Item(self.registry, model)
         model.used_for(item)
         self.item_cache[uuid] = item
+        self._cache_unique_keys(item)
 
     def warm_cache_for_paths(self, paths):
         # Batch-resolve paths from write storage so per-path request.embed() hits warm caches.
@@ -196,7 +219,13 @@ class Connection(object):
 
     def get_rev_links(self, model, rel, *types):
         item_types = [self.types[t].item_type for t in types]
-        return self.storage.get_rev_links(model, rel, *item_types)
+        if not batch_embed_enabled():
+            return self.storage.get_rev_links(model, rel, *item_types)
+        key = (str(model.uuid), rel, tuple(item_types))
+        cached = self.rev_link_cache.get(key)
+        if cached is None:
+            cached = self.rev_link_cache[key] = self.storage.get_rev_links(model, rel, *item_types)
+        return list(cached)
 
     def __iter__(self, *types):
         if not types:
@@ -223,5 +252,21 @@ class Connection(object):
         ti = self.types[type_]
         return self.storage.create(ti.item_type, uuid)
 
+    def _forget_stale_entries(self, model, unique_keys, links):
+        if unique_keys is None and links is None:
+            return
+        item = self.item_cache.get(str(model.uuid))
+        try:
+            properties = item.properties
+            keys_changed = unique_keys is not None and _as_sets(unique_keys) != _as_sets(item.unique_keys(properties))
+            links_changed = links is not None and _as_sets(links) != _as_sets(item.links(properties))
+        except Exception:
+            keys_changed = links_changed = True
+        if keys_changed:
+            self.unique_key_cache.clear()
+        if links_changed:
+            self.rev_link_cache.clear()
+
     def update(self, model, properties, sheets=None, unique_keys=None, links=None):
+        self._forget_stale_entries(model, unique_keys, links)
         self.storage.update(model, properties, sheets, unique_keys, links)
