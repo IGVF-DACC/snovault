@@ -3,6 +3,7 @@ from pyramid.decorator import reify
 from uuid import UUID
 from .cache import ManagerLRUCache
 from .interfaces import (
+    COLLECTIONS,
     CONNECTION,
     STORAGE,
     TYPES,
@@ -65,6 +66,50 @@ class Connection(object):
         self.item_cache[uuid] = item
         return item
 
+    def get_by_uuids(self, uuids, default=None):
+        ''' Batched equivalent of get_by_uuid.
+
+        Resolves cache hits locally and fetches the remaining uuids from
+        storage in a single call instead of one storage round trip per
+        uuid, which is what made large (5000-100000 member) linkTo/rev
+        lists expensive to resolve.
+        '''
+        results = [default] * len(uuids)
+        fetch_uuids = []
+        fetch_indices = []
+        for i, candidate in enumerate(uuids):
+            if isinstance(candidate, basestring):
+                try:
+                    candidate = UUID(candidate)
+                except ValueError:
+                    continue
+            elif not isinstance(candidate, UUID):
+                raise TypeError(candidate)
+
+            candidate = str(candidate)
+            cached = self.item_cache.get(candidate)
+            if cached is not None:
+                results[i] = cached
+            else:
+                fetch_uuids.append(candidate)
+                fetch_indices.append(i)
+
+        if fetch_uuids:
+            models = self.storage.get_by_uuids(fetch_uuids)
+            for i, fetch_uuid, model in zip(fetch_indices, fetch_uuids, models):
+                if model is None:
+                    continue
+                try:
+                    Item = self.types.by_item_type[model.item_type].factory
+                except KeyError:
+                    raise UnknownItemTypeError(model.item_type)
+                item = Item(self.registry, model)
+                model.used_for(item)
+                self.item_cache[fetch_uuid] = item
+                results[i] = item
+
+        return results
+
     def get_by_unique_key(self, unique_key, name, default=None, index=None):
         pkey = (unique_key, name)
 
@@ -91,6 +136,70 @@ class Connection(object):
         model.used_for(item)
         self.item_cache[uuid] = item
         return item
+
+    def _cache_model(self, model):
+        if model is None:
+            return
+        uuid = str(model.uuid)
+        if uuid in self.item_cache:
+            return
+        try:
+            Item = self.types.by_item_type[model.item_type].factory
+        except KeyError:
+            return
+        item = Item(self.registry, model)
+        model.used_for(item)
+        self.item_cache[uuid] = item
+
+    def warm_cache_for_paths(self, paths):
+        ''' Pre-resolves a batch of resource paths (e.g. the members of a
+        large linkTo/rev list) against write (Postgres) storage in a
+        couple of grouped queries, so that the per-path request.embed()
+        calls that follow -- see Path.expand_path_with_frame in util.py --
+        hit a warm cache instead of each making their own database round
+        trip. Always goes through write storage: the deep-embed fan-out
+        this exists for only ever runs during indexing or after a cache
+        invalidation, both of which already force datastore='database',
+        so there is nothing for the ES-backed read path to contribute here.
+        '''
+        collections = self.registry[COLLECTIONS]
+        by_collection = {}
+        for path in paths:
+            parts = path.strip('/').split('/')
+            if len(parts) != 2:
+                continue
+            collection_name, name = parts
+            collection = collections.get(collection_name)
+            if collection is None:
+                continue
+            by_collection.setdefault(collection_name, []).append(name)
+
+        for collection_name, names in by_collection.items():
+            collection = collections[collection_name]
+            uuid_names = []
+            key_names = []
+            for name in names:
+                try:
+                    UUID(name)
+                except ValueError:
+                    key_names.append(name)
+                else:
+                    uuid_names.append(name)
+
+            if uuid_names:
+                for model in self.storage.write.get_by_uuids(uuid_names):
+                    self._cache_model(model)
+
+            if key_names and collection.unique_key is not None:
+                index = getattr(collection.type_info, 'item_type', None)
+                models = self.storage.write.get_by_unique_keys(
+                    collection.unique_key, key_names, index=index,
+                )
+                for name, model in zip(key_names, models):
+                    if model is None:
+                        continue
+                    self._cache_model(model)
+                    self.unique_key_cache[(collection.unique_key, name)] = model.uuid
 
     def get_rev_links(self, model, rel, *types):
         item_types = [self.types[t].item_type for t in types]

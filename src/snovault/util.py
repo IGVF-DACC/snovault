@@ -1,6 +1,6 @@
 from past.builtins import basestring
 from pyramid.threadlocal import manager as threadlocal_manager
-from snovault.interfaces import ROOT
+from snovault.interfaces import CONNECTION, ROOT
 from urllib.parse import urlencode
 
 
@@ -176,6 +176,14 @@ class Path:
         if value is None:
             return
         if isinstance(value, list):
+            unresolved = [member for member in value if not isinstance(member, dict)]
+            if len(unresolved) > 1:
+                # Resolving each of these individually via request.embed()
+                # below means one database round trip per member. For a
+                # list of this size, pre-resolve them all in a couple of
+                # grouped queries so those per-member embeds become cache
+                # hits instead.
+                request.registry[CONNECTION].warm_cache_for_paths(unresolved)
             for index, member in enumerate(value):
                 if not isinstance(member, dict):
                     member = value[index] = request.embed(member, frame)

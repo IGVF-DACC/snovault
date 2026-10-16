@@ -48,8 +48,8 @@ class ItemNamespace(object):
             if name in context.type_info.schema_links:
                 if isinstance(value, list):
                     value = [
-                        request.resource_path(conn.get_by_uuid(v))
-                        for v in value
+                        request.resource_path(r)
+                        for r in conn.get_by_uuids(value)
                     ]
                 else:
                     value = request.resource_path(conn.get_by_uuid(value))
@@ -58,8 +58,8 @@ class ItemNamespace(object):
         if name in context.rev:
             value = context.get_rev_links(name)
             value = [
-                request.resource_path(conn.get_by_uuid(v))
-                for v in value
+                request.resource_path(r)
+                for r in conn.get_by_uuids(value)
             ]
             setattr(self, name, value)
             return value

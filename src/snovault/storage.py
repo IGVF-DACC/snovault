@@ -71,6 +71,13 @@ baked_query_unique_key = bakery(
         .joinedload(CurrentPropertySheet.propsheet, innerjoin=True),
     ).filter(Key.name == bindparam('name'), Key.value == bindparam('value'))
 )
+baked_query_unique_keys = bakery(
+    lambda session: session.query(Key).options(
+        orm.joinedload(Key.resource, innerjoin=True)
+        .joinedload(Resource.data, innerjoin=True)
+        .joinedload(CurrentPropertySheet.propsheet, innerjoin=True),
+    ).filter(Key.name == bindparam('name'), Key.value.in_(bindparam('values', expanding=True)))
+)
 
 
 class RDBStorage(object):
@@ -102,6 +109,15 @@ class RDBStorage(object):
             return default
         else:
             return key.resource
+
+    def get_by_unique_keys(self, unique_key, names, default=None, index=None):
+        names = list(names)
+        if not names:
+            return []
+        session = self.DBSession()
+        keys = baked_query_unique_keys(session).params(name=unique_key, values=names).all()
+        by_value = {key.value: key.resource for key in keys}
+        return [by_value.get(name, default) for name in names]
 
     def get_rev_links(self, model, rel, *item_types):
         if item_types:
