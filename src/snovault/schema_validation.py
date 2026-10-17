@@ -5,6 +5,7 @@ from jsonschema.exceptions import ValidationError
 from jsonschema._types import is_integer
 from pyramid.threadlocal import get_current_request
 from pyramid.traversal import find_resource
+from .util import batch_embed_enabled
 
 
 NO_DEFAULT = object()
@@ -78,6 +79,10 @@ def maybe_normalize_links_to_uuids(validator, property, subschema, instance):
 
 
 def set_defaults(validator, property, subschema, instance):
+    if property in instance and batch_embed_enabled():
+        # setdefault never replaces a value. Computing one that is discarded is wasted work,
+        # and server defaults such as accession query the database.
+        return
     if 'default' in subschema:
         instance.setdefault(
             property,

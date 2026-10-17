@@ -327,6 +327,18 @@ class SchemaValidator(SerializingSchemaValidator):
     SERVER_DEFAULTS = SERVER_DEFAULTS
 
 
+def ignore_request_checks(validator, value, instance, schema):
+    return ()
+
+
+class StoredDataSchemaValidator(SchemaValidator):
+    # For data that was already accepted on write: the permission/requestMethod checks only
+    # produce IgnoreUnchanged errors, which validate() discards for unchanged values.
+    VALIDATORS = SchemaValidator.VALIDATORS.copy()
+    VALIDATORS['permission'] = ignore_request_checks
+    VALIDATORS['requestMethod'] = ignore_request_checks
+
+
 format_checker = FormatChecker()
 
 
@@ -348,9 +360,9 @@ def load_schema(filename):
     return schema
 
 
-def validate(schema, data, current=None):
+def validate(schema, data, current=None, validator_class=SchemaValidator):
     resolver = NoRemoteResolver.from_schema(schema)
-    sv = SchemaValidator(schema, resolver=resolver, format_checker=format_checker)
+    sv = validator_class(schema, resolver=resolver, format_checker=format_checker)
     validated, errors = sv.serialize(data)
 
     filtered_errors = []

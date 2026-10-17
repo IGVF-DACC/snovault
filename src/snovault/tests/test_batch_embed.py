@@ -341,3 +341,94 @@ def test_items_loaded_together_get_their_rev_links_in_one_query(
     assert len(set(map(str, results.values()))) == 1
     assert len(results[(True, 'uuids')][0]) == N_SOURCES - 1
     assert len(results[(True, 'uuids')][1]) == 1
+
+
+def test_server_default_is_not_computed_for_a_value_that_is_present(
+    dummy_request, threadlocals, monkeypatch
+):
+    from snovault.schema_utils import SERVER_DEFAULTS, validate
+    calls = []
+
+    def counting(instance, subschema):
+        calls.append(1)
+        return 'generated'
+
+    monkeypatch.setitem(SERVER_DEFAULTS, 'counting', counting)
+    schema = {
+        'type': 'object',
+        'properties': {'a': {'type': 'string', 'serverDefault': 'counting'}},
+    }
+    for batch_embed in (False, True):
+        dummy_request.batch_embed = batch_embed
+        calls.clear()
+        validated, errors = validate(schema, {'a': 'given'})
+        assert validated == {'a': 'given'} and not errors
+        assert len(calls) == (0 if batch_embed else 1)
+        calls.clear()
+        validated, errors = validate(schema, {})
+        assert validated == {'a': 'generated'} and len(calls) == 1
+
+
+def test_stored_data_validator_skips_request_checks_without_changing_results(
+    dummy_request, threadlocals
+):
+    from snovault.schema_utils import StoredDataSchemaValidator, validate
+    checks = []
+
+    def has_permission(permission, context=None):
+        checks.append(permission)
+        return allowed['value']
+
+    allowed = {'value': True}
+    dummy_request.has_permission = has_permission
+    dummy_request.context = object()
+    schema = {
+        'type': 'object',
+        'properties': {
+            'a': {'type': 'string', 'permission': 'import_items'},
+            'b': {'type': 'integer', 'requestMethod': ['POST']},
+            'c': {'type': 'integer'},
+        },
+    }
+    data = {'a': 'x', 'b': 1, 'c': 'not an integer'}
+    for permitted in (True, False):
+        allowed['value'] = permitted
+        checks.clear()
+        default_result = validate(schema, data, data)
+        assert checks == ['import_items']
+        checks.clear()
+        stored_result = validate(schema, data, data, validator_class=StoredDataSchemaValidator)
+        assert checks == []
+        assert [e.message for e in stored_result[1]] == [e.message for e in default_result[1]]
+        assert stored_result[0] == default_result[0]
+        assert len(stored_result[1]) == 1
+
+
+@pytest.fixture
+def submitter_testapp(app):
+    from webtest import TestApp
+    return TestApp(app, {'HTTP_ACCEPT': 'application/json', 'REMOTE_USER': 'TEST_SUBMITTER'})
+
+
+@pytest.mark.parametrize('batch_embed', ['true', 'false'])
+def test_submitter_cannot_write_admin_only_properties_in_either_mode(submitter_testapp, testapp, batch_embed):
+    collection = '/testing-post-put-patch/'
+    mode = f'?batch_embed={batch_embed}'
+
+    for admin_only in (
+        {'protected': 'changed'},
+        {'accession': 'SNOFL727WCB'},
+        {'uuid': '0f13ff76-c559-4e70-9497-a6130841df9f'},
+    ):
+        res = submitter_testapp.post_json(collection + mode, {'required': 'x', **admin_only}, status=422)
+        assert any("permission 'admin_only' required" in e['description'] for e in res.json['errors'])
+
+    created = submitter_testapp.post_json(collection + mode, {'required': 'x'}, status=201).json['@graph'][0]
+    assert created['protected'] == 'protected default'
+
+    url = created['@id'] + mode
+    res = submitter_testapp.patch_json(url, {'protected': 'changed'}, status=422)
+    assert any("permission 'admin_only' required" in e['description'] for e in res.json['errors'])
+    submitter_testapp.put_json(url, {'required': 'x', 'protected': 'changed'}, status=422)
+    submitter_testapp.put_json(url, {'required': 'x', 'protected': 'protected default'}, status=200)
+    assert testapp.get(created['@id']).json['protected'] == 'protected default'
