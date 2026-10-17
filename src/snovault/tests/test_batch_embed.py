@@ -8,6 +8,7 @@ CACHE_NAMES = (
     'snovault.connection.embed_cache',
     'snovault.connection.item_cache',
     'snovault.connection.key_cache',
+    'snovault.connection.rev_link_cache',
 )
 
 
