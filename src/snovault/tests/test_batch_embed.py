@@ -432,3 +432,23 @@ def test_submitter_cannot_write_admin_only_properties_in_either_mode(submitter_t
     submitter_testapp.put_json(url, {'required': 'x', 'protected': 'changed'}, status=422)
     submitter_testapp.put_json(url, {'required': 'x', 'protected': 'protected default'}, status=200)
     assert testapp.get(created['@id']).json['protected'] == 'protected default'
+
+
+def index_document(indexer_testapp, item_url, batch_embed):
+    url = f'{item_url}@@index-data?datastore=database&batch_embed={str(batch_embed).lower()}'
+    document = indexer_testapp.get(url).json
+    document.pop('xmin')
+    return document
+
+
+@pytest.mark.parametrize('prefix', ['testing-link', 'testing-custom-embed'])
+def test_index_document_identical_with_and_without_batch_embed(indexer_testapp, many_targets_and_sources, prefix):
+    urls = [f'/{prefix}-targets/{uuid}/' for uuid in many_targets_and_sources[f'{prefix}-targets'].values()]
+    urls += [f'/{prefix}-sources/{uuid}/' for uuid in many_targets_and_sources[f'{prefix}-sources']]
+    for url in urls:
+        batched = index_document(indexer_testapp, url, True)
+        unbatched = index_document(indexer_testapp, url, False)
+        # ES invalidation is driven by these two lists, so they must match exactly.
+        assert batched['embedded_uuids'] == unbatched['embedded_uuids']
+        assert batched['linked_uuids'] == unbatched['linked_uuids']
+        assert normalize(batched) == normalize(unbatched)
