@@ -309,3 +309,34 @@ def test_upgraded_properties_refresh_after_update(
     after = item.upgraded_properties()
     assert after['status'] == 'deleted'
     assert before['status'] == 'current'
+
+
+def test_items_loaded_together_get_their_rev_links_in_one_query(
+    dummy_request, threadlocals, registry, many_targets_and_sources, mocker
+):
+    from snovault.interfaces import CONNECTION
+    from snovault.storage import RDBStorage
+    conn = registry[CONNECTION]
+    targets = many_targets_and_sources['testing-link-targets']
+    batch_spy = mocker.spy(RDBStorage, 'get_incoming_links_batch')
+    single_spy = mocker.spy(RDBStorage, 'get_incoming_links')
+    results = {}
+    for batch_embed in (False, True):
+        for load in ('uuids', 'paths'):
+            reset_caches(threadlocals)
+            dummy_request.batch_embed = batch_embed
+            batch_spy.reset_mock()
+            single_spy.reset_mock()
+            if load == 'uuids':
+                one, two = conn.get_by_uuids([targets['one'], targets['two']])
+            else:
+                conn.warm_cache_for_paths(['/testing-link-targets/one/', '/testing-link-targets/two/'])
+                one, two = conn.get_by_uuid(targets['one']), conn.get_by_uuid(targets['two'])
+            rev_one = conn.get_rev_links(one.model, 'target', 'TestingLinkSource')
+            rev_two = conn.get_rev_links(two.model, 'target', 'TestingLinkSource')
+            assert batch_spy.call_count == (1 if batch_embed else 0), (batch_embed, load)
+            assert single_spy.call_count == 0
+            results[(batch_embed, load)] = (sorted(map(str, rev_one)), sorted(map(str, rev_two)))
+    assert len(set(map(str, results.values()))) == 1
+    assert len(results[(True, 'uuids')][0]) == N_SOURCES - 1
+    assert len(results[(True, 'uuids')][1]) == 1

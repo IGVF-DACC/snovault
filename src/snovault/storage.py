@@ -134,6 +134,19 @@ class RDBStorage(object):
         by_value = {key.value: key.resource for key in keys}
         return [by_value.get(name, default) for name in names]
 
+    def get_incoming_links_batch(self, models):
+        rids = [model.rid for model in models]
+        by_target = {rid: [] for rid in rids}
+        if not rids:
+            return by_target
+        session = self.DBSession()
+        query = session.query(Link.target_rid, Link.rel, Link.source_rid, Resource.item_type).select_from(Link).join(
+            Resource, Resource.rid == Link.source_rid
+        ).filter(Link.target_rid.in_(rids))
+        for target_rid, rel, source_rid, item_type in query:
+            by_target[target_rid].append((rel, source_rid, item_type))
+        return by_target
+
     def get_incoming_links(self, model):
         session = self.DBSession()
         query = session.query(Link.rel, Link.source_rid, Resource.item_type).select_from(Link).join(

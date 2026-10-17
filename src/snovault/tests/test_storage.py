@@ -281,6 +281,28 @@ def test_get_incoming_links_matches_get_rev_links(session, storage):
         assert sorted(map(str, actual)) == sorted(map(str, expected))
 
 
+def test_get_incoming_links_batch_matches_single_item_query(session, storage):
+    from snovault.storage import Link, Resource
+    first = Resource('target_type', {'': {}})
+    second = Resource('target_type', {'': {}})
+    unlinked = Resource('target_type', {'': {}})
+    sources = [Resource('type_a', {'': {}}), Resource('type_b', {'': {}}), Resource('type_a', {'': {}})]
+    session.add_all([first, second, unlinked] + sources)
+    session.flush()
+    session.add(Link(source_rid=sources[0].rid, rel='parent', target_rid=first.rid))
+    session.add(Link(source_rid=sources[1].rid, rel='other', target_rid=first.rid))
+    session.add(Link(source_rid=sources[2].rid, rel='parent', target_rid=second.rid))
+    session.flush()
+    session.expire_all()
+    models = [storage.get_by_uuid(str(resource.rid)) for resource in (first, second, unlinked)]
+    batch = storage.get_incoming_links_batch(models)
+    assert set(batch) == {first.rid, second.rid, unlinked.rid}
+    assert batch[unlinked.rid] == []
+    for model in models:
+        assert sorted(batch[model.rid]) == sorted(storage.get_incoming_links(model))
+    assert storage.get_incoming_links_batch([]) == {}
+
+
 def test_S3BlobStorage_boto3(mocker):
     from snovault.storage import S3BlobStorage
     mocker.patch('boto3.Session.resource')

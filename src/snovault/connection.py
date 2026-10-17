@@ -101,6 +101,7 @@ class Connection(object):
                 fetch_indices.append(i)
 
         if fetch_uuids:
+            created = []
             models = self.storage.write.get_by_uuids(fetch_uuids)
             for i, fetch_uuid, model in zip(fetch_indices, fetch_uuids, models):
                 if model is None:
@@ -114,6 +115,8 @@ class Connection(object):
                 self.item_cache[fetch_uuid] = item
                 self._cache_unique_keys(item)
                 results[i] = item
+                created.append(item)
+            self._prefetch_incoming_links(created)
 
         return results
 
@@ -172,6 +175,25 @@ class Connection(object):
         model.used_for(item)
         self.item_cache[uuid] = item
         self._cache_unique_keys(item)
+        return item
+
+    def _prefetch_incoming_links(self, items):
+        # Items loaded together usually render together: fetch their incoming links in one query.
+        if not batch_embed_enabled() or not hasattr(self.storage, 'get_incoming_links_batch'):
+            return
+        pending = [
+            item for item in items
+            if item is not None and item.rev and ('links', str(item.uuid)) not in self.rev_link_cache
+        ]
+        if len(pending) < 2:
+            return
+        for start in range(0, len(pending), 5000):
+            chunk = pending[start:start + 5000]
+            by_target = self.storage.get_incoming_links_batch([item.model for item in chunk])
+            if by_target is None:
+                return
+            for item in chunk:
+                self.rev_link_cache[('links', str(item.uuid))] = by_target.get(item.model.uuid, [])
 
     def warm_cache_for_paths(self, paths):
         # Batch-resolve paths from write storage so per-path request.embed() hits warm caches.
@@ -202,9 +224,10 @@ class Connection(object):
                     if str(parsed) not in self.item_cache:
                         uuid_names.append(name)
 
+            created = []
             if uuid_names:
                 for model in self.storage.write.get_by_uuids(uuid_names):
-                    self._cache_model(model)
+                    created.append(self._cache_model(model))
 
             if key_names and collection.unique_key is not None:
                 index = getattr(collection.type_info, 'item_type', None)
@@ -214,8 +237,9 @@ class Connection(object):
                 for name, model in zip(key_names, models):
                     if model is None:
                         continue
-                    self._cache_model(model)
+                    created.append(self._cache_model(model))
                     self.unique_key_cache[(collection.unique_key, name)] = model.uuid
+            self._prefetch_incoming_links(created)
 
     def get_rev_links(self, model, rel, *types):
         item_types = [self.types[t].item_type for t in types]

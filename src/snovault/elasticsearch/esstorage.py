@@ -115,6 +115,13 @@ class PickStorage(object):
             model = storage.get_by_uuid(str(model.uuid))
         return storage.get_rev_links(model, rel, *item_types)
 
+    def get_incoming_links_batch(self, models):
+        storage = self.storage()
+        if storage is not self.write:
+            return None
+        models = [storage.get_by_uuid(str(m.uuid)) if isinstance(m, CachedModel) else m for m in models]
+        return storage.get_incoming_links_batch(models)
+
     def get_incoming_links(self, model):
         storage = self.storage()
         if storage is not self.write:
