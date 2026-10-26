@@ -78,6 +78,10 @@ def maybe_normalize_links_to_uuids(validator, property, subschema, instance):
 
 
 def set_defaults(validator, property, subschema, instance):
+    if property in instance:
+        # Default will never replace existing value.
+        # Return early instead of doing unnecessary work.
+        return
     if 'default' in subschema:
         instance.setdefault(
             property,
