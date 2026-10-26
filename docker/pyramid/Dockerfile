@@ -9,6 +9,7 @@ ENV VIRTUAL_ENV=/opt/venv
 RUN useradd -u 1444 -m snovault
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
     curl \
     gcc \
     git \
@@ -42,9 +43,9 @@ COPY --chown=snovault:snovault src/snovault/__init__.py src/snovault/__init__.py
 
 USER snovault
 
-RUN python -m pip install pip==26.0.1
+RUN python -m pip install pip==26.2.2
 
-RUN PIP_BUILD_CONSTRAINT=build-constraint.txt pip --use-feature=build-constraint install -e .[dev]
+RUN PIP_BUILD_CONSTRAINT=build-constraint.txt pip install -e .[dev]
 
 COPY --chown=snovault:snovault . .
 
