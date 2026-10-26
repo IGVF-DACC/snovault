@@ -45,7 +45,7 @@ USER snovault
 
 RUN python -m pip install pip==26.2.2
 
-RUN PIP_BUILD_CONSTRAINT=build-constraint.txt pip --use-feature=build-constraint install -e .[dev]
+RUN PIP_BUILD_CONSTRAINT=build-constraint.txt pip install -e .[dev]
 
 COPY --chown=snovault:snovault . .
 
