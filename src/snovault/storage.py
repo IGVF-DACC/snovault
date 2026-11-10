@@ -141,6 +141,12 @@ class RDBStorage(object):
         else:
             return key.resource
 
+    def get_by_unique_keys(self, unique_key, names, index=None):
+        session = self.DBSession()
+        keys = baked_query_unique_keys(session).params(name=unique_key, values=names).all()
+        by_value = {key.value: key.resource for key in keys}
+        return [by_value.get(name) for name in names]
+
     def get_rev_links(self, model, rel, *item_types):
         if item_types:
             return [

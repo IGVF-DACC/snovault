@@ -286,3 +286,27 @@ def test_storage_get_by_uuids(session, storage):
     models = storage.get_by_uuids([str(rid) for rid in ordered])
     model_rids = [m.rid if m else m for m in models]
     assert model_rids == [resources[2].rid, None, resources[0].rid, resources[2].rid]
+
+
+def test_storage_get_by_unique_keys(session, storage):
+    from snovault.storage import Resource
+    from snovault.storage import Key
+    resources = {}
+    for value in ('a', 'b'):
+        resource = Resource('test_item', {'': {'foo': value}})
+        session.add(resource)
+        session.flush()
+        session.add(
+            Key(
+                rid=resource.rid,
+                name='foo',
+                value=value
+            )
+        )
+        resources[value] = resource
+    session.flush()
+    models = storage.get_by_unique_keys('foo', ['b', 'missing', 'a', 'b'])
+    model_rids = [m.rid if m else m for m in models]
+    assert model_rids == [
+        resources['b'].rid, None, resources['a'].rid, resources['b'].rid,
+    ]
