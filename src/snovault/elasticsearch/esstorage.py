@@ -98,6 +98,12 @@ class PickStorage(object):
                 return self.write.get_by_uuid(uuid)
         return model
 
+    def get_by_uuids(self, uuids):
+        storage = self.storage()
+        if storage is self.write:  # Only write database supports bulk queries.
+            return storage.get_by_uuids(uuids)
+        return [self.get_by_uuid(uuid) for uuid in uuids]
+
     def get_by_unique_key(self, unique_key, name, index=None):
         storage = self.storage()
         model = storage.get_by_unique_key(unique_key, name, index=index)
@@ -108,6 +114,12 @@ class PickStorage(object):
             if model is None or model_invalidated:
                 return self.write.get_by_unique_key(unique_key, name, index=index)
         return model
+
+    def get_by_unique_keys(self, unique_key, names, index=None):
+        storage = self.storage()
+        if storage is self.write:  # Only write database supports bulk queries.
+            return storage.get_by_unique_keys(unique_key, names)
+        return [self.get_by_unique_key(unique_key, name, index=index) for name in names]
 
     def get_rev_links(self, model, rel, *item_types):
         storage = self.storage()

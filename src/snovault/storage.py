@@ -141,7 +141,7 @@ class RDBStorage(object):
         else:
             return key.resource
 
-    def get_by_unique_keys(self, unique_key, names, index=None):
+    def get_by_unique_keys(self, unique_key, names):
         session = self.DBSession()
         keys = baked_query_unique_keys(session).params(name=unique_key, values=names).all()
         by_value = {key.value: key.resource for key in keys}

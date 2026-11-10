@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import Mock
+from unittest.mock import Mock, call
 
 pytestmark = [pytest.mark.indexing]
 
@@ -137,4 +137,65 @@ def test_pick_storage_get_by_uuid_does_not_force_database_when_model_is_none(dum
         model = storage.get_by_uuid('123')
     # Make sure it looks in PG and doesn't force request.
     assert model is pg_model
+    assert dummy_request.datastore == 'elasticsearch'
+
+
+def test_pick_storage_get_by_uuids_batches_only_for_the_write_database(dummy_request):
+    from pyramid.testing import testConfig
+    from ..esstorage import PickStorage
+    read = Mock()
+    write = Mock()
+    write.get_by_uuids.return_value = ['pg_model_1', 'pg_model_2']
+    storage = PickStorage(read, write)
+    # Batches on the write database.
+    dummy_request.datastore = 'database'
+    with testConfig(request=dummy_request):
+        models = storage.get_by_uuids(['uuid_1', 'uuid_2'])
+    assert models == ['pg_model_1', 'pg_model_2']
+    write.get_by_uuids.assert_called_once_with(['uuid_1', 'uuid_2'])
+    assert read.method_calls == []
+    write.reset_mock()
+    # Goes one at a time through get_by_uuid for Elasticsearch, so
+    # invalidated documents can still fall back to the database.
+    es_model = Mock()
+    es_model.invalidated.return_value = False
+    read.get_by_uuid.side_effect = [es_model, es_model]
+    dummy_request.datastore = 'elasticsearch'
+    with testConfig(request=dummy_request):
+        models = storage.get_by_uuids(['uuid_1', 'uuid_2'])
+    assert models == [es_model, es_model]
+    assert [c.args for c in read.get_by_uuid.call_args_list] == [('uuid_1',), ('uuid_2',)]
+    assert write.method_calls == []
+    assert dummy_request.datastore == 'elasticsearch'
+
+
+def test_pick_storage_get_by_unique_keys_batches_only_for_the_write_database(dummy_request):
+    from pyramid.testing import testConfig
+    from ..esstorage import PickStorage
+    read = Mock()
+    write = Mock()
+    write.get_by_unique_keys.return_value = ['pg_model_1', 'pg_model_2']
+    storage = PickStorage(read, write)
+    # Batches on the write database. The index hint is only for Elasticsearch.
+    dummy_request.datastore = 'database'
+    with testConfig(request=dummy_request):
+        models = storage.get_by_unique_keys('accession', ['A', 'B'], index='snowflake')
+    assert models == ['pg_model_1', 'pg_model_2']
+    write.get_by_unique_keys.assert_called_once_with('accession', ['A', 'B'])
+    assert read.method_calls == []
+    write.reset_mock()
+    # Goes one at a time through get_by_unique_key for Elasticsearch,
+    # keeping the index hint.
+    es_model = Mock()
+    es_model.invalidated.return_value = False
+    read.get_by_unique_key.side_effect = [es_model, es_model]
+    dummy_request.datastore = 'elasticsearch'
+    with testConfig(request=dummy_request):
+        models = storage.get_by_unique_keys('accession', ['A', 'B'], index='snowflake')
+    assert models == [es_model, es_model]
+    assert read.get_by_unique_key.call_args_list == [
+        call('accession', 'A', index='snowflake'),
+        call('accession', 'B', index='snowflake'),
+    ]
+    assert write.method_calls == []
     assert dummy_request.datastore == 'elasticsearch'
