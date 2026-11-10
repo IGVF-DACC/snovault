@@ -63,13 +63,42 @@ def includeme(config):
 Base = declarative_base()
 
 bakery = baked.bakery()
+
 baked_query_resource = bakery(lambda session: session.query(Resource))
+
+baked_query_resources = bakery(
+    lambda session: session.query(Resource).filter(
+        Resource.rid.in_(
+            bindparam(
+                'rids',
+                expanding=True
+            )
+        )
+    )
+)
+
 baked_query_unique_key = bakery(
     lambda session: session.query(Key).options(
         orm.joinedload(Key.resource, innerjoin=True)
         .joinedload(Resource.data, innerjoin=True)
         .joinedload(CurrentPropertySheet.propsheet, innerjoin=True),
     ).filter(Key.name == bindparam('name'), Key.value == bindparam('value'))
+)
+
+baked_query_unique_keys = bakery(
+    lambda session: session.query(Key).options(
+        orm.joinedload(Key.resource, innerjoin=True)
+        .joinedload(Resource.data, innerjoin=True)
+        .joinedload(CurrentPropertySheet.propsheet, innerjoin=True),
+    ).filter(
+        Key.name == bindparam('name'),
+        Key.value.in_(
+            bindparam(
+                'values',
+                expanding=True
+            )
+        )
+    )
 )
 
 
@@ -93,6 +122,15 @@ class RDBStorage(object):
         if model is None:
             return default
         return model
+
+    def get_by_uuids(self, rids):
+        rids = [uuid.UUID(rid) for rid in rids]
+        session = self.DBSession()
+        models = baked_query_resources(session).params(
+            rids=rids,
+        ).all()
+        by_rid = {model.rid: model for model in models}
+        return [by_rid.get(rid) for rid in rids]
 
     def get_by_unique_key(self, unique_key, name, default=None, index=None):
         session = self.DBSession()

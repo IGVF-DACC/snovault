@@ -273,3 +273,16 @@ def test_S3BlobStorage_boto3_get_blob_url_for_s3_file(mocker):
     storage.read_conn.generate_presigned_url.assert_called_once_with(
         Params={'Key': '123', 'Bucket': 'test'}, ExpiresIn=129600, ClientMethod='get_object'
     )
+
+
+def test_storage_get_by_uuids(session, storage):
+    from snovault.storage import Resource
+    import uuid
+    resources = [Resource('test_item', {'': {'foo': str(i)}}) for i in range(3)]
+    session.add_all(resources)
+    session.flush()
+    missing = uuid.uuid4()
+    ordered = [resources[2].rid, missing, resources[0].rid, resources[2].rid]
+    models = storage.get_by_uuids([str(rid) for rid in ordered])
+    model_rids = [m.rid if m else m for m in models]
+    assert model_rids == [resources[2].rid, None, resources[0].rid, resources[2].rid]
