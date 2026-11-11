@@ -74,8 +74,10 @@ def test_connection_get_by_uuids_is_one_query(content, registry, dummy_request, 
     dummy_request.datastore = 'database'
     conn = registry[CONNECTION]
     seen = []
+
     def log(conn_, cursor, statement, *args):
         seen.append(statement)
+
     uuids = [target['uuid'] for target in targets]
     event.listen(Engine, 'before_cursor_execute', log)
     try:
