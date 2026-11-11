@@ -37,6 +37,20 @@ class Connection(object):
     def types(self):
         return self.registry[TYPES]
 
+    def _get_item_from_model(self, model):
+        uuid = str(model.uuid)
+        item = self.item_cache.get(uuid)
+        if item is not None:
+            return item
+        try:
+            Item = self.types.by_item_type[model.item_type].factory
+        except KeyError:
+            raise UnknownItemTypeError(model.item_type)
+        item = Item(self.registry, model)
+        model.used_for(item)
+        self.item_cache[uuid] = item
+        return item
+
     def get_by_uuid(self, uuid, default=None):
         if isinstance(uuid, basestring):
             try:
@@ -45,52 +59,25 @@ class Connection(object):
                 return default
         elif not isinstance(uuid, UUID):
             raise TypeError(uuid)
-
         uuid = str(uuid)
         cached = self.item_cache.get(uuid)
         if cached is not None:
             return cached
-
         model = self.storage.get_by_uuid(uuid)
         if model is None:
             return default
-
-        try:
-            Item = self.types.by_item_type[model.item_type].factory
-        except KeyError:
-            raise UnknownItemTypeError(model.item_type)
-
-        item = Item(self.registry, model)
-        model.used_for(item)
-        self.item_cache[uuid] = item
-        return item
+        return self._get_item_from_model(model)
 
     def get_by_unique_key(self, unique_key, name, default=None, index=None):
         pkey = (unique_key, name)
-
         cached = self.unique_key_cache.get(pkey)
         if cached is not None:
             return self.get_by_uuid(cached)
-
         model = self.storage.get_by_unique_key(unique_key, name, index=index)
         if model is None:
             return default
-
-        uuid = model.uuid
-        self.unique_key_cache[pkey] = uuid
-        cached = self.item_cache.get(uuid)
-        if cached is not None:
-            return cached
-
-        try:
-            Item = self.types.by_item_type[model.item_type].factory
-        except KeyError:
-            raise UnknownItemTypeError(model.item_type)
-
-        item = Item(self.registry, model)
-        model.used_for(item)
-        self.item_cache[uuid] = item
-        return item
+        self.unique_key_cache[pkey] = model.uuid
+        return self._get_item_from_model(model)
 
     def get_rev_links(self, model, rel, *types):
         item_types = [self.types[t].item_type for t in types]
