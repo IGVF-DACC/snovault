@@ -107,3 +107,19 @@ def test_connection_get_by_uuids_without_a_cache(content, registry):
     uuids = [target['uuid'] for target in targets]
     items = conn.get_by_uuids(uuids)
     assert [str(item.uuid) for item in items] == uuids
+
+
+def test_connection_uuid_to_path_keeps_order_and_raises_key_error(content, dummy_request, threadlocals):
+    from snovault.resource_views import uuid_to_path
+    dummy_request.datastore = 'database'
+    one, two = targets[0]['uuid'], targets[1]['uuid']
+    obj = {'links': [two, one]}
+    uuid_to_path(dummy_request, obj, 'links')
+    assert obj['links'] == ['/testing-link-targets/two/', '/testing-link-targets/one/']
+    bad = {'links': [one, 'not-a-uuid']}
+    with pytest.raises(KeyError) as excinfo:
+        uuid_to_path(dummy_request, bad, 'links')
+    assert excinfo.value.args == ('not-a-uuid',)
+    assert bad['links'] == [one, 'not-a-uuid']
+    with pytest.raises(KeyError):
+        uuid_to_path(dummy_request, {'links': [str(uuid4())]}, 'links')
