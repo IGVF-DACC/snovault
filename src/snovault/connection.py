@@ -82,21 +82,15 @@ class Connection(object):
             normalized_uuids.append(str(uuid))
         found = {}  # Keep results locally in case of cache churn.
         missing = []
-        for uuid in dict.fromkeys(  # Dedup and preserve order.
-            uuid
-            for uuid in normalized_uuids
-            if uuid is not None
-        ):
+        # Dedup and preserve order
+        for uuid in dict.fromkeys(u for u in normalized_uuids if u is not None):
             cached = self.item_cache.get(uuid)
             if cached is not None:
                 found[uuid] = cached
             else:
                 missing.append(uuid)
         if missing:
-            for uuid, model in zip(
-                missing,
-                self.storage.get_by_uuids(missing)
-            ):
+            for uuid, model in zip(missing, self.storage.get_by_uuids(missing)):
                 if model is not None:
                     found[uuid] = self._get_item_from_model(model)
         return [
