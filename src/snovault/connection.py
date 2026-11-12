@@ -37,6 +37,31 @@ class Connection(object):
     def types(self):
         return self.registry[TYPES]
 
+    def _cache_unique_keys(self, item):
+        unique_key = item.collection.unique_key
+        if unique_key is None:
+            return
+        try:
+            values = item.unique_keys(item.properties).get(unique_key, ())
+        except (KeyError, TypeError):
+            return
+        for value in values:
+            self.unique_key_cache[(unique_key, value)] = item.uuid
+
+    def _forget_unique_keys(self, model, unique_keys):
+        # Current Key rows pointing to the Resource, through unique_keys backref.
+        current = {
+            (key.name, key.value)
+            for key in model.unique_keys
+        }
+        new = {
+            (name, value)
+            for name, values in unique_keys.items()
+            for value in values
+        }
+        for pkey in current - new:
+            self.unique_key_cache.pop(pkey)
+
     def _get_item_from_model(self, model):
         uuid = str(model.uuid)
         item = self.item_cache.get(uuid)
@@ -49,6 +74,7 @@ class Connection(object):
         item = Item(self.registry, model)
         model.used_for(item)
         self.item_cache[uuid] = item
+        self._cache_unique_keys(item)
         return item
 
     def get_by_uuid(self, uuid, default=None):
@@ -139,4 +165,6 @@ class Connection(object):
         return self.storage.create(ti.item_type, uuid)
 
     def update(self, model, properties, sheets=None, unique_keys=None, links=None):
+        if unique_keys is not None:
+            self._forget_unique_keys(model, unique_keys)
         self.storage.update(model, properties, sheets, unique_keys, links)

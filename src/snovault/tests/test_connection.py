@@ -123,3 +123,54 @@ def test_connection_uuid_to_path_keeps_order_and_raises_key_error(content, dummy
     assert bad['links'] == [one, 'not-a-uuid']
     with pytest.raises(KeyError):
         uuid_to_path(dummy_request, {'links': [str(uuid4())]}, 'links')
+
+
+def test_connection_unique_key_is_cached_when_item_loads(content, registry, dummy_request, threadlocals):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    one = conn.get_by_uuid(targets[0]['uuid'])
+    seen = []
+
+    def log(conn_, cursor, statement, *args):
+        seen.append(statement)
+
+    event.listen(Engine, 'before_cursor_execute', log)
+    try:
+        assert conn.get_by_unique_key('testing_link_target:name', 'one') is one
+    finally:
+        event.remove(Engine, 'before_cursor_execute', log)
+    assert seen == []
+
+
+def test_connection_renaming_an_item_forgets_its_old_unique_key(content, registry, dummy_request, threadlocals):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    item = conn.get_by_unique_key('testing_link_target:name', 'one')
+    properties = item.upgrade_properties()
+    properties['name'] = 'renamed'
+    item.update(properties)
+    assert conn.get_by_unique_key('testing_link_target:name', 'one') is None
+    assert conn.get_by_unique_key('testing_link_target:name', 'renamed') is item
+
+
+def test_connection_update_without_key_changes_keeps_unique_keys(content, registry, dummy_request, threadlocals):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    item = conn.get_by_unique_key('testing_link_target:name', 'one')
+    properties = item.upgrade_properties()
+    properties['status'] = 'deleted'
+    item.update(properties)
+    seen = []
+
+    def log(conn_, cursor, statement, *args):
+        seen.append(statement)
+
+    event.listen(Engine, 'before_cursor_execute', log)
+    try:
+        assert conn.get_by_unique_key('testing_link_target:name', 'one') is item
+    finally:
+        event.remove(Engine, 'before_cursor_execute', log)
+    assert seen == []
