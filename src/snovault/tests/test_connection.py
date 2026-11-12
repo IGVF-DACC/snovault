@@ -12,6 +12,13 @@ targets = [
 ]
 
 
+sources = [
+    {'name': 'A', 'target': targets[0]['uuid']},
+    {'name': 'B', 'target': targets[0]['uuid']},
+]
+
+
+
 @pytest.fixture(autouse=True)
 def autouse_external_tx(external_tx):
     pass
@@ -21,6 +28,8 @@ def autouse_external_tx(external_tx):
 def content(testapp):
     for item in targets:
         testapp.post_json('/testing-link-targets/', item, status=201)
+    for item in sources:
+        testapp.post_json('/testing-link-sources/', item, status=201)
 
 
 def test_connection_item_loaded_by_unique_key_is_found_by_uuid(content, registry, dummy_request, threadlocals):
@@ -174,3 +183,23 @@ def test_connection_update_without_key_changes_keeps_unique_keys(content, regist
     finally:
         event.remove(Engine, 'before_cursor_execute', log)
     assert seen == []
+
+
+def test_connection_get_rev_links_is_one_statement(content, registry, dummy_request, threadlocals):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    model = conn.get_by_uuid(targets[0]['uuid']).model
+    seen = []
+
+    def log(conn_, cursor, statement, *args):
+        seen.append(statement)
+
+    event.listen(Engine, 'before_cursor_execute', log)
+    try:
+        uuids = conn.get_rev_links(model, 'target', 'TestingLinkSource')
+    finally:
+        event.remove(Engine, 'before_cursor_execute', log)
+    assert len(uuids) == len(sources)
+    assert all(isinstance(uuid, UUID) for uuid in uuids)
+    assert len(seen) == 1

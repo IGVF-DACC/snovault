@@ -310,3 +310,44 @@ def test_storage_get_by_unique_keys(session, storage):
     assert model_rids == [
         resources['b'].rid, None, resources['a'].rid, resources['b'].rid,
     ]
+
+
+def test_storage_get_rev_links(session, storage):
+    from snovault.storage import Link, Resource
+    from uuid import UUID
+    target = Resource('target_type', {'': {}})
+    sources = [
+        Resource('type_a', {'': {}}),
+        Resource('type_a', {'': {}}),
+        Resource('type_b', {'': {}}),
+    ]
+    unrelated = Resource('type_a', {'': {}})
+    session.add_all([target, unrelated] + sources)
+    session.flush()
+    session.add(Link(source_rid=sources[0].rid, rel='parent', target_rid=target.rid))
+    session.add(Link(source_rid=sources[1].rid, rel='parent', target_rid=target.rid))
+    session.add(Link(source_rid=sources[2].rid, rel='parent', target_rid=target.rid))
+    session.add(Link(source_rid=sources[0].rid, rel='other', target_rid=target.rid))
+    # Points at a source, not at the target.
+    session.add(Link(source_rid=unrelated.rid, rel='parent', target_rid=sources[0].rid))
+    session.flush()
+    session.expire_all()
+    model = storage.get_by_uuid(str(target.rid))
+
+    def lazy_get_rev_links(model, rel, *item_types):
+        # The implementation this replaced.
+        if item_types:
+            return [
+                link.source_rid for link in model.revs
+                if link.rel == rel and link.source.item_type in item_types]
+        return [link.source_rid for link in model.revs if link.rel == rel]
+
+    for rel in ('parent', 'other', 'no_such_rel'):
+        for item_types in ((), ('type_a',), ('type_b',), ('type_a', 'type_b'), ('missing',)):
+            actual = storage.get_rev_links(model, rel, *item_types)
+            assert isinstance(actual, list)
+            assert all(isinstance(uuid, UUID) for uuid in actual)
+            assert sorted(actual) == sorted(lazy_get_rev_links(model, rel, *item_types))
+    assert sorted(storage.get_rev_links(model, 'parent', 'type_a')) == sorted(
+        [sources[0].rid, sources[1].rid]
+    )
