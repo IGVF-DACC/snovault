@@ -43,7 +43,7 @@ class Connection(object):
             return
         try:
             values = item.unique_keys(item.properties).get(unique_key, ())
-        except (KeyError, TypeError):
+        except (KeyError, TypeError):  # Ignore unique_keys overrides that index into properties directly.
             return
         for value in values:
             self.unique_key_cache[(unique_key, value)] = item.uuid
