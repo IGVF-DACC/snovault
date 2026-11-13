@@ -205,6 +205,5 @@ class Connection(object):
         if unique_keys is not None:
             self._forget_unique_keys(model, unique_keys)
         if links is not None:
-            assert True
             self._forget_rev_links()
         self.storage.update(model, properties, sheets, unique_keys, links)

@@ -298,8 +298,11 @@ def test_connection_updating_links_refreshes_rev_links(content, registry, dummy_
     properties = moved.upgrade_properties()
     properties['target'] = targets[1]['uuid']
     moved.update(properties)
-    assert sorted(conn.get_rev_links(one.model, 'target', 'TestingLinkSource')
-                  ) == sorted(set(before_one) - {moved.uuid})
+    assert sorted(
+        conn.get_rev_links(one.model, 'target', 'TestingLinkSource')
+    ) == sorted(
+        set(before_one) - {moved.uuid}
+    )
     assert conn.get_rev_links(two.model, 'target', 'TestingLinkSource') == [moved.uuid]
 
 
@@ -316,7 +319,7 @@ def test_connection_updating_without_properties_keeps_rev_links(content, registr
     assert spy.call_count == 1
 
 
-def test_batchupgrade_repair_refreshes_rev_links(content, registry, dummy_request, threadlocals):
+def test_connection_batchupgrade_repair_refreshes_rev_links(content, registry, dummy_request, threadlocals):
     from snovault.batchupgrade import update_item
     from snovault.interfaces import CONNECTION, STORAGE
     from snovault.storage import Link
@@ -335,3 +338,25 @@ def test_batchupgrade_repair_refreshes_rev_links(content, registry, dummy_reques
     assert update
     assert errors == []
     assert conn.get_rev_links(two.model, 'target', 'TestingLinkSource') == []
+
+
+def test_connection_batchupgrade_repair_forgets_removed_unique_keys(content, registry, dummy_request, threadlocals):
+    from snovault.batchupgrade import update_item
+    from snovault.interfaces import CONNECTION, STORAGE
+    from snovault.storage import Key
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    storage = registry[STORAGE].write
+    one = conn.get_by_uuid(targets[0]['uuid'])
+    # A key row that the item's own properties do not have, already cached.
+    session = storage.DBSession()
+    session.add(Key(rid=one.model.rid, name='testing_link_target:name', value='stale'))
+    session.flush()
+    session.expire_all()
+    conn.unique_key_cache[('testing_link_target:name', 'stale')] = one.uuid
+    assert conn.get_by_unique_key('testing_link_target:name', 'stale') is one
+    update, errors = update_item(storage, one, dummy_request)
+    assert update
+    assert errors == []
+    assert conn.get_by_unique_key('testing_link_target:name', 'stale') is None
+    assert conn.get_by_unique_key('testing_link_target:name', 'one') is one
