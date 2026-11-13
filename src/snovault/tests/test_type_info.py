@@ -56,3 +56,9 @@ def test_type_info_add_types_to_hierarchy():
         }
     }
     assert expected == hierarchy
+
+
+def test_type_info_rev_link_rels(registry):
+    from snovault.interfaces import TYPES
+    assert registry[TYPES]['TestingLinkTarget'].rev_link_rels == {'target'}
+    assert registry[TYPES]['TestingLinkSource'].rev_link_rels == set()
