@@ -272,3 +272,66 @@ def test_connection_get_rev_links_falls_back_when_links_cannot_be_listed(content
     mocker.patch.object(conn.storage, 'get_incoming_links_batch', return_value=None)
     assert sorted(conn.get_rev_links(model, 'target', 'TestingLinkSource')) == sorted(expected)
     assert str(model.uuid) not in conn.rev_link_cache
+
+
+def test_connection_creating_an_item_refreshes_rev_links(content, registry, dummy_request, threadlocals):
+    from snovault.interfaces import CONNECTION, TYPES
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    model = conn.get_by_uuid(targets[0]['uuid']).model
+    before = conn.get_rev_links(model, 'target', 'TestingLinkSource')
+    factory = registry[TYPES]['TestingLinkSource'].factory
+    created = factory.create(registry, uuid4(), {'name': 'C', 'target': targets[0]['uuid']})
+    after = conn.get_rev_links(model, 'target', 'TestingLinkSource')
+    assert sorted(after) == sorted(before + [created.uuid])
+
+
+def test_connection_updating_links_refreshes_rev_links(content, registry, dummy_request, threadlocals):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    one = conn.get_by_uuid(targets[0]['uuid'])
+    two = conn.get_by_uuid(targets[1]['uuid'])
+    before_one = conn.get_rev_links(one.model, 'target', 'TestingLinkSource')
+    assert conn.get_rev_links(two.model, 'target', 'TestingLinkSource') == []
+    moved = conn.get_by_uuid(sources[0]['uuid'])
+    properties = moved.upgrade_properties()
+    properties['target'] = targets[1]['uuid']
+    moved.update(properties)
+    assert sorted(conn.get_rev_links(one.model, 'target', 'TestingLinkSource')
+                  ) == sorted(set(before_one) - {moved.uuid})
+    assert conn.get_rev_links(two.model, 'target', 'TestingLinkSource') == [moved.uuid]
+
+
+def test_connection_updating_without_properties_keeps_rev_links(content, registry, dummy_request, threadlocals, mocker):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    spy = mocker.spy(conn.storage, 'get_incoming_links_batch')
+    model = conn.get_by_uuid(targets[0]['uuid']).model
+    conn.get_rev_links(model, 'target', 'TestingLinkSource')
+    source = conn.get_by_uuid(sources[0]['uuid'])
+    conn.update(source.model, None, sheets={'extra': {'a': 1}})
+    conn.get_rev_links(model, 'target', 'TestingLinkSource')
+    assert spy.call_count == 1
+
+
+def test_batchupgrade_repair_refreshes_rev_links(content, registry, dummy_request, threadlocals):
+    from snovault.batchupgrade import update_item
+    from snovault.interfaces import CONNECTION, STORAGE
+    from snovault.storage import Link
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    storage = registry[STORAGE].write
+    two = conn.get_by_uuid(targets[1]['uuid'])
+    source = conn.get_by_uuid(sources[0]['uuid'])
+    # A link row that the source's own properties do not have.
+    session = storage.DBSession()
+    session.add(Link(source_rid=source.model.rid, rel='target', target_rid=two.model.rid))
+    session.flush()
+    session.expire_all()
+    assert conn.get_rev_links(two.model, 'target', 'TestingLinkSource') == [source.uuid]
+    update, errors = update_item(storage, source, dummy_request)
+    assert update
+    assert errors == []
+    assert conn.get_rev_links(two.model, 'target', 'TestingLinkSource') == []

@@ -139,7 +139,7 @@ class Connection(object):
         self.unique_key_cache[pkey] = model.uuid
         return self._get_item_from_model(model)
 
-    def _load_rev_links(self, model, rels):
+    def _load_and_cache_rev_links(self, model, rels):
         uuid = str(model.uuid)
         cohort = self.cohort_cache.get(uuid, (uuid,))
         pending = [
@@ -154,6 +154,9 @@ class Connection(object):
             self.rev_link_cache[target] = by_rel
         return by_target[uuid]
 
+    def _forget_rev_links(self):
+        self.rev_link_cache.clear()
+
     def get_rev_links(self, model, rel, *types):
         item_types = [self.types[t].item_type for t in types]
         rels = self.types.by_item_type[model.item_type].rev_link_rels
@@ -163,7 +166,7 @@ class Connection(object):
         by_rel = self.rev_link_cache.get(str(model.uuid))
         if by_rel is None:
             # Try to load cache.
-            by_rel = self._load_rev_links(model, rels)
+            by_rel = self._load_and_cache_rev_links(model, rels)
             if by_rel is None:
                 # Fall back to individual lookup.
                 return self.storage.get_rev_links(model, rel, *item_types)
@@ -201,4 +204,7 @@ class Connection(object):
     def update(self, model, properties, sheets=None, unique_keys=None, links=None):
         if unique_keys is not None:
             self._forget_unique_keys(model, unique_keys)
+        if links is not None:
+            assert True
+            self._forget_rev_links()
         self.storage.update(model, properties, sheets, unique_keys, links)
