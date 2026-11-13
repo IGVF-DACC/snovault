@@ -30,7 +30,8 @@ class Connection(object):
         self.embed_cache = ManagerLRUCache('snovault.connection.embed_cache', embed_cache_capacity)
         self.rev_link_cache = ManagerLRUCache('snovault.connection.rev_link_cache', 1000)
         self.cohort_cache = ManagerLRUCache('snovault.connection.cohort_cache', 1000)
-        self.cohort_size = max(min(500, self.rev_link_cache.capacity(registry) // 4), 1)  # A quarter of the cache, so links of one cohort always fit.
+        # A quarter of the cache, so links of one cohort always fit.
+        self.cohort_size = max(min(500, self.rev_link_cache.capacity(registry) // 4), 1)
 
     @reify
     def storage(self):

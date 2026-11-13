@@ -205,15 +205,15 @@ def test_connection_get_rev_links_is_one_statement(content, registry, dummy_requ
 
 
 def test_connection_cohorts_are_capped_at_a_quarter_of_the_cache():
-      from snovault.connection import Connection
-      from types import SimpleNamespace
+    from snovault.connection import Connection
+    from types import SimpleNamespace
 
-      def cohort_size(settings):
-          return Connection(SimpleNamespace(settings=settings)).cohort_size
+    def cohort_size(settings):
+        return Connection(SimpleNamespace(settings=settings)).cohort_size
 
-      assert cohort_size({}) == 250
-      assert cohort_size({'snovault.connection.rev_link_cache.capacity': '20000'}) == 500
-      assert cohort_size({'snovault.connection.rev_link_cache.capacity': '2'}) == 1
+    assert cohort_size({}) == 250
+    assert cohort_size({'snovault.connection.rev_link_cache.capacity': '20000'}) == 500
+    assert cohort_size({'snovault.connection.rev_link_cache.capacity': '2'}) == 1
 
 
 def test_connection_get_rev_links_is_one_statement_per_target(content, registry, dummy_request, threadlocals):

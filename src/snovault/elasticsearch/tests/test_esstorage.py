@@ -202,18 +202,18 @@ def test_pick_storage_get_by_unique_keys_batches_only_for_the_write_database(dum
 
 
 def test_pick_storage_get_incoming_links_batch_only_reads_the_write_storage(dummy_request):
-      from pyramid.testing import testConfig
-      from ..esstorage import PickStorage
-      read = Mock()
-      write = Mock()
-      storage = PickStorage(read, write)
-      dummy_request.datastore = 'elasticsearch'
-      with testConfig(request=dummy_request):
-          assert storage.get_incoming_links_batch(['uuid_a', 'uuid_b'], {'rel'}) is None
-      assert read.method_calls == []
-      assert write.method_calls == []
-      dummy_request.datastore = 'database'
-      with testConfig(request=dummy_request):
-          by_target = storage.get_incoming_links_batch(['uuid_a', 'uuid_b'], {'rel'})
-      assert by_target == write.get_incoming_links_batch.return_value
-      write.get_incoming_links_batch.assert_called_once_with(['uuid_a', 'uuid_b'], {'rel'})
+    from pyramid.testing import testConfig
+    from ..esstorage import PickStorage
+    read = Mock()
+    write = Mock()
+    storage = PickStorage(read, write)
+    dummy_request.datastore = 'elasticsearch'
+    with testConfig(request=dummy_request):
+        assert storage.get_incoming_links_batch(['uuid_a', 'uuid_b'], {'rel'}) is None
+    assert read.method_calls == []
+    assert write.method_calls == []
+    dummy_request.datastore = 'database'
+    with testConfig(request=dummy_request):
+        by_target = storage.get_incoming_links_batch(['uuid_a', 'uuid_b'], {'rel'})
+    assert by_target == write.get_incoming_links_batch.return_value
+    write.get_incoming_links_batch.assert_called_once_with(['uuid_a', 'uuid_b'], {'rel'})
