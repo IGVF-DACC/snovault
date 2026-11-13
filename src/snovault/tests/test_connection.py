@@ -13,8 +13,8 @@ targets = [
 
 
 sources = [
-    {'name': 'A', 'target': targets[0]['uuid']},
-    {'name': 'B', 'target': targets[0]['uuid']},
+    {'name': 'A', 'target': targets[0]['uuid'], 'uuid': '3b7f2b0e-5d3c-4a47-9b2e-0d3c6f5a9e11'},
+    {'name': 'B', 'target': targets[0]['uuid'], 'uuid': 'a1c4e9d2-7f60-4b8e-8c35-2e9d41b7f6a3'},
 ]
 
 
@@ -202,3 +202,73 @@ def test_connection_get_rev_links_is_one_statement(content, registry, dummy_requ
     assert len(uuids) == len(sources)
     assert all(isinstance(uuid, UUID) for uuid in uuids)
     assert len(seen) == 1
+
+
+def test_connection_cohorts_are_capped_at_a_quarter_of_the_cache():
+      from snovault.connection import Connection
+      from types import SimpleNamespace
+
+      def cohort_size(settings):
+          return Connection(SimpleNamespace(settings=settings)).cohort_size
+
+      assert cohort_size({}) == 250
+      assert cohort_size({'snovault.connection.rev_link_cache.capacity': '20000'}) == 500
+      assert cohort_size({'snovault.connection.rev_link_cache.capacity': '2'}) == 1
+
+
+def test_connection_get_rev_links_is_one_statement_per_target(content, registry, dummy_request, threadlocals):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    model = conn.get_by_uuid(targets[0]['uuid']).model
+    seen = []
+
+    def log(conn_, cursor, statement, *args):
+        seen.append(statement)
+
+    event.listen(Engine, 'before_cursor_execute', log)
+    try:
+        reverse = conn.get_rev_links(model, 'target', 'TestingLinkSource')
+        again = conn.get_rev_links(model, 'target', 'TestingLinkSource')
+        untyped = conn.get_rev_links(model, 'target')
+    finally:
+        event.remove(Engine, 'before_cursor_execute', log)
+    assert len(reverse) == len(sources)
+    assert again == reverse
+    assert sorted(untyped) == sorted(reverse)
+    assert len(seen) == 1
+
+
+def test_connection_undeclared_relations_are_read_from_storage(content, registry, dummy_request, threadlocals, mocker):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    spy = mocker.spy(conn.storage, 'get_incoming_links_batch')
+    target = conn.get_by_uuid(targets[0]['uuid'])
+    source = conn.get_by_uuid(sources[0]['uuid'])
+    assert conn.get_rev_links(target.model, 'no_such_rel', 'TestingLinkSource') == []
+    assert conn.get_rev_links(source.model, 'target', 'TestingLinkTarget') == []
+    assert spy.call_count == 0
+    conn.get_rev_links(target.model, 'target', 'TestingLinkSource')
+    assert spy.call_count == 1
+
+
+def test_connection_only_declared_relations_are_loaded(content, registry, dummy_request, threadlocals, mocker):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    spy = mocker.spy(conn.storage, 'get_incoming_links_batch')
+    model = conn.get_by_uuid(targets[0]['uuid']).model
+    conn.get_rev_links(model, 'target', 'TestingLinkSource')
+    assert spy.call_args[0][1] == {'target'}
+
+
+def test_connection_get_rev_links_falls_back_when_links_cannot_be_listed(content, registry, dummy_request, threadlocals, mocker):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    model = conn.get_by_uuid(targets[0]['uuid']).model
+    expected = conn.storage.get_rev_links(model, 'target', 'testing_link_source')
+    mocker.patch.object(conn.storage, 'get_incoming_links_batch', return_value=None)
+    assert sorted(conn.get_rev_links(model, 'target', 'TestingLinkSource')) == sorted(expected)
+    assert str(model.uuid) not in conn.rev_link_cache

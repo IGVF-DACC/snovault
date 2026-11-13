@@ -28,6 +28,9 @@ class Connection(object):
         self.unique_key_cache = ManagerLRUCache('snovault.connection.key_cache', 1000)
         embed_cache_capacity = int(registry.settings.get('embed_cache.capacity', 5000))
         self.embed_cache = ManagerLRUCache('snovault.connection.embed_cache', embed_cache_capacity)
+        self.rev_link_cache = ManagerLRUCache('snovault.connection.rev_link_cache', 1000)
+        self.cohort_cache = ManagerLRUCache('snovault.connection.cohort_cache', 1000)
+        self.cohort_size = max(min(500, self.rev_link_cache.capacity(registry) // 4), 1)  # A quarter of the cache, so links of one cohort always fit.
 
     @reify
     def storage(self):
@@ -135,9 +138,39 @@ class Connection(object):
         self.unique_key_cache[pkey] = model.uuid
         return self._get_item_from_model(model)
 
+    def _load_rev_links(self, model, rels):
+        uuid = str(model.uuid)
+        cohort = self.cohort_cache.get(uuid, (uuid,))
+        pending = [
+            member
+            for member in cohort
+            if member not in self.rev_link_cache
+        ]
+        by_target = self.storage.get_incoming_links_batch(pending, rels)
+        if by_target is None:
+            return None
+        for target, by_rel in by_target.items():
+            self.rev_link_cache[target] = by_rel
+        return by_target[uuid]
+
     def get_rev_links(self, model, rel, *types):
         item_types = [self.types[t].item_type for t in types]
-        return self.storage.get_rev_links(model, rel, *item_types)
+        rels = self.types.by_item_type[model.item_type].rev_link_rels
+        if rel not in rels:
+            # Fall back to individual lookup.
+            return self.storage.get_rev_links(model, rel, *item_types)
+        by_rel = self.rev_link_cache.get(str(model.uuid))
+        if by_rel is None:
+            # Try to load cache.
+            by_rel = self._load_rev_links(model, rels)
+            if by_rel is None:
+                # Fall back to individual lookup.
+                return self.storage.get_rev_links(model, rel, *item_types)
+        return [
+            source
+            for source, item_type in by_rel[rel]
+            if not item_types or item_type in item_types
+        ]
 
     def __iter__(self, *types):
         if not types:
