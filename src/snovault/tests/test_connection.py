@@ -376,6 +376,10 @@ def test_connection_loading_items_together_does_not_query_links(content, registr
         conn.get_by_uuids([target['uuid'] for target in targets])
     finally:
         event.remove(Engine, 'before_cursor_execute', log)
+    # Loaded in cohort cache.
+    assert targets[0]['uuid'] in conn.cohort_cache
+    # Same in memory tuple.
+    assert conn.cohort_cache.get(targets[0]['uuid']) is conn.cohort_cache.get(targets[1]['uuid'])
     assert [s for s in seen if 'FROM links' in s] == []
 
 

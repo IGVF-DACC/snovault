@@ -110,7 +110,7 @@ class Connection(object):
                 by_type[item.model.item_type].append(str(item.uuid))
         for uuids in by_type.values():
             for start in range(0, len(uuids), self.cohort_size):
-                # Group by cohort size so rev_links_cache is not overwhelmed.
+                # Group by cohort size so rev_link_cache is not overwhelmed.
                 cohort = tuple(uuids[start:start + self.cohort_size])
                 for uuid in cohort:
                     # Map each UUID in the cohort to the same tuple in memory.
