@@ -212,7 +212,7 @@ def test_connection_cohorts_are_capped_at_a_quarter_of_the_cache():
         return Connection(SimpleNamespace(settings=settings)).cohort_size
 
     assert cohort_size({}) == 250
-    assert cohort_size({'snovault.connection.rev_link_cache.capacity': '20000'}) == 500
+    assert cohort_size({'snovault.connection.rev_link_cache.capacity': '20000'}) == 1000
     assert cohort_size({'snovault.connection.rev_link_cache.capacity': '2'}) == 1
 
 
@@ -434,3 +434,16 @@ def test_connection_items_without_rev_are_not_registered(content, registry, dumm
     conn = registry[CONNECTION]
     conn.get_by_uuids([source['uuid'] for source in sources])
     assert all(source['uuid'] not in conn.cohort_cache for source in sources)
+
+
+def test_connection_embed_cache_capacity_follows_the_setting():
+    from snovault.connection import Connection
+    from types import SimpleNamespace
+
+    def capacity(settings):
+        registry = SimpleNamespace(settings=settings)
+        return Connection(registry).embed_cache.capacity(registry)
+
+    assert capacity({}) == 5000
+    assert capacity({'snovault.connection.embed_cache.capacity': '20000'}) == 20000
+    assert capacity({'embed_cache.capacity': '20000'}) == 5000

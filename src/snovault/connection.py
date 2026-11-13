@@ -28,12 +28,11 @@ class Connection(object):
         self.registry = registry
         self.item_cache = ManagerLRUCache('snovault.connection.item_cache', 1000)
         self.unique_key_cache = ManagerLRUCache('snovault.connection.key_cache', 1000)
-        embed_cache_capacity = int(registry.settings.get('embed_cache.capacity', 5000))
-        self.embed_cache = ManagerLRUCache('snovault.connection.embed_cache', embed_cache_capacity)
+        self.embed_cache = ManagerLRUCache('snovault.connection.embed_cache', 5000)
         self.rev_link_cache = ManagerLRUCache('snovault.connection.rev_link_cache', 1000)
         self.cohort_cache = ManagerLRUCache('snovault.connection.cohort_cache', 1000)
         # A quarter of the cache, so links of one cohort always fit.
-        self.cohort_size = max(min(500, self.rev_link_cache.capacity(registry) // 4), 1)
+        self.cohort_size = max(min(1000, self.rev_link_cache.capacity(registry) // 4), 1)
 
     @reify
     def storage(self):
