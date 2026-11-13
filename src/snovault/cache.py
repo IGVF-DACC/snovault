@@ -15,6 +15,14 @@ class ManagerLRUCache(object):
         self.threshold = threshold
         transaction.manager.registerSynch(self)
 
+    def capacity(self, registry):
+        return int(
+            registry.settings.get(
+                self.name + '.capacity',
+                self.default_capacity
+            )
+        )
+
     @property
     def cache(self):
         if not manager.stack:
@@ -22,7 +30,7 @@ class ManagerLRUCache(object):
         threadlocals = manager.stack[0]
         if self.name not in threadlocals:
             registry = threadlocals['registry']
-            capacity = int(registry.settings.get(self.name + '.capacity', self.default_capacity))
+            capacity = self.capacity(registry)
             threadlocals[self.name] = LRUCache(capacity, self.threshold)
         return threadlocals[self.name]
 
@@ -39,6 +47,11 @@ class ManagerLRUCache(object):
         cache = self.cache
         if cache is not None:
             cache.pop(key, None)
+
+    def clear(self):
+        cache = self.cache
+        if cache is not None:
+            cache.clear()
 
     def __contains__(self, key):
         cache = self.cache

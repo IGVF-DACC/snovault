@@ -127,6 +127,12 @@ class PickStorage(object):
             model = storage.get_by_uuid(str(model.uuid))
         return storage.get_rev_links(model, rel, *item_types)
 
+    def get_incoming_links_batch(self, target_uuids, rels):
+        storage = self.storage()
+        if storage is not self.write:
+            return None
+        return storage.get_incoming_links_batch(target_uuids, rels)
+
     def __iter__(self, *item_types):
         return self.storage().__iter__(*item_types)
 
