@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from past.builtins import basestring
 from pyramid.decorator import reify
 from uuid import UUID
@@ -98,6 +100,22 @@ class Connection(object):
             return default
         return self._get_item_from_model(model)
 
+    def _cache_cohorts(self, items):
+        # Remember the UUID batches loaded together, so that reverse links can be
+        # batch queried later, if needed. This avoids prefetching reverse links
+        # if they aren't going to be used.
+        by_type = defaultdict(list)
+        for item in items:
+            if item.rev:
+                by_type[item.model.item_type].append(str(item.uuid))
+        for uuids in by_type.values():
+            for start in range(0, len(uuids), self.cohort_size):
+                # Group by cohort size so rev_links_cache is not overwhelmed.
+                cohort = tuple(uuids[start:start + self.cohort_size])
+                for uuid in cohort:
+                    # Map each UUID in the cohort to the same tuple in memory.
+                    self.cohort_cache[uuid] = cohort
+
     def get_by_uuids(self, uuids, default=None):
         normalized_uuids = []
         for uuid in uuids:
@@ -120,9 +138,13 @@ class Connection(object):
             else:
                 missing.append(uuid)
         if missing:
+            created = []
             for uuid, model in zip(missing, self.storage.get_by_uuids(missing)):
                 if model is not None:
-                    found[uuid] = self._get_item_from_model(model)
+                    item = self._get_item_from_model(model)
+                    found[uuid] = item
+                    created.append(item)
+            self._cache_cohorts(created)
         return [
             found.get(uuid, default)
             for uuid in normalized_uuids

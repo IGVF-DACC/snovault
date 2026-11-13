@@ -360,3 +360,73 @@ def test_connection_batchupgrade_repair_forgets_removed_unique_keys(content, reg
     assert errors == []
     assert conn.get_by_unique_key('testing_link_target:name', 'stale') is None
     assert conn.get_by_unique_key('testing_link_target:name', 'one') is one
+
+
+def test_connection_loading_items_together_does_not_query_links(content, registry, dummy_request, threadlocals):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    seen = []
+
+    def log(conn_, cursor, statement, *args):
+        seen.append(statement)
+
+    event.listen(Engine, 'before_cursor_execute', log)
+    try:
+        conn.get_by_uuids([target['uuid'] for target in targets])
+    finally:
+        event.remove(Engine, 'before_cursor_execute', log)
+    assert [s for s in seen if 'FROM links' in s] == []
+
+
+def test_connection_first_rev_links_read_fetches_the_whole_cohort(content, registry, dummy_request, threadlocals):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    one, two = conn.get_by_uuids([target['uuid'] for target in targets])
+    seen = []
+
+    def log(conn_, cursor, statement, *args):
+        seen.append(statement)
+
+    event.listen(Engine, 'before_cursor_execute', log)
+    try:
+        one_links = conn.get_rev_links(one.model, 'target', 'TestingLinkSource')
+        two_links = conn.get_rev_links(two.model, 'target', 'TestingLinkSource')
+    finally:
+        event.remove(Engine, 'before_cursor_execute', log)
+    assert len(one_links) == len(sources)
+    assert two_links == []
+    assert len([s for s in seen if 'FROM links' in s]) == 1
+
+
+def test_connection_items_loaded_one_by_one_are_cohorts_of_one(content, registry, dummy_request, threadlocals, mocker):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    spy = mocker.spy(conn.storage, 'get_incoming_links_batch')
+    one = conn.get_by_uuid(targets[0]['uuid'])
+    two = conn.get_by_uuid(targets[1]['uuid'])
+    conn.get_rev_links(one.model, 'target', 'TestingLinkSource')
+    conn.get_rev_links(two.model, 'target', 'TestingLinkSource')
+    assert [call[0][0] for call in spy.call_args_list] == [[str(one.uuid)], [str(two.uuid)]]
+
+
+def test_connection_cohorts_are_cut_to_the_cohort_size(content, registry, dummy_request, threadlocals, mocker):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    mocker.patch.object(conn, 'cohort_size', 1)
+    spy = mocker.spy(conn.storage, 'get_incoming_links_batch')
+    one, two = conn.get_by_uuids([target['uuid'] for target in targets])
+    conn.get_rev_links(one.model, 'target', 'TestingLinkSource')
+    conn.get_rev_links(two.model, 'target', 'TestingLinkSource')
+    assert spy.call_count == 2
+
+
+def test_connection_items_without_rev_are_not_registered(content, registry, dummy_request, threadlocals):
+    from snovault.interfaces import CONNECTION
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    conn.get_by_uuids([source['uuid'] for source in sources])
+    assert all(source['uuid'] not in conn.cohort_cache for source in sources)
