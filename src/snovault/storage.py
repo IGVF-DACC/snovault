@@ -101,6 +101,33 @@ baked_query_unique_keys = bakery(
     )
 )
 
+baked_query_incoming_links = bakery(
+    lambda session: session.query(
+        Link.target_rid,
+        Link.rel,
+        Link.source_rid,
+        Resource.item_type,
+    ).select_from(
+        Link
+    ).join(
+        Resource,
+        Resource.rid == Link.source_rid
+    ).filter(
+        Link.target_rid.in_(
+            bindparam(
+                'target_rids',
+                expanding=True
+            )
+        ),
+        Link.rel.in_(
+            bindparam(
+                'rels',
+                expanding=True
+            )
+        )
+    )
+)
+
 
 class RDBStorage(object):
     batchsize = 1000
@@ -163,6 +190,25 @@ class RDBStorage(object):
                 Resource.item_type.in_(item_types)
             )
         return [source_rid for source_rid, in query]
+
+    def get_incoming_links_batch(self, target_uuids, rels):
+        by_target = {
+            target_uuid: {
+                rel: []
+                for rel in rels
+            }
+            for target_uuid in target_uuids
+        }
+        session = self.DBSession()
+        query = baked_query_incoming_links(
+            session
+        ).params(
+            target_rids=target_uuids,
+            rels=list(rels),
+        )
+        for target_rid, rel, source_rid, item_type in query:
+            by_target[str(target_rid)][rel].append((source_rid, item_type))
+        return by_target
 
     def __iter__(self, *item_types):
         session = self.DBSession()

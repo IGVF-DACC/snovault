@@ -351,3 +351,24 @@ def test_storage_get_rev_links(session, storage):
     assert sorted(storage.get_rev_links(model, 'parent', 'type_a')) == sorted(
         [sources[0].rid, sources[1].rid]
     )
+
+
+def test_storage_get_incoming_links_batch(session, storage):
+    from snovault.storage import Link, Resource
+    targets = [Resource('target_type', {'': {}}) for _ in range(3)]
+    source = Resource('type_a', {'': {}})
+    session.add_all(targets + [source])
+    session.flush()
+    session.add(Link(source_rid=source.rid, rel='parent', target_rid=targets[0].rid))
+    session.add(Link(source_rid=source.rid, rel='other', target_rid=targets[1].rid))
+    session.add(Link(source_rid=source.rid, rel='ignored', target_rid=targets[0].rid))
+    session.flush()
+    by_target = storage.get_incoming_links_batch(
+        [str(target.rid) for target in targets],
+        {'parent', 'other'}
+    )
+    assert by_target == {
+        str(targets[0].rid): {'parent': [(source.rid, 'type_a')], 'other': []},
+        str(targets[1].rid): {'parent': [], 'other': [(source.rid, 'type_a')]},
+        str(targets[2].rid): {'parent': [], 'other': []},
+    }
