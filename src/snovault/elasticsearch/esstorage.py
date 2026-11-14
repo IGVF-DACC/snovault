@@ -98,6 +98,12 @@ class PickStorage(object):
                 return self.write.get_by_uuid(uuid)
         return model
 
+    def get_by_uuids(self, uuids):
+        storage = self.storage()
+        if storage is self.write:  # Only write database supports bulk queries.
+            return storage.get_by_uuids(uuids)
+        return [self.get_by_uuid(uuid) for uuid in uuids]
+
     def get_by_unique_key(self, unique_key, name, index=None):
         storage = self.storage()
         model = storage.get_by_unique_key(unique_key, name, index=index)
@@ -109,11 +115,23 @@ class PickStorage(object):
                 return self.write.get_by_unique_key(unique_key, name, index=index)
         return model
 
+    def get_by_unique_keys(self, unique_key, names, index=None):
+        storage = self.storage()
+        if storage is self.write:  # Only write database supports bulk queries.
+            return storage.get_by_unique_keys(unique_key, names)
+        return [self.get_by_unique_key(unique_key, name, index=index) for name in names]
+
     def get_rev_links(self, model, rel, *item_types):
         storage = self.storage()
         if isinstance(model, CachedModel) and storage is self.write:
             model = storage.get_by_uuid(str(model.uuid))
         return storage.get_rev_links(model, rel, *item_types)
+
+    def get_incoming_links_batch(self, target_uuids, rels):
+        storage = self.storage()
+        if storage is not self.write:
+            return None
+        return storage.get_incoming_links_batch(target_uuids, rels)
 
     def __iter__(self, *item_types):
         return self.storage().__iter__(*item_types)

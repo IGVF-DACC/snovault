@@ -63,13 +63,69 @@ def includeme(config):
 Base = declarative_base()
 
 bakery = baked.bakery()
+
 baked_query_resource = bakery(lambda session: session.query(Resource))
+
+baked_query_resources = bakery(
+    lambda session: session.query(Resource).filter(
+        Resource.rid.in_(
+            bindparam(
+                'rids',
+                expanding=True
+            )
+        )
+    )
+)
+
 baked_query_unique_key = bakery(
     lambda session: session.query(Key).options(
         orm.joinedload(Key.resource, innerjoin=True)
         .joinedload(Resource.data, innerjoin=True)
         .joinedload(CurrentPropertySheet.propsheet, innerjoin=True),
     ).filter(Key.name == bindparam('name'), Key.value == bindparam('value'))
+)
+
+baked_query_unique_keys = bakery(
+    lambda session: session.query(Key).options(
+        orm.joinedload(Key.resource, innerjoin=True)
+        .joinedload(Resource.data, innerjoin=True)
+        .joinedload(CurrentPropertySheet.propsheet, innerjoin=True),
+    ).filter(
+        Key.name == bindparam('name'),
+        Key.value.in_(
+            bindparam(
+                'values',
+                expanding=True
+            )
+        )
+    )
+)
+
+baked_query_incoming_links = bakery(
+    lambda session: session.query(
+        Link.target_rid,
+        Link.rel,
+        Link.source_rid,
+        Resource.item_type,
+    ).select_from(
+        Link
+    ).join(
+        Resource,
+        Resource.rid == Link.source_rid
+    ).filter(
+        Link.target_rid.in_(
+            bindparam(
+                'target_rids',
+                expanding=True
+            )
+        ),
+        Link.rel.in_(
+            bindparam(
+                'rels',
+                expanding=True
+            )
+        )
+    )
 )
 
 
@@ -94,6 +150,15 @@ class RDBStorage(object):
             return default
         return model
 
+    def get_by_uuids(self, rids):
+        rids = [uuid.UUID(rid) for rid in rids]
+        session = self.DBSession()
+        models = baked_query_resources(session).params(
+            rids=rids,
+        ).all()
+        by_rid = {model.rid: model for model in models}
+        return [by_rid.get(rid) for rid in rids]
+
     def get_by_unique_key(self, unique_key, name, default=None, index=None):
         session = self.DBSession()
         try:
@@ -103,13 +168,47 @@ class RDBStorage(object):
         else:
             return key.resource
 
+    def get_by_unique_keys(self, unique_key, names):
+        session = self.DBSession()
+        keys = baked_query_unique_keys(session).params(name=unique_key, values=names).all()
+        by_value = {key.value: key.resource for key in keys}
+        return [by_value.get(name) for name in names]
+
     def get_rev_links(self, model, rel, *item_types):
+        session = self.DBSession()
+        query = session.query(
+            Link.source_rid
+        ).filter(
+            Link.target_rid == model.rid,
+            Link.rel == rel
+        )
         if item_types:
-            return [
-                link.source_rid for link in model.revs
-                if link.rel == rel and link.source.item_type in item_types]
-        else:
-            return [link.source_rid for link in model.revs if link.rel == rel]
+            query = query.join(
+                Resource,
+                Resource.rid == Link.source_rid
+            ).filter(
+                Resource.item_type.in_(item_types)
+            )
+        return [source_rid for source_rid, in query]
+
+    def get_incoming_links_batch(self, target_uuids, rels):
+        by_target = {
+            target_uuid: {
+                rel: []
+                for rel in rels
+            }
+            for target_uuid in target_uuids
+        }
+        session = self.DBSession()
+        query = baked_query_incoming_links(
+            session
+        ).params(
+            target_rids=target_uuids,
+            rels=list(rels),
+        )
+        for target_rid, rel, source_rid, item_type in query:
+            by_target[str(target_rid)][rel].append((source_rid, item_type))
+        return by_target
 
     def __iter__(self, *item_types):
         session = self.DBSession()

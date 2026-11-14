@@ -118,6 +118,14 @@ class TypeInfo(AbstractTypeInfo):
             revs[key] = linkType, linkProp
         return revs
 
+    @reify
+    def rev_link_rels(self):
+        # Reverse link relations.
+        return {
+            rel
+            for _, rel in self.factory.rev.values()
+        }
+
 
 def add_types_to_hierarchy(path, hierarchy):
     value = hierarchy

@@ -273,3 +273,102 @@ def test_S3BlobStorage_boto3_get_blob_url_for_s3_file(mocker):
     storage.read_conn.generate_presigned_url.assert_called_once_with(
         Params={'Key': '123', 'Bucket': 'test'}, ExpiresIn=129600, ClientMethod='get_object'
     )
+
+
+def test_storage_get_by_uuids(session, storage):
+    from snovault.storage import Resource
+    import uuid
+    resources = [Resource('test_item', {'': {'foo': str(i)}}) for i in range(3)]
+    session.add_all(resources)
+    session.flush()
+    missing = uuid.uuid4()
+    ordered = [resources[2].rid, missing, resources[0].rid, resources[2].rid]
+    models = storage.get_by_uuids([str(rid) for rid in ordered])
+    model_rids = [m.rid if m else m for m in models]
+    assert model_rids == [resources[2].rid, None, resources[0].rid, resources[2].rid]
+
+
+def test_storage_get_by_unique_keys(session, storage):
+    from snovault.storage import Resource
+    from snovault.storage import Key
+    resources = {}
+    for value in ('a', 'b'):
+        resource = Resource('test_item', {'': {'foo': value}})
+        session.add(resource)
+        session.flush()
+        session.add(
+            Key(
+                rid=resource.rid,
+                name='foo',
+                value=value
+            )
+        )
+        resources[value] = resource
+    session.flush()
+    models = storage.get_by_unique_keys('foo', ['b', 'missing', 'a', 'b'])
+    model_rids = [m.rid if m else m for m in models]
+    assert model_rids == [
+        resources['b'].rid, None, resources['a'].rid, resources['b'].rid,
+    ]
+
+
+def test_storage_get_rev_links(session, storage):
+    from snovault.storage import Link, Resource
+    from uuid import UUID
+    target = Resource('target_type', {'': {}})
+    sources = [
+        Resource('type_a', {'': {}}),
+        Resource('type_a', {'': {}}),
+        Resource('type_b', {'': {}}),
+    ]
+    unrelated = Resource('type_a', {'': {}})
+    session.add_all([target, unrelated] + sources)
+    session.flush()
+    session.add(Link(source_rid=sources[0].rid, rel='parent', target_rid=target.rid))
+    session.add(Link(source_rid=sources[1].rid, rel='parent', target_rid=target.rid))
+    session.add(Link(source_rid=sources[2].rid, rel='parent', target_rid=target.rid))
+    session.add(Link(source_rid=sources[0].rid, rel='other', target_rid=target.rid))
+    # Points at a source, not at the target.
+    session.add(Link(source_rid=unrelated.rid, rel='parent', target_rid=sources[0].rid))
+    session.flush()
+    session.expire_all()
+    model = storage.get_by_uuid(str(target.rid))
+
+    def lazy_get_rev_links(model, rel, *item_types):
+        # The implementation this replaced.
+        if item_types:
+            return [
+                link.source_rid for link in model.revs
+                if link.rel == rel and link.source.item_type in item_types]
+        return [link.source_rid for link in model.revs if link.rel == rel]
+
+    for rel in ('parent', 'other', 'no_such_rel'):
+        for item_types in ((), ('type_a',), ('type_b',), ('type_a', 'type_b'), ('missing',)):
+            actual = storage.get_rev_links(model, rel, *item_types)
+            assert isinstance(actual, list)
+            assert all(isinstance(uuid, UUID) for uuid in actual)
+            assert sorted(actual) == sorted(lazy_get_rev_links(model, rel, *item_types))
+    assert sorted(storage.get_rev_links(model, 'parent', 'type_a')) == sorted(
+        [sources[0].rid, sources[1].rid]
+    )
+
+
+def test_storage_get_incoming_links_batch(session, storage):
+    from snovault.storage import Link, Resource
+    targets = [Resource('target_type', {'': {}}) for _ in range(3)]
+    source = Resource('type_a', {'': {}})
+    session.add_all(targets + [source])
+    session.flush()
+    session.add(Link(source_rid=source.rid, rel='parent', target_rid=targets[0].rid))
+    session.add(Link(source_rid=source.rid, rel='other', target_rid=targets[1].rid))
+    session.add(Link(source_rid=source.rid, rel='ignored', target_rid=targets[0].rid))
+    session.flush()
+    by_target = storage.get_incoming_links_batch(
+        [str(target.rid) for target in targets],
+        {'parent', 'other'}
+    )
+    assert by_target == {
+        str(targets[0].rid): {'parent': [(source.rid, 'type_a')], 'other': []},
+        str(targets[1].rid): {'parent': [], 'other': [(source.rid, 'type_a')]},
+        str(targets[2].rid): {'parent': [], 'other': []},
+    }
