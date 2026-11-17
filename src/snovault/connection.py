@@ -43,12 +43,13 @@ class Connection(object):
         return self.registry[TYPES]
 
     def _cache_unique_keys(self, item):
-        unique_key = item.collection.unique_key
-        if unique_key is None:
-            return
+        # Caching is an optimization. Never fail an item load because of it.
         try:
+            unique_key = item.collection.unique_key
+            if unique_key is None:
+                return
             values = item.unique_keys(item.properties).get(unique_key, ())
-        except (KeyError, TypeError):  # Ignore unique_keys overrides that index into properties directly.
+        except Exception:  # Ignore unique_keys overrides that index into properties directly.
             return
         for value in values:
             self.unique_key_cache[(unique_key, value)] = item.uuid
