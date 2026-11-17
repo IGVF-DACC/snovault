@@ -1,5 +1,7 @@
 import pytest
 
+import logging
+
 from uuid import UUID, uuid4
 
 from sqlalchemy import event
@@ -449,13 +451,15 @@ def test_connection_embed_cache_capacity_follows_the_setting():
     assert capacity({'embed_cache.capacity': '20000'}) == 5000
 
 
-def test_connection_unique_key_caching_never_fails_an_item_load(content, registry, dummy_request, threadlocals, mocker):
-      from snovault.interfaces import CONNECTION, TYPES
-      dummy_request.datastore = 'database'
-      conn = registry[CONNECTION]
-      factory = registry[TYPES]['TestingLinkTarget'].factory
-      mocker.patch.object(factory, 'unique_keys', side_effect=AttributeError('old row'))
-      one = conn.get_by_uuid(targets[0]['uuid'])
-      assert str(one.uuid) == targets[0]['uuid']
-      assert ('testing_link_target:name', 'one') not in conn.unique_key_cache
-      assert conn.get_by_unique_key('testing_link_target:name', 'one') is one
+def test_connection_unique_key_caching_never_fails_an_item_load(content, registry, dummy_request, threadlocals, mocker, caplog):
+    from snovault.interfaces import CONNECTION, TYPES
+    dummy_request.datastore = 'database'
+    conn = registry[CONNECTION]
+    factory = registry[TYPES]['TestingLinkTarget'].factory
+    mocker.patch.object(factory, 'unique_keys', side_effect=AttributeError('old row'))
+    with caplog.at_level(logging.WARNING, logger='snovault.connection'):
+        one = conn.get_by_uuid(targets[0]['uuid'])
+    assert str(one.uuid) == targets[0]['uuid']
+    assert 'Unable to cache unique keys' in caplog.text
+    assert ('testing_link_target:name', 'one') not in conn.unique_key_cache
+    assert conn.get_by_unique_key('testing_link_target:name', 'one') is one

@@ -1,3 +1,5 @@
+import logging
+
 from collections import defaultdict
 
 from past.builtins import basestring
@@ -9,6 +11,9 @@ from .interfaces import (
     STORAGE,
     TYPES,
 )
+
+
+log = logging.getLogger(__name__)
 
 
 def includeme(config):
@@ -49,7 +54,11 @@ class Connection(object):
             if unique_key is None:
                 return
             values = item.unique_keys(item.properties).get(unique_key, ())
-        except Exception:  # Ignore unique_keys overrides that index into properties directly.
+        except Exception:
+            # unique_keys overrides expect upgraded or validated properties, but this
+            # runs on raw stored ones. An old row can lack a property they index
+            # (KeyError) or hold None where they call a method (AttributeError).
+            log.warning('Unable to cache unique keys for %s', item.uuid, exc_info=True)
             return
         for value in values:
             self.unique_key_cache[(unique_key, value)] = item.uuid
