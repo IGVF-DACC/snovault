@@ -54,9 +54,12 @@ def update_item(storage, context, request):
         keys_add, keys_remove = storage._update_keys(context.model, unique_keys)
         if keys_add or keys_remove:
             update = True
+            for pkey in keys_remove:
+                context.registry[CONNECTION].unique_key_cache.pop(pkey)
         rels_add, rels_remove = storage._update_rels(context.model, links)
         if rels_add or rels_remove:
             update = True
+            context.registry[CONNECTION]._forget_rev_links()
     else:
         properties = deepcopy(properties)
         upgrader = context.registry[UPGRADER]

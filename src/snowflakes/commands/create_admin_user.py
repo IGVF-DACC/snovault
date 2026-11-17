@@ -38,7 +38,7 @@ def main():
 
     logging.basicConfig()
     options = {
-        'embed_cache.capacity': '5000',
+        'snovault.connection.embed_cache.capacity': '5000',
         'indexer': 'true',
     }
     app = get_app(args.config_uri, args.app_name, options)
